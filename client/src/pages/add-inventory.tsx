@@ -46,9 +46,18 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       setLocation("/inventory");
     },
     onError: (error: any) => {
+      console.error("Add to inventory error:", error);
+      let errorMessage = "Failed to add book to inventory";
+      
+      if (error.message && error.message.includes("409")) {
+        errorMessage = "This book is already in your inventory";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to add book to inventory",
+        description: errorMessage,
         variant: "destructive",
       });
     },
