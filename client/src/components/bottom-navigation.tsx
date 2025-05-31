@@ -12,7 +12,7 @@ export default function BottomNavigation() {
   };
 
   return (
-    <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-slate-200 z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 safe-area-inset-bottom">
       <div className="flex">
         <Button
           variant="ghost"
