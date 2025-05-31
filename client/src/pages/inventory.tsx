@@ -1,15 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search } from "lucide-react";
+import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Inventory() {
   const [, setLocation] = useLocation();
   const [expandedISBNs, setExpandedISBNs] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
   
   const { data: books = [], isLoading } = useQuery({
     queryKey: ["/api/books"],
@@ -104,6 +106,50 @@ export default function Inventory() {
     document.body.removeChild(link);
   };
 
+  const handleImportData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const jsonData = JSON.parse(e.target?.result as string);
+        
+        // Here you would typically send this data to your backend
+        // For now, we'll just show a message
+        toast({
+          title: "Import Ready",
+          description: `Found ${jsonData.length} items to import. Feature coming soon!`,
+        });
+        
+        console.log("Import data:", jsonData);
+      } catch (error) {
+        toast({
+          title: "Import Error",
+          description: "Invalid JSON file format",
+          variant: "destructive",
+        });
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset input
+    event.target.value = '';
+  };
+
+  const exportToJSON = () => {
+    const jsonData = JSON.stringify(books, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `inventory-backup-${new Date().toISOString().split('T')[0]}.json`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (isLoading) {
     return (
       <div className="flex-1 flex flex-col pb-20">
@@ -192,11 +238,37 @@ export default function Inventory() {
             <h1 className="text-xl font-semibold">Inventory</h1>
           </div>
           <div className="flex items-center space-x-2">
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImportData}
+              className="hidden"
+              id="import-file"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => document.getElementById('import-file')?.click()}
+              className="text-white hover:bg-blue-600"
+              title="Import backup"
+            >
+              <Upload className="w-5 h-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={exportToJSON}
+              className="text-white hover:bg-blue-600"
+              title="Backup data"
+            >
+              <Package className="w-5 h-5" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={exportToCSV}
               className="text-white hover:bg-blue-600"
+              title="Export CSV"
             >
               <Download className="w-5 h-5" />
             </Button>
