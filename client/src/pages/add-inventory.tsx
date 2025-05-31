@@ -183,11 +183,11 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
                 <SelectValue placeholder="Select condition..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="New">New</SelectItem>
-                <SelectItem value="Near Fine">Near Fine</SelectItem>
-                <SelectItem value="Fine">Fine</SelectItem>
+                <SelectItem value="Brand New">Brand New</SelectItem>
+                <SelectItem value="Like New">Like New</SelectItem>
                 <SelectItem value="Very Good">Very Good</SelectItem>
                 <SelectItem value="Good">Good</SelectItem>
+                <SelectItem value="Acceptable">Acceptable</SelectItem>
               </SelectContent>
             </Select>
           </div>
