@@ -19,6 +19,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
   const { toast } = useToast();
   
   const [purchasePrice, setPurchasePrice] = useState("");
+  const [estimatedPrice, setEstimatedPrice] = useState("");
   const [condition, setCondition] = useState("");
   const [location, setLocationField] = useState("");
   const [classification, setClassification] = useState("COGS");
@@ -83,6 +84,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       year: bookData?.year || null,
       imageUrl: bookData?.imageUrl || null,
       purchasePrice: purchasePrice,
+      estimatedPrice: estimatedPrice || null,
       condition,
       location: location || null,
       type: classification,
@@ -169,6 +171,26 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
                 onChange={(e) => setPurchasePrice(e.target.value)}
                 className="pl-8 text-lg"
                 required
+              />
+            </div>
+          </div>
+
+          {/* Estimated Selling Price */}
+          <div className="space-y-2">
+            <Label htmlFor="estimated-price" className="text-sm font-medium text-slate-700">
+              Estimated Selling Price
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">$</span>
+              <Input
+                id="estimated-price"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                value={estimatedPrice}
+                onChange={(e) => setEstimatedPrice(e.target.value)}
+                className="pl-8 text-lg"
               />
             </div>
           </div>

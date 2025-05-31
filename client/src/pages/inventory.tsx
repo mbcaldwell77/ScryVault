@@ -1,20 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 export default function Inventory() {
   const [, setLocation] = useLocation();
   const [expandedISBNs, setExpandedISBNs] = useState<Set<string>>(new Set());
+  const [searchTerm, setSearchTerm] = useState("");
   
   const { data: books = [], isLoading } = useQuery({
     queryKey: ["/api/books"],
   });
 
-  // Group books by ISBN
-  const groupedBooks = books.reduce((acc: any, book: any) => {
+  // Filter books based on search term
+  const filteredBooks = books.filter((book: any) => {
+    if (!searchTerm) return true;
+    const search = searchTerm.toLowerCase();
+    return (
+      book.title?.toLowerCase().includes(search) ||
+      book.author?.toLowerCase().includes(search) ||
+      book.isbn?.includes(search) ||
+      book.condition?.toLowerCase().includes(search) ||
+      book.location?.toLowerCase().includes(search) ||
+      book.sku?.toLowerCase().includes(search)
+    );
+  });
+
+  // Group filtered books by ISBN
+  const groupedBooks = filteredBooks.reduce((acc: any, book: any) => {
     if (!acc[book.isbn]) {
       acc[book.isbn] = [];
     }
@@ -43,6 +59,50 @@ export default function Inventory() {
       newExpanded.add(isbn);
     }
     setExpandedISBNs(newExpanded);
+  };
+
+  const exportToCSV = () => {
+    const headers = [
+      'SKU',
+      'ISBN',
+      'Title',
+      'Author',
+      'Publisher',
+      'Year',
+      'Condition',
+      'Purchase Price',
+      'Location',
+      'Type',
+      'Date Added'
+    ];
+
+    const csvData = books.map((book: any) => [
+      book.sku || '',
+      book.isbn || '',
+      book.title || '',
+      book.author || '',
+      book.publisher || '',
+      book.year || '',
+      book.condition || '',
+      book.purchasePrice || '',
+      book.location || '',
+      book.type || '',
+      formatDate(book.dateAdded)
+    ]);
+
+    const csvContent = [headers, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `inventory-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (isLoading) {
@@ -119,21 +179,44 @@ export default function Inventory() {
   return (
     <div className="flex-1 flex flex-col pb-24 min-h-screen">
       {/* Header */}
-      <div className="bg-primary text-white p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setLocation("/")}
-            className="text-white hover:bg-blue-600"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Button>
-          <h1 className="text-xl font-semibold">Inventory</h1>
+      <div className="bg-primary text-white p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-4">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setLocation("/")}
+              className="text-white hover:bg-blue-600"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Button>
+            <h1 className="text-xl font-semibold">Inventory</h1>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={exportToCSV}
+              className="text-white hover:bg-blue-600"
+            >
+              <Download className="w-5 h-5" />
+            </Button>
+            <span className="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium">
+              {totalBooks}
+            </span>
+          </div>
         </div>
-        <span className="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium">
-          {totalBooks}
-        </span>
+        
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-200" />
+          <Input
+            placeholder="Search books, authors, ISBN, SKU..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-blue-600 border-blue-500 text-white placeholder-blue-200 focus:bg-blue-500"
+          />
+        </div>
       </div>
 
       {/* Summary Stats */}
