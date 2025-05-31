@@ -22,7 +22,6 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
   const [condition, setCondition] = useState("");
   const [location, setLocationField] = useState("");
   const [classification, setClassification] = useState("COGS");
-  const [quantity, setQuantity] = useState("1");
   
   const { data: bookData } = useQuery<{
     title: string;
@@ -87,7 +86,6 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       condition,
       location: location || null,
       type: classification,
-      quantity: parseInt(quantity) || 1,
     };
 
     try {
@@ -112,7 +110,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col pb-20">
+    <div className="flex-1 flex flex-col pb-24 min-h-screen">
       {/* Header */}
       <div className="bg-green-600 text-white p-4 flex items-center space-x-4">
         <Button 
@@ -192,22 +190,6 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
                 <SelectItem value="Good">Good</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Quantity */}
-          <div className="space-y-2">
-            <Label htmlFor="quantity" className="text-sm font-medium text-slate-700">
-              Quantity
-            </Label>
-            <Input
-              id="quantity"
-              type="number"
-              min="1"
-              placeholder="1"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              className="text-lg"
-            />
           </div>
 
           {/* Location */}

@@ -96,7 +96,7 @@ export default function Inventory() {
   }
 
   return (
-    <div className="flex-1 flex flex-col pb-20">
+    <div className="flex-1 flex flex-col pb-24 min-h-screen">
       {/* Header */}
       <div className="bg-primary text-white p-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">

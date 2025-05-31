@@ -14,7 +14,6 @@ export const books = pgTable("books", {
   condition: text("condition").notNull(),
   location: text("location"),
   type: text("type").notNull(), // "COGS" or "Expense"
-  quantity: integer("quantity").notNull().default(1),
   dateAdded: timestamp("date_added").notNull().defaultNow(),
 });
 
