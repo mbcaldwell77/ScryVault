@@ -12,9 +12,11 @@ export const books = pgTable("books", {
   year: text("year"),
   imageUrl: text("image_url"),
   purchasePrice: decimal("purchase_price", { precision: 10, scale: 2 }).notNull(),
+  estimatedPrice: decimal("estimated_price", { precision: 10, scale: 2 }),
   condition: text("condition").notNull(),
   location: text("location"),
   type: text("type").notNull(), // "COGS" or "Expense"
+  status: text("status").notNull().default("available"), // "available", "sold", "listed"
   dateAdded: timestamp("date_added").notNull().defaultNow(),
 });
 
