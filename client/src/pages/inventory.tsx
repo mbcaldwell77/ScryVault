@@ -1,20 +1,34 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload } from "lucide-react";
+import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw } from "lucide-react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
 
 export default function Inventory() {
   const [, setLocation] = useLocation();
   const [expandedISBNs, setExpandedISBNs] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
-  const { data: books = [], isLoading } = useQuery({
+  const { data: books = [], isLoading, refetch } = useQuery({
     queryKey: ["/api/books"],
+  });
+
+  // Pull to refresh functionality
+  const pullToRefresh = usePullToRefresh({
+    onRefresh: async () => {
+      await refetch();
+      toast({
+        title: "Inventory Updated",
+        description: "Your collection has been refreshed"
+      });
+    },
+    threshold: 80
   });
 
   // Filter books based on search term
@@ -222,7 +236,28 @@ export default function Inventory() {
   }
 
   return (
-    <div className="flex-1 flex flex-col pb-24 min-h-screen">
+    <div 
+      className="flex-1 flex flex-col pb-24 min-h-screen relative"
+      {...pullToRefresh}
+    >
+      {/* Pull to refresh indicator */}
+      {pullToRefresh.isPulling && (
+        <div 
+          className="fixed top-0 left-0 right-0 z-40 bg-primary/90 text-primary-foreground text-center py-2 transition-transform duration-200"
+          style={{
+            transform: `translateY(${Math.min(pullToRefresh.pullDistance - 60, 0)}px)`
+          }}
+        >
+          <RefreshCw 
+            className={`w-5 h-5 mx-auto ${pullToRefresh.isRefreshing ? 'animate-spin' : ''}`}
+          />
+          <div className="text-sm mt-1">
+            {pullToRefresh.isRefreshing ? 'Refreshing...' : 
+             pullToRefresh.pullDistance >= pullToRefresh.threshold ? 'Release to refresh' : 'Pull to refresh'}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-primary text-white p-4">
         <div className="flex items-center justify-between mb-4">
