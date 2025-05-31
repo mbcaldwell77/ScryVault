@@ -4,6 +4,7 @@ import { z } from "zod";
 
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
+  sku: text("sku").notNull().unique(),
   isbn: text("isbn").notNull(),
   title: text("title").notNull(),
   author: text("author").notNull(),
@@ -19,6 +20,7 @@ export const books = pgTable("books", {
 
 export const insertBookSchema = createInsertSchema(books).omit({
   id: true,
+  sku: true,
   dateAdded: true,
 });
 

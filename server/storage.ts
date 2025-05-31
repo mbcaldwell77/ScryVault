@@ -26,9 +26,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBook(insertBook: InsertBook): Promise<Book> {
+    // Generate unique SKU based on ISBN and timestamp
+    const timestamp = Date.now().toString().slice(-6);
+    const isbnSuffix = insertBook.isbn.slice(-4);
+    const sku = `${isbnSuffix}-${timestamp}`;
+    
+    const bookWithSku = {
+      ...insertBook,
+      sku
+    };
+    
     const [book] = await db
       .insert(books)
-      .values(insertBook)
+      .values(bookWithSku)
       .returning();
     return book;
   }
