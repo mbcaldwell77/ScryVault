@@ -70,24 +70,33 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       isbn,
       title: bookData?.title || "Unknown Title",
       author: bookData?.author || "Unknown Author",
-      publisher: bookData?.publisher || "",
-      year: bookData?.year || "",
-      imageUrl: bookData?.imageUrl || "",
-      purchasePrice: parseFloat(purchasePrice),
+      publisher: bookData?.publisher || null,
+      year: bookData?.year || null,
+      imageUrl: bookData?.imageUrl || null,
+      purchasePrice: purchasePrice,
       condition,
-      location,
+      location: location || null,
       type: classification,
     };
 
     try {
-      insertBookSchema.parse(inventoryData);
-      addToInventoryMutation.mutate(inventoryData);
+      const validatedData = insertBookSchema.parse(inventoryData);
+      addToInventoryMutation.mutate(validatedData);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Invalid form data",
-        variant: "destructive",
-      });
+      console.error("Form validation error:", error);
+      if (error instanceof Error) {
+        toast({
+          title: "Validation Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Invalid form data",
+          variant: "destructive",
+        });
+      }
     }
   };
 
