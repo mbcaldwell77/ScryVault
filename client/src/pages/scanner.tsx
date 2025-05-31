@@ -20,18 +20,30 @@ export default function Scanner() {
   };
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col pb-24 min-h-screen">
       {/* Header */}
-      <div className="bg-primary text-white p-4 flex items-center space-x-4">
+      <div className="bg-primary text-white p-4 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setLocation("/")}
+            className="text-white hover:bg-blue-600"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+          <h1 className="text-xl font-semibold">Scan ISBN Barcode</h1>
+        </div>
+        
+        {/* Flash toggle in header */}
         <Button 
-          variant="ghost" 
+          onClick={() => setFlashEnabled(!flashEnabled)}
+          variant="ghost"
           size="icon"
-          onClick={() => setLocation("/")}
-          className="text-white hover:bg-blue-600"
+          className={`text-white hover:bg-blue-600 ${flashEnabled ? 'bg-blue-600' : ''}`}
         >
-          <ArrowLeft className="w-6 h-6" />
+          <Zap className="w-5 h-5" />
         </Button>
-        <h1 className="text-xl font-semibold">Scan ISBN Barcode</h1>
       </div>
 
       {/* Camera View */}
@@ -42,48 +54,36 @@ export default function Scanner() {
         />
         
         {/* Scanner Overlay */}
-        <div className="absolute inset-0 scanner-overlay flex items-center justify-center">
-          <div className="w-80 h-32 scanner-frame rounded-lg relative">
-            {/* Scanning line animation */}
-            <div className="absolute inset-x-0 top-1/2 h-0.5 bg-primary animate-pulse transform -translate-y-1/2"></div>
-            
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-72 h-28 relative">
             {/* Corner markers */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-l-4 border-t-4 border-white rounded-tl"></div>
-            <div className="absolute top-0 right-0 w-8 h-8 border-r-4 border-t-4 border-white rounded-tr"></div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-l-4 border-b-4 border-white rounded-bl"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-r-4 border-b-4 border-white rounded-br"></div>
+            <div className="absolute top-0 left-0 w-6 h-6 border-l-3 border-t-3 border-white"></div>
+            <div className="absolute top-0 right-0 w-6 h-6 border-r-3 border-t-3 border-white"></div>
+            <div className="absolute bottom-0 left-0 w-6 h-6 border-l-3 border-b-3 border-white"></div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-r-3 border-b-3 border-white"></div>
+            
+            {/* Scanning line */}
+            <div className="absolute inset-x-0 top-1/2 h-0.5 bg-primary animate-pulse transform -translate-y-1/2"></div>
             
             {/* Center guide */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-white text-xs font-medium bg-black bg-opacity-50 px-2 py-1 rounded">
+              <div className="text-white text-xs font-medium bg-black bg-opacity-60 px-3 py-1 rounded-md">
                 Position barcode here
               </div>
             </div>
           </div>
         </div>
 
-        {/* Instructions */}
-        <div className="absolute bottom-4 left-4 right-4 text-center text-white bg-black bg-opacity-50 p-4 rounded-lg">
-          <p className="text-sm">Position the ISBN barcode within the frame</p>
-          <p className="text-xs text-gray-300 mt-1">Keep barcode centered and well-lit for best results</p>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="p-4 bg-white space-y-4">
-        <div className="flex space-x-4">
-          <Button 
-            onClick={() => setFlashEnabled(!flashEnabled)}
-            variant="outline"
-            className="flex-1 bg-slate-100 text-slate-700 py-3 px-4 rounded-lg font-medium"
-          >
-            <Zap className="w-5 h-5 mr-2" />
-            Flash
-          </Button>
+        {/* Bottom instructions and manual entry */}
+        <div className="absolute bottom-6 left-4 right-4">
+          <div className="text-center text-white bg-black bg-opacity-60 p-3 rounded-lg mb-4">
+            <p className="text-sm">Position the ISBN barcode within the frame</p>
+            <p className="text-xs text-gray-300 mt-1">Keep barcode centered and well-lit for best results</p>
+          </div>
+          
           <Button 
             onClick={() => setShowManualInput(true)}
-            variant="outline"
-            className="flex-1 bg-slate-100 text-slate-700 py-3 px-4 rounded-lg font-medium"
+            className="w-full bg-white bg-opacity-90 text-slate-800 hover:bg-white py-3 font-medium"
           >
             <Keyboard className="w-5 h-5 mr-2" />
             Manual Entry
