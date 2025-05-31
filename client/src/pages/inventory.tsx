@@ -39,13 +39,12 @@ export default function Inventory() {
   }, {});
 
   const totalBooks = books.length;
-  const totalCOGS = books
-    .filter((book: any) => book.type === "COGS")
+  const totalInvestment = books
     .reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
-  const totalExpense = books
-    .filter((book: any) => book.type === "Expense")
-    .reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
-  const avgPrice = totalBooks > 0 ? (totalCOGS + totalExpense) / totalBooks : 0;
+  const totalEstimatedValue = books
+    .reduce((sum: number, book: any) => sum + parseFloat(book.estimatedPrice || book.purchasePrice || 0), 0);
+  const potentialProfit = totalEstimatedValue - totalInvestment;
+  const profitMargin = totalInvestment > 0 ? (potentialProfit / totalInvestment) * 100 : 0;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
@@ -223,16 +222,20 @@ export default function Inventory() {
       <div className="p-4 bg-blue-50 border-b">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-lg font-bold text-slate-900">${totalCOGS.toFixed(2)}</div>
-            <div className="text-xs text-slate-600">Total COGS</div>
+            <div className="text-lg font-bold text-slate-900">${totalInvestment.toFixed(2)}</div>
+            <div className="text-xs text-slate-600">Total Investment</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-slate-900">${totalExpense.toFixed(2)}</div>
-            <div className="text-xs text-slate-600">Expenses</div>
+            <div className="text-lg font-bold text-green-600">${totalEstimatedValue.toFixed(2)}</div>
+            <div className="text-xs text-slate-600">Est. Value</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-green-600">${avgPrice.toFixed(2)}</div>
-            <div className="text-xs text-slate-600">Avg. Price</div>
+            <div className={`text-lg font-bold ${potentialProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              ${potentialProfit.toFixed(2)}
+            </div>
+            <div className="text-xs text-slate-600">
+              Profit ({profitMargin.toFixed(1)}%)
+            </div>
           </div>
         </div>
       </div>
@@ -285,9 +288,21 @@ export default function Inventory() {
                       {copyCount === 1 ? (
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-green-600 font-bold">
-                              ${parseFloat(mainBook.purchasePrice).toFixed(2)}
-                            </span>
+                            <div className="flex flex-col">
+                              <span className="text-green-600 font-bold">
+                                ${parseFloat(mainBook.purchasePrice).toFixed(2)}
+                              </span>
+                              {mainBook.estimatedPrice && (
+                                <span className="text-xs text-slate-500">
+                                  Est: ${parseFloat(mainBook.estimatedPrice).toFixed(2)}
+                                  {parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice) && (
+                                    <span className="text-green-600 ml-1">
+                                      (+${(parseFloat(mainBook.estimatedPrice) - parseFloat(mainBook.purchasePrice)).toFixed(2)})
+                                    </span>
+                                  )}
+                                </span>
+                              )}
+                            </div>
                             <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
                               {mainBook.condition}
                             </span>
@@ -323,9 +338,21 @@ export default function Inventory() {
                                 </div>
                               )}
                             </div>
-                            <span className="text-green-600 font-bold text-sm">
-                              ${parseFloat(book.purchasePrice).toFixed(2)}
-                            </span>
+                            <div className="text-right">
+                              <span className="text-green-600 font-bold text-sm">
+                                ${parseFloat(book.purchasePrice).toFixed(2)}
+                              </span>
+                              {book.estimatedPrice && (
+                                <div className="text-xs text-slate-500">
+                                  Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
+                                  {parseFloat(book.estimatedPrice) > parseFloat(book.purchasePrice) && (
+                                    <div className="text-green-600">
+                                      +${(parseFloat(book.estimatedPrice) - parseFloat(book.purchasePrice)).toFixed(2)}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
                           <div className="flex items-center justify-between mb-1">
                             <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
