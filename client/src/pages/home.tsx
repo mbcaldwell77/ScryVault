@@ -14,7 +14,7 @@ export default function Home() {
   const totalValue = books.reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
 
   return (
-    <div className="flex-1 flex flex-col pb-20">
+    <div className="flex-1 flex flex-col pb-24 min-h-screen">
       {/* Header */}
       <div className="bg-primary text-white p-4 shadow-sm">
         <h1 className="text-xl font-semibold">ScryVault</h1>
