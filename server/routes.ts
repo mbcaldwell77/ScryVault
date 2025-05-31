@@ -35,16 +35,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/books", async (req, res) => {
     try {
       const validatedData = insertBookSchema.parse(req.body);
-      
-      // Check if book with same ISBN already exists
-      const existingBook = await storage.getBookByIsbn(validatedData.isbn);
-      if (existingBook) {
-        return res.status(409).json({ 
-          error: "Book with this ISBN already exists in inventory",
-          existingBook
-        });
-      }
-      
       const book = await storage.createBook(validatedData);
       res.status(201).json(book);
     } catch (error) {

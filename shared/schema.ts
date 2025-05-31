@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
-  isbn: text("isbn").notNull().unique(),
+  isbn: text("isbn").notNull(),
   title: text("title").notNull(),
   author: text("author").notNull(),
   publisher: text("publisher"),
@@ -14,6 +14,7 @@ export const books = pgTable("books", {
   condition: text("condition").notNull(),
   location: text("location"),
   type: text("type").notNull(), // "COGS" or "Expense"
+  quantity: integer("quantity").notNull().default(1),
   dateAdded: timestamp("date_added").notNull().defaultNow(),
 });
 
