@@ -43,22 +43,29 @@ export default function Scanner() {
         
         {/* Scanner Overlay */}
         <div className="absolute inset-0 scanner-overlay flex items-center justify-center">
-          <div className="w-72 h-24 scanner-frame rounded-lg relative">
+          <div className="w-80 h-32 scanner-frame rounded-lg relative">
             {/* Scanning line animation */}
-            <div className="absolute inset-x-0 top-0 h-0.5 bg-primary animate-pulse"></div>
+            <div className="absolute inset-x-0 top-1/2 h-0.5 bg-primary animate-pulse transform -translate-y-1/2"></div>
             
             {/* Corner markers */}
-            <div className="absolute top-0 left-0 w-6 h-6 border-l-4 border-t-4 border-white rounded-tl"></div>
-            <div className="absolute top-0 right-0 w-6 h-6 border-r-4 border-t-4 border-white rounded-tr"></div>
-            <div className="absolute bottom-0 left-0 w-6 h-6 border-l-4 border-b-4 border-white rounded-bl"></div>
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-r-4 border-b-4 border-white rounded-br"></div>
+            <div className="absolute top-0 left-0 w-8 h-8 border-l-4 border-t-4 border-white rounded-tl"></div>
+            <div className="absolute top-0 right-0 w-8 h-8 border-r-4 border-t-4 border-white rounded-tr"></div>
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-l-4 border-b-4 border-white rounded-bl"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-r-4 border-b-4 border-white rounded-br"></div>
+            
+            {/* Center guide */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-white text-xs font-medium bg-black bg-opacity-50 px-2 py-1 rounded">
+                Position barcode here
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Instructions */}
         <div className="absolute bottom-4 left-4 right-4 text-center text-white bg-black bg-opacity-50 p-4 rounded-lg">
           <p className="text-sm">Position the ISBN barcode within the frame</p>
-          <p className="text-xs text-gray-300 mt-1">Hold steady for automatic detection</p>
+          <p className="text-xs text-gray-300 mt-1">Keep barcode centered and well-lit for best results</p>
         </div>
       </div>
 
