@@ -192,31 +192,29 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
           {/* Type Toggle */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-slate-700">Classification</Label>
-            <div className="flex bg-slate-100 rounded-lg p-1">
-              <Button
+            <div className="flex bg-slate-100 rounded-lg p-1 gap-1">
+              <button
                 type="button"
                 onClick={() => setClassification("COGS")}
-                variant="ghost"
-                className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
+                className={`flex-1 py-3 px-4 rounded-md font-medium transition-all duration-200 ${
                   classification === "COGS" 
-                    ? "bg-green-600 text-white" 
-                    : "text-slate-600 hover:bg-slate-200"
+                    ? "bg-green-600 text-white shadow-sm" 
+                    : "text-slate-600 hover:bg-slate-200 bg-transparent"
                 }`}
               >
                 COGS
-              </Button>
-              <Button
+              </button>
+              <button
                 type="button"
                 onClick={() => setClassification("Expense")}
-                variant="ghost"
-                className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
+                className={`flex-1 py-3 px-4 rounded-md font-medium transition-all duration-200 ${
                   classification === "Expense" 
-                    ? "bg-green-600 text-white" 
-                    : "text-slate-600 hover:bg-slate-200"
+                    ? "bg-green-600 text-white shadow-sm" 
+                    : "text-slate-600 hover:bg-slate-200 bg-transparent"
                 }`}
               >
                 Expense
-              </Button>
+              </button>
             </div>
             <p className="text-xs text-slate-600">
               COGS for resale inventory, Expense for reference/research books
