@@ -1,86 +1,66 @@
 import { useEffect, useRef } from "react";
+import { BrowserMultiFormatReader } from "@zxing/library";
 
-// Mock barcode scanning for web demo
-// In a real implementation, you would use a library like @zxing/library
 export function useBarcodeScanner(
   videoRef: React.RefObject<HTMLVideoElement>,
   onBarcodeDetected: (isbn: string) => void
 ) {
-  const scanIntervalRef = useRef<NodeJS.Timeout>();
+  const codeReaderRef = useRef<BrowserMultiFormatReader>();
   const lastScannedRef = useRef<string>("");
+  const scanTimeoutRef = useRef<NodeJS.Timeout>();
 
-  useEffect(() => {
-    if (!videoRef.current) return;
-
-    // Mock scanning simulation for demo
-    // In production, use @zxing/library or similar
-    const simulateScanning = () => {
-      // Demo ISBNs for testing
-      const demoISBNs = [
-        "9780262033848", // Introduction to Algorithms
-        "9780134685991", // Effective Java
-        "9780143129394", // The Seven Husbands of Evelyn Hugo
-        "9780547928227", // The Hobbit
-      ];
-
-      // Simulate random scanning after 3-5 seconds
-      const delay = Math.random() * 2000 + 3000;
-      
-      scanIntervalRef.current = setTimeout(() => {
-        const randomISBN = demoISBNs[Math.floor(Math.random() * demoISBNs.length)];
-        
-        if (randomISBN !== lastScannedRef.current) {
-          lastScannedRef.current = randomISBN;
-          onBarcodeDetected(randomISBN);
-        }
-      }, delay);
-    };
-
-    // Start simulation
-    simulateScanning();
-
-    return () => {
-      if (scanIntervalRef.current) {
-        clearTimeout(scanIntervalRef.current);
-      }
-    };
-  }, [videoRef, onBarcodeDetected]);
-
-  // In production, implement actual barcode scanning here
-  // Example with @zxing/library:
-  /*
   useEffect(() => {
     if (!videoRef.current) return;
 
     const codeReader = new BrowserMultiFormatReader();
-    
+    codeReaderRef.current = codeReader;
+
     const startScanning = async () => {
       try {
-        const result = await codeReader.decodeFromVideoDevice(
-          undefined, // Use default device
+        await codeReader.decodeFromVideoDevice(
+          null, // Use default camera device
           videoRef.current!,
           (result, error) => {
             if (result) {
               const code = result.getText();
-              // Validate ISBN format and call onBarcodeDetected
-              if (isValidISBN(code)) {
-                onBarcodeDetected(code);
+              
+              // Prevent duplicate scans in quick succession
+              if (code !== lastScannedRef.current && isValidISBN(code)) {
+                lastScannedRef.current = code;
+                
+                // Clear any existing timeout
+                if (scanTimeoutRef.current) {
+                  clearTimeout(scanTimeoutRef.current);
+                }
+                
+                // Debounce scanning to prevent multiple rapid detections
+                scanTimeoutRef.current = setTimeout(() => {
+                  onBarcodeDetected(code);
+                }, 500);
               }
+            }
+            
+            if (error && error.name !== "NotFoundException") {
+              console.warn("Barcode scanning error:", error);
             }
           }
         );
       } catch (error) {
-        console.error('Barcode scanning error:', error);
+        console.error("Failed to start barcode scanning:", error);
       }
     };
 
     startScanning();
 
     return () => {
-      codeReader.reset();
+      if (scanTimeoutRef.current) {
+        clearTimeout(scanTimeoutRef.current);
+      }
+      if (codeReaderRef.current) {
+        codeReaderRef.current.reset();
+      }
     };
   }, [videoRef, onBarcodeDetected]);
-  */
 }
 
 export function isValidISBN(code: string): boolean {
