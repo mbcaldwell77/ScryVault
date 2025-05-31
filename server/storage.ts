@@ -39,9 +39,13 @@ export class MemStorage implements IStorage {
   async createBook(insertBook: InsertBook): Promise<Book> {
     const id = this.currentId++;
     const book: Book = { 
-      ...insertBook, 
+      ...insertBook,
       id,
-      dateAdded: new Date()
+      dateAdded: new Date(),
+      publisher: insertBook.publisher || null,
+      year: insertBook.year || null,
+      imageUrl: insertBook.imageUrl || null,
+      location: insertBook.location || null,
     };
     this.books.set(id, book);
     return book;

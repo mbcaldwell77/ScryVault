@@ -16,8 +16,12 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/scanner" component={Scanner} />
-        <Route path="/book-details/:isbn" component={BookDetails} />
-        <Route path="/add-inventory/:isbn" component={AddInventory} />
+        <Route path="/book-details/:isbn">
+          {(params) => <BookDetails isbn={params.isbn} />}
+        </Route>
+        <Route path="/add-inventory/:isbn">
+          {(params) => <AddInventory isbn={params.isbn} />}
+        </Route>
         <Route path="/inventory" component={Inventory} />
       </Switch>
       <BottomNavigation />

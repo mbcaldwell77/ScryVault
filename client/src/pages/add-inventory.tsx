@@ -5,8 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Save } from "lucide-react";
 import { useLocation } from "wouter";
-import { useQuery, useMutation, queryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertBookSchema } from "@shared/schema";
 
@@ -23,7 +23,13 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
   const [location, setLocationField] = useState("");
   const [classification, setClassification] = useState("COGS");
   
-  const { data: bookData } = useQuery({
+  const { data: bookData } = useQuery<{
+    title: string;
+    author: string;
+    publisher?: string;
+    year?: string;
+    imageUrl?: string;
+  }>({
     queryKey: [`/api/book-lookup/${isbn}`],
   });
 
@@ -64,8 +70,8 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       isbn,
       title: bookData?.title || "Unknown Title",
       author: bookData?.author || "Unknown Author",
-      publisher: bookData?.publisher || "Unknown Publisher",
-      year: bookData?.year || "Unknown",
+      publisher: bookData?.publisher || "",
+      year: bookData?.year || "",
       imageUrl: bookData?.imageUrl || "",
       purchasePrice: parseFloat(purchasePrice),
       condition,
