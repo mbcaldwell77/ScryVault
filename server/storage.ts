@@ -1,7 +1,6 @@
 import { books, type Book, type InsertBook } from "@shared/schema";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getBook(id: number): Promise<Book | undefined>;
@@ -11,49 +10,33 @@ export interface IStorage {
   deleteBook(id: number): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private books: Map<number, Book>;
-  currentId: number;
-
-  constructor() {
-    this.books = new Map();
-    this.currentId = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   async getBook(id: number): Promise<Book | undefined> {
-    return this.books.get(id);
+    const [book] = await db.select().from(books).where(eq(books.id, id));
+    return book || undefined;
   }
 
   async getBookByIsbn(isbn: string): Promise<Book | undefined> {
-    return Array.from(this.books.values()).find(
-      (book) => book.isbn === isbn,
-    );
+    const [book] = await db.select().from(books).where(eq(books.isbn, isbn));
+    return book || undefined;
   }
 
   async getAllBooks(): Promise<Book[]> {
-    return Array.from(this.books.values()).sort(
-      (a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
-    );
+    return await db.select().from(books).orderBy(books.dateAdded);
   }
 
   async createBook(insertBook: InsertBook): Promise<Book> {
-    const id = this.currentId++;
-    const book: Book = { 
-      ...insertBook,
-      id,
-      dateAdded: new Date(),
-      publisher: insertBook.publisher || null,
-      year: insertBook.year || null,
-      imageUrl: insertBook.imageUrl || null,
-      location: insertBook.location || null,
-    };
-    this.books.set(id, book);
+    const [book] = await db
+      .insert(books)
+      .values(insertBook)
+      .returning();
     return book;
   }
 
   async deleteBook(id: number): Promise<boolean> {
-    return this.books.delete(id);
+    const result = await db.delete(books).where(eq(books.id, id));
+    return result.rowCount > 0;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
