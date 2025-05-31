@@ -232,7 +232,14 @@ export default function Inventory() {
                       {isbnBooks.map((book: any, index: number) => (
                         <div key={book.id} className="bg-white rounded-lg p-3 border border-slate-200">
                           <div className="flex items-start justify-between mb-2">
-                            <span className="text-xs font-medium text-slate-500">Copy {index + 1}</span>
+                            <div>
+                              <span className="text-xs font-medium text-slate-500">Copy {index + 1}</span>
+                              {book.sku && (
+                                <div className="text-xs text-slate-400 font-mono mt-1">
+                                  SKU: {book.sku}
+                                </div>
+                              )}
+                            </div>
                             <span className="text-green-600 font-bold text-sm">
                               ${parseFloat(book.purchasePrice).toFixed(2)}
                             </span>
