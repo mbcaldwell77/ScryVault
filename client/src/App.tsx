@@ -9,10 +9,12 @@ import BookDetails from "@/pages/book-details";
 import AddInventory from "@/pages/add-inventory";
 import Inventory from "@/pages/inventory";
 import BottomNavigation from "@/components/bottom-navigation";
+import PWAInstallBanner from "@/components/pwa-install-banner";
 
 function Router() {
   return (
     <div className="min-h-screen bg-slate-50 max-w-md mx-auto bg-white relative">
+      <PWAInstallBanner />
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/scanner" component={Scanner} />

@@ -1,22 +1,34 @@
 {
-  "name": "ScryVault - ISBN Scanner",
+  "name": "ScryVault - Book Inventory Oracle",
   "short_name": "ScryVault",
-  "description": "Professional ISBN scanning app for book resellers",
+  "description": "Mystical book inventory management for resellers",
   "start_url": "/",
   "display": "standalone",
-  "theme_color": "#2563EB",
-  "background_color": "#F8FAFC",
+  "background_color": "#0F1419",
+  "theme_color": "#6366F1",
   "orientation": "portrait",
+  "scope": "/",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232563EB'/><text y='70' font-size='60' text-anchor='middle' x='50' fill='white'>📚</text></svg>",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232563EB'/><text y='70' font-size='60' text-anchor='middle' x='50' fill='white'>📚</text></svg>",
+      "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }
