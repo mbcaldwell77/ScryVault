@@ -33,10 +33,10 @@ export function useBarcodeScanner(
                   clearTimeout(scanTimeoutRef.current);
                 }
                 
-                // Debounce scanning to prevent multiple rapid detections
+                // Reduced debounce for faster scanning
                 scanTimeoutRef.current = setTimeout(() => {
                   onBarcodeDetected(code);
-                }, 500);
+                }, 100);
               }
             }
             
