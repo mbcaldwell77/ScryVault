@@ -216,6 +216,25 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             </Select>
           </div>
 
+          {/* Book Format */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-slate-700">
+              Book Format <span className="text-red-500">*</span>
+            </Label>
+            <Select value={format} onValueChange={setFormat} required>
+              <SelectTrigger className="text-lg">
+                <SelectValue placeholder="Select format..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Hardcover">Hardcover</SelectItem>
+                <SelectItem value="Mass Market Paperback">Mass Market Paperback</SelectItem>
+                <SelectItem value="Trade Paperback">Trade Paperback</SelectItem>
+                <SelectItem value="Oversize">Oversize</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Location */}
           <div className="space-y-2">
             <Label htmlFor="location" className="text-sm font-medium text-slate-700">
