@@ -398,7 +398,7 @@ export default function Inventory() {
                         </div>
                       </div>
                       <p className="text-xs text-slate-600">
-                        {mainBook.author} • {mainBook.year}
+                        {mainBook.author} • {mainBook.format || "Other"}
                       </p>
                       
                       {/* ISBN and Publisher - Always shown for all copies */}
@@ -460,7 +460,7 @@ export default function Inventory() {
                             </div>
                           </div>
                           <p className="text-xs text-slate-500">
-                            {mainBook.format || "Other"} • SKU: {mainBook.sku}
+                            {mainBook.year || "Unknown"} • SKU: {mainBook.sku}
                           </p>
                         </div>
                       ) : (
