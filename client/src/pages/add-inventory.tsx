@@ -248,24 +248,26 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             </Select>
           </div>
 
-          {/* Book Format */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-slate-700">
-              Book Format <span className="text-red-500">*</span>
-            </Label>
-            <Select value={format} onValueChange={setFormat} required>
-              <SelectTrigger className="text-lg">
-                <SelectValue placeholder="Select format..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Hardcover">Hardcover</SelectItem>
-                <SelectItem value="Mass Market Paperback">Mass Market Paperback</SelectItem>
-                <SelectItem value="Trade Paperback">Trade Paperback</SelectItem>
-                <SelectItem value="Oversize">Oversize</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Book Format - Only show if ISBN API didn't provide format */}
+          {!bookData?.format && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-slate-700">
+                Book Format <span className="text-red-500">*</span>
+              </Label>
+              <Select value={format} onValueChange={setFormat} required>
+                <SelectTrigger className="text-lg">
+                  <SelectValue placeholder="Select format..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Hardcover">Hardcover</SelectItem>
+                  <SelectItem value="Mass Market Paperback">Mass Market Paperback</SelectItem>
+                  <SelectItem value="Trade Paperback">Trade Paperback</SelectItem>
+                  <SelectItem value="Oversize">Oversize</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Notes */}
           <div className="space-y-2">
@@ -286,38 +288,24 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             </p>
           </div>
 
-          {/* Location with Auto-complete */}
-          <div className="space-y-2 relative">
+          {/* Purchase Location - Simplified Dropdown */}
+          <div className="space-y-2">
             <Label htmlFor="location" className="text-sm font-medium text-slate-700">
               Purchase Location
             </Label>
-            <Input
-              ref={locationInputRef}
-              id="location"
-              type="text"
-              placeholder="Estate sale, thrift store, etc."
-              value={location}
-              onChange={(e) => setLocationField(e.target.value)}
-              onFocus={handleLocationFocus}
-              onBlur={handleLocationBlur}
-              className="text-lg"
-            />
-            
-            {/* Location Suggestions Dropdown */}
-            {showLocationSuggestions && locationSuggestions.length > 0 && (
-              <div className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
-                {locationSuggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => selectLocationSuggestion(suggestion)}
-                    className="w-full text-left px-4 py-3 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none text-sm border-b border-slate-100 last:border-b-0"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            )}
+            <Select value={location} onValueChange={setLocation}>
+              <SelectTrigger className="text-lg">
+                <SelectValue placeholder="Select location..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Garage Sale">Garage Sale</SelectItem>
+                <SelectItem value="Estate Sale">Estate Sale</SelectItem>
+                <SelectItem value="Thrift Store">Thrift Store</SelectItem>
+                <SelectItem value="Online Retailer">Online Retailer</SelectItem>
+                <SelectItem value="Local Retailer">Local Retailer</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Type Toggle */}

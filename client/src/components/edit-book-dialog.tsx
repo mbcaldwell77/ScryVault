@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 
 interface EditBookDialogProps {
   book: any;
@@ -16,29 +16,37 @@ interface EditBookDialogProps {
 
 export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialogProps) {
   const [formData, setFormData] = useState({
-    purchasePrice: book?.purchasePrice || '',
-    estimatedPrice: book?.estimatedPrice || '',
-    condition: book?.condition || 'Good',
     format: book?.format || 'Other',
+    purchasePrice: book?.purchasePrice || '',
+    purchaseDate: book?.purchaseDate ? new Date(book.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     location: book?.location || '',
-    type: book?.type || 'COGS',
-    purchaseDate: book?.purchaseDate ? new Date(book.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+    condition: book?.condition || 'Good',
+    notes: book?.notes || '',
+    storageLocation: book?.storageLocation || ''
   });
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const updateMutation = useMutation({
     mutationFn: async (data: any) => {
       const updateData = {
         ...book,
-        purchasePrice: data.purchasePrice.toString(),
-        estimatedPrice: data.estimatedPrice ? data.estimatedPrice.toString() : null,
-        condition: data.condition,
         format: data.format,
+        purchasePrice: parseFloat(data.purchasePrice),
+        purchaseDate: data.purchaseDate,
         location: data.location,
-        type: data.type,
-        purchaseDate: data.purchaseDate
+        condition: data.condition,
+        notes: data.notes,
+        storageLocation: data.storageLocation,
+        type: 'COGS' // Fixed classification for V2
       };
 
       const response = await fetch(`/api/books/${book.id}`, {
@@ -51,97 +59,55 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
         throw new Error('Failed to update book');
       }
       
-      return await response.json();
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
       toast({
-        title: "Book Updated",
-        description: "The book details have been saved successfully."
+        title: "Success",
+        description: "Book updated successfully",
       });
       onClose();
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
-        title: "Update Failed",
-        description: error.message || "Failed to update book details.",
-        variant: "destructive"
+        title: "Error",
+        description: error.message || "Failed to update book",
+        variant: "destructive",
       });
-    }
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.purchasePrice || formData.purchasePrice.trim() === "") {
+    
+    if (!formData.purchasePrice || parseFloat(formData.purchasePrice) <= 0) {
       toast({
-        title: "Invalid Price",
-        description: "Please enter a valid purchase price.",
-        variant: "destructive"
+        title: "Error",
+        description: "Please enter a valid purchase price",
+        variant: "destructive",
       });
       return;
     }
-    updateMutation.mutate(formData);
-  };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    updateMutation.mutate(formData);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Book Details</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">Edit Book Details</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="purchasePrice">Purchase Price *</Label>
-            <Input
-              id="purchasePrice"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.purchasePrice}
-              onChange={(e) => handleInputChange('purchasePrice', e.target.value)}
-              placeholder="0.00"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="estimatedPrice">Estimated Selling Price</Label>
-            <Input
-              id="estimatedPrice"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.estimatedPrice}
-              onChange={(e) => handleInputChange('estimatedPrice', e.target.value)}
-              placeholder="0.00"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="condition">Condition</Label>
-            <Select value={formData.condition} onValueChange={(value) => handleInputChange('condition', value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Brand New">Brand New</SelectItem>
-                <SelectItem value="Like New">Like New</SelectItem>
-                <SelectItem value="Very Good">Very Good</SelectItem>
-                <SelectItem value="Good">Good</SelectItem>
-                <SelectItem value="Acceptable">Acceptable</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="format">Book Format</Label>
-            <Select value={formData.format} onValueChange={(value) => handleInputChange('format', value)}>
-              <SelectTrigger>
+          {/* Book Format - Always shown in edit */}
+          <div className="space-y-2">
+            <Label htmlFor="format" className="text-sm font-medium text-slate-700">
+              Book Format <span className="text-red-500">*</span>
+            </Label>
+            <Select value={formData.format} onValueChange={(value) => handleInputChange('format', value)} required>
+              <SelectTrigger className="text-lg">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -154,37 +120,109 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
             </Select>
           </div>
 
-          <div>
-            <Label htmlFor="purchase-date">Purchase Date</Label>
+          {/* Purchase Price */}
+          <div className="space-y-2">
+            <Label htmlFor="purchasePrice" className="text-sm font-medium text-slate-700">
+              Purchase Price <span className="text-red-500">*</span>
+            </Label>
             <Input
-              id="purchase-date"
+              id="purchasePrice"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.purchasePrice}
+              onChange={(e) => handleInputChange('purchasePrice', e.target.value)}
+              placeholder="0.00"
+              className="text-lg"
+              required
+            />
+          </div>
+
+          {/* Purchase Date */}
+          <div className="space-y-2">
+            <Label htmlFor="purchaseDate" className="text-sm font-medium text-slate-700">
+              Purchase Date <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="purchaseDate"
               type="date"
               value={formData.purchaseDate}
               onChange={(e) => handleInputChange('purchaseDate', e.target.value)}
+              className="text-lg"
+              required
             />
           </div>
 
-          <div>
-            <Label htmlFor="location">Storage Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => handleInputChange('location', e.target.value)}
-              placeholder="e.g., Shelf A, Box 1"
-            />
+          {/* Purchase Location - Dropdown */}
+          <div className="space-y-2">
+            <Label htmlFor="location" className="text-sm font-medium text-slate-700">
+              Purchase Location
+            </Label>
+            <Select value={formData.location} onValueChange={(value) => handleInputChange('location', value)}>
+              <SelectTrigger className="text-lg">
+                <SelectValue placeholder="Select location..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Garage Sale">Garage Sale</SelectItem>
+                <SelectItem value="Estate Sale">Estate Sale</SelectItem>
+                <SelectItem value="Thrift Store">Thrift Store</SelectItem>
+                <SelectItem value="Online Retailer">Online Retailer</SelectItem>
+                <SelectItem value="Local Retailer">Local Retailer</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div>
-            <Label htmlFor="type">Type</Label>
-            <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
-              <SelectTrigger>
+          {/* Condition and Notes - Grouped */}
+          <div className="space-y-2">
+            <Label htmlFor="condition" className="text-sm font-medium text-slate-700">
+              Condition <span className="text-red-500">*</span>
+            </Label>
+            <Select value={formData.condition} onValueChange={(value) => handleInputChange('condition', value)} required>
+              <SelectTrigger className="text-lg">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="COGS">COGS (Cost of Goods Sold)</SelectItem>
-                <SelectItem value="Expense">Expense</SelectItem>
+                <SelectItem value="Brand New">Brand New</SelectItem>
+                <SelectItem value="Like New">Like New</SelectItem>
+                <SelectItem value="Very Good">Very Good</SelectItem>
+                <SelectItem value="Good">Good</SelectItem>
+                <SelectItem value="Acceptable">Acceptable</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-sm font-medium text-slate-700">
+              Notes
+            </Label>
+            <Textarea
+              id="notes"
+              placeholder="Condition details, inscriptions, damage notes, etc."
+              value={formData.notes}
+              onChange={(e) => handleInputChange('notes', e.target.value)}
+              maxLength={500}
+              className="text-lg min-h-[80px]"
+              rows={3}
+            />
+            <p className="text-xs text-slate-500">
+              {formData.notes.length}/500 characters
+            </p>
+          </div>
+
+          {/* Storage Location */}
+          <div className="space-y-2">
+            <Label htmlFor="storageLocation" className="text-sm font-medium text-slate-700">
+              Storage Location
+            </Label>
+            <Input
+              id="storageLocation"
+              type="text"
+              value={formData.storageLocation}
+              onChange={(e) => handleInputChange('storageLocation', e.target.value)}
+              placeholder="Shelf A, Box 1, etc."
+              className="text-lg"
+            />
           </div>
 
           <div className="flex gap-2 pt-4">
