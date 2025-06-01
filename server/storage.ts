@@ -7,6 +7,7 @@ export interface IStorage {
   getBookByIsbn(isbn: string): Promise<Book | undefined>;
   getAllBooks(): Promise<Book[]>;
   createBook(book: InsertBook): Promise<Book>;
+  updateBook(id: number, book: InsertBook): Promise<Book | undefined>;
   deleteBook(id: number): Promise<boolean>;
 }
 
@@ -43,9 +44,18 @@ export class DatabaseStorage implements IStorage {
     return book;
   }
 
+  async updateBook(id: number, book: InsertBook): Promise<Book | undefined> {
+    const [updatedBook] = await db
+      .update(books)
+      .set(book)
+      .where(eq(books.id, id))
+      .returning();
+    return updatedBook || undefined;
+  }
+
   async deleteBook(id: number): Promise<boolean> {
     const result = await db.delete(books).where(eq(books.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 }
 

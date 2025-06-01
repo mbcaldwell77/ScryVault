@@ -1,0 +1,100 @@
+ScryVault Edit/Delete Functionality
+Copy and paste this to Replit Agent:
+
+Add essential edit and delete functionality to ScryVault's inventory management system. Users need to be able to modify and remove inventory items.
+Required Features
+1. Delete Individual Items
+
+Add delete button/icon to each inventory item
+Require confirmation dialog before deletion
+Remove item from database permanently
+Update inventory counts and totals immediately
+Show success message after deletion
+
+2. Edit Item Details
+
+Add edit button/icon to each inventory item
+Open edit form with current values pre-populated
+Allow editing of all fields:
+
+Purchase price
+Condition (dropdown)
+Location
+Type (COGS/Expense toggle)
+Storage notes (if applicable)
+
+
+Save changes to database
+Update display immediately
+Show success message after save
+
+3. User Experience
+
+Delete confirmation: "Are you sure you want to delete [Book Title]? This cannot be undone."
+Edit form: Modal/popup or inline editing
+Cancel option: Allow users to cancel edit without saving
+Validation: Ensure required fields are filled
+Error handling: Show error messages if save/delete fails
+
+UI Implementation
+Inventory List View
+
+Add small edit and delete icons to each book card
+Icons should be subtle but easily clickable
+Use standard edit (pencil) and delete (trash) icons
+
+Edit Modal/Form
+
+Clean, simple form layout
+Same field types as the original "Add to Inventory" form
+Pre-populate with current values
+Save and Cancel buttons
+Form validation matching original add form
+
+Confirmation Dialog
+
+Simple modal with book title and confirmation message
+"Delete" and "Cancel" buttons
+Delete button should be red/warning color
+
+Technical Requirements
+Backend Updates
+
+Add DELETE endpoint for removing items by ID
+Add PUT/PATCH endpoint for updating items by ID
+Ensure proper error handling and validation
+Return appropriate success/error responses
+
+Frontend Updates
+
+Add edit/delete buttons to inventory item components
+Create edit form component (can reuse add form logic)
+Create confirmation dialog component
+Update inventory list after successful edit/delete
+Handle loading states during save/delete operations
+
+Database Considerations
+
+Ensure proper ID-based deletion and updates
+Maintain data integrity
+Consider soft delete vs hard delete (hard delete is fine for MVP)
+
+Error Handling
+
+Network errors during save/delete
+Invalid data validation
+Item not found errors
+Database connection issues
+
+Success Criteria
+
+ Users can delete any inventory item with confirmation
+ Users can edit all editable fields of any inventory item
+ Changes reflect immediately in the UI
+ Proper error messages for failed operations
+ Portfolio totals update correctly after edits/deletes
+ No data corruption or orphaned records
+
+Priority
+High Priority - This is essential functionality for a usable inventory system. Users need to correct mistakes and manage their data.
+Focus on simple, reliable implementation over fancy UI. Function over form.
