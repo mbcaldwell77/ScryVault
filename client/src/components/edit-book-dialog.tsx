@@ -37,7 +37,8 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
         condition: data.condition,
         format: data.format,
         location: data.location,
-        type: data.type
+        type: data.type,
+        purchaseDate: new Date(data.purchaseDate).toISOString()
       };
 
       const response = await fetch(`/api/books/${book.id}`, {
@@ -151,6 +152,16 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
                 <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="purchase-date">Purchase Date</Label>
+            <Input
+              id="purchase-date"
+              type="date"
+              value={formData.purchaseDate}
+              onChange={(e) => handleInputChange('purchaseDate', e.target.value)}
+            />
           </div>
 
           <div>
