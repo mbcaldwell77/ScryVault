@@ -455,7 +455,7 @@ export default function Inventory() {
                             </p>
                           )}
                           <p className="text-xs text-slate-500">
-                            {mainBook.format || "Other"} • {mainBook.condition}
+                            {mainBook.format || "Other"} • SKU: {mainBook.sku}
                           </p>
                         </div>
                       ) : (
@@ -516,7 +516,7 @@ export default function Inventory() {
                                 {book.condition}
                               </span>
                               <span className="text-xs text-slate-500">
-                                {book.format || "Other"}
+                                {book.format || "Other"} • SKU: {book.sku}
                               </span>
                             </div>
                             <div className="flex items-center space-x-1">
