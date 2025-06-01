@@ -32,11 +32,20 @@ export function useUpdateBookPricing() {
   
   return useMutation({
     mutationFn: async (bookId: number) => {
-      return apiRequest(`/api/books/${bookId}/pricing`, {
+      const response = await fetch(`/api/books/${bookId}/pricing`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return response.json();
     },
-    onSuccess: (data, bookId) => {
+    onSuccess: (data: any, bookId) => {
       // Invalidate and refetch book data
       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
       queryClient.invalidateQueries({ queryKey: ['/api/books', bookId] });
