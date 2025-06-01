@@ -115,10 +115,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { isbn } = req.params;
       
-      // Try OpenLibrary API first
-      let bookData = await fetchFromOpenLibrary(isbn);
+      // Try ISBNdb API first (provides format data)
+      let bookData = await fetchFromISBNdb(isbn);
       
-      // Fallback to Google Books API if OpenLibrary fails
+      // Fallback to OpenLibrary API
+      if (!bookData) {
+        bookData = await fetchFromOpenLibrary(isbn);
+      }
+      
+      // Final fallback to Google Books API
       if (!bookData) {
         bookData = await fetchFromGoogleBooks(isbn);
       }
@@ -271,6 +276,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
   return httpServer;
+}
+
+async function fetchFromISBNdb(isbn: string) {
+  try {
+    const apiKey = process.env.ISBNDB_API_KEY;
+    if (!apiKey) {
+      console.log("ISBNdb API key not available, skipping...");
+      return null;
+    }
+
+    const response = await fetch(`https://api2.isbndb.com/book/${isbn}`, {
+      headers: {
+        'Authorization': apiKey
+      }
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    const book = data.book;
+    
+    if (!book) return null;
+
+    // ISBNdb provides binding information which maps to format
+    let format = null;
+    if (book.binding) {
+      const binding = book.binding.toLowerCase();
+      if (binding.includes('hardcover') || binding.includes('hardback')) {
+        format = 'Hardcover';
+      } else if (binding.includes('mass market')) {
+        format = 'Mass Market Paperback';
+      } else if (binding.includes('paperback') || binding.includes('trade')) {
+        format = 'Trade Paperback';
+      } else {
+        format = 'Other';
+      }
+    }
+
+    return {
+      title: book.title || "Unknown Title",
+      author: book.authors?.[0] || "Unknown Author",
+      publisher: book.publisher || "Unknown Publisher", 
+      year: book.date_published?.split('-')[0] || "Unknown",
+      imageUrl: book.image || "",
+      format: format, // ISBNdb provides reliable format data
+      estimatedPrice: null
+    };
+  } catch (error) {
+    console.error("ISBNdb API error:", error);
+    return null;
+  }
 }
 
 async function fetchFromOpenLibrary(isbn: string) {
