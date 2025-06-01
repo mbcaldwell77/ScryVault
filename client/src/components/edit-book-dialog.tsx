@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -16,17 +16,32 @@ interface EditBookDialogProps {
 
 export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialogProps) {
   const [formData, setFormData] = useState({
-    format: book?.format || 'Other',
-    purchasePrice: book?.purchasePrice ?? '', // Use nullish coalescing to preserve 0 values
-    purchaseDate: book?.purchaseDate ? new Date(book.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-    location: book?.location || '',
-    condition: book?.condition || 'Good',
-    notes: book?.notes || '',
-    storageLocation: book?.storageLocation || ''
+    format: 'Other',
+    purchasePrice: '',
+    purchaseDate: new Date().toISOString().split('T')[0],
+    location: '',
+    condition: 'Good',
+    notes: '',
+    storageLocation: ''
   });
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Update form data when book prop changes
+  useEffect(() => {
+    if (book && isOpen) {
+      setFormData({
+        format: book.format || 'Other',
+        purchasePrice: book.purchasePrice ?? '',
+        purchaseDate: book.purchaseDate ? new Date(book.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        location: book.location || '',
+        condition: book.condition || 'Good',
+        notes: book.notes || '',
+        storageLocation: book.storageLocation || ''
+      });
+    }
+  }, [book, isOpen]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
