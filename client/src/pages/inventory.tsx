@@ -388,10 +388,12 @@ export default function Inventory() {
                               {copyCount} copies
                             </span>
                           )}
-                          {isExpanded ? (
-                            <ChevronDown className="w-4 h-4 text-slate-400" />
-                          ) : (
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                          {copyCount > 1 && (
+                            isExpanded ? (
+                              <ChevronDown className="w-4 h-4 text-slate-400" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4 text-slate-400" />
+                            )
                           )}
                         </div>
                       </div>
@@ -496,10 +498,27 @@ export default function Inventory() {
                               )}
                             </div>
                           </div>
+                          {/* ISBN and Publisher - Same as main cards */}
+                          <div className="mb-2">
+                            <p className="text-xs text-slate-600 font-medium">
+                              ISBN: {book.isbn}
+                            </p>
+                            {book.publisher && (
+                              <p className="text-xs text-slate-600">
+                                {book.publisher}
+                              </p>
+                            )}
+                          </div>
+                          
                           <div className="flex items-center justify-between mb-1">
-                            <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
-                              {book.condition}
-                            </span>
+                            <div className="flex items-center space-x-2">
+                              <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
+                                {book.condition}
+                              </span>
+                              <span className="text-xs text-slate-500">
+                                {book.format || "Other"}
+                              </span>
+                            </div>
                             <div className="flex items-center space-x-1">
                               <span className="text-xs text-slate-600">{book.type}</span>
                               <Button
@@ -520,12 +539,6 @@ export default function Inventory() {
                               </Button>
                             </div>
                           </div>
-                          <p className="text-xs text-slate-600 mb-1">
-                            {book.location || "Unknown location"}
-                          </p>
-                          <p className="text-xs text-slate-400">
-                            Added {formatDate(book.dateAdded)}
-                          </p>
                         </div>
                       ))}
                     </div>
