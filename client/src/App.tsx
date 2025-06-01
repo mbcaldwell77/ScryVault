@@ -8,12 +8,11 @@ import Scanner from "@/pages/scanner";
 import BookDetails from "@/pages/book-details";
 import AddInventory from "@/pages/add-inventory";
 import Inventory from "@/pages/inventory";
-import BottomNavigation from "@/components/bottom-navigation";
 import PWAInstallBanner from "@/components/pwa-install-banner";
 
 function Router() {
   return (
-    <div className="min-h-screen bg-slate-50 max-w-md mx-auto bg-white relative">
+    <div className="min-h-screen bg-slate-50 max-w-md mx-auto bg-white">
       <PWAInstallBanner />
       <Switch>
         <Route path="/" component={Home} />
@@ -26,7 +25,6 @@ function Router() {
         </Route>
         <Route path="/inventory" component={Inventory} />
       </Switch>
-      <BottomNavigation />
     </div>
   );
 }
