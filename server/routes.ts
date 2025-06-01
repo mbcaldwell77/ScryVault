@@ -239,8 +239,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/ebay/webhook", async (req, res) => {
     try {
-      console.log('[eBay Webhook] Received request:', JSON.stringify(req.body, null, 2));
+      console.log('[eBay Webhook] === INCOMING REQUEST ===');
+      console.log('[eBay Webhook] Method:', req.method);
+      console.log('[eBay Webhook] URL:', req.url);
+      console.log('[eBay Webhook] Body:', JSON.stringify(req.body, null, 2));
       console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
+      console.log('[eBay Webhook] Query params:', JSON.stringify(req.query, null, 2));
       
       const { challengeCode, verificationToken, notificationId, eventDate, publishDate, notificationType } = req.body;
       
