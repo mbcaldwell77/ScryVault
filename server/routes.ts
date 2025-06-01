@@ -230,18 +230,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // eBay webhook endpoint for marketplace compliance
   app.post("/api/ebay/webhook", async (req, res) => {
     try {
+      console.log('[eBay Webhook] Received request:', JSON.stringify(req.body, null, 2));
+      console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
+      
       const { challengeCode, verificationToken, notificationId, eventDate, publishDate, notificationType } = req.body;
       
       // Handle verification challenge
       if (challengeCode) {
-        console.log('[eBay Webhook] Verification challenge received');
+        console.log('[eBay Webhook] Verification challenge received:', challengeCode);
+        console.log('[eBay Webhook] Verification token received:', verificationToken);
         
         // Verify the token matches our configured token
         const expectedToken = 'scryvaul_webhook_verification_2025';
         if (verificationToken === expectedToken) {
+          console.log('[eBay Webhook] Token verified successfully');
           return res.status(200).json({ challengeResponse: challengeCode });
         } else {
-          console.error('[eBay Webhook] Invalid verification token');
+          console.error('[eBay Webhook] Invalid verification token. Expected:', expectedToken, 'Received:', verificationToken);
           return res.status(401).json({ error: 'Invalid verification token' });
         }
       }
