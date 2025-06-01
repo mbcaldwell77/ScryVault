@@ -377,9 +377,10 @@ export default function Inventory() {
                         (e.target as HTMLImageElement).src = "/placeholder-book.svg";
                       }}
                     />
-                    <div className="flex-1 space-y-1">
+                    <div className="flex-1 space-y-2">
+                      {/* Title - Most prominent */}
                       <div className="flex items-start justify-between">
-                        <h3 className="font-semibold text-slate-900 text-sm leading-tight">
+                        <h3 className="font-bold text-base text-slate-900 leading-tight">
                           {mainBook.title}
                         </h3>
                         <div className="flex items-center space-x-2 ml-2">
@@ -397,27 +398,29 @@ export default function Inventory() {
                           )}
                         </div>
                       </div>
-                      <p className="text-xs text-slate-600">
-                        {mainBook.author} • {mainBook.format || "Other"}
+                      
+                      {/* Publisher and Format - Secondary info */}
+                      {mainBook.publisher && (
+                        <p className="text-sm text-slate-700 font-medium">
+                          {mainBook.publisher} • {mainBook.format || "Other"}
+                        </p>
+                      )}
+                      
+                      {/* ISBN - Important for identification */}
+                      <p className="text-xs text-slate-600 font-medium">
+                        ISBN: {mainBook.isbn}
                       </p>
                       
-                      {/* ISBN and Publisher - Always shown for all copies */}
-                      <div className="space-y-1 mt-2">
-                        <p className="text-xs text-slate-600 font-medium">
-                          ISBN: {mainBook.isbn}
-                        </p>
-                        {mainBook.publisher && (
-                          <p className="text-xs text-slate-600">
-                            {mainBook.publisher} • {mainBook.year || "Unknown"}
-                          </p>
-                        )}
-                      </div>
+                      {/* Author and Year - Supporting details */}
+                      <p className="text-xs text-slate-500">
+                        {mainBook.author} • {mainBook.year || "Unknown"}
+                      </p>
                       
                       {copyCount === 1 ? (
-                        <div className="space-y-2 mt-2">
+                        <div className="border-t border-slate-200 pt-3 mt-4 space-y-2">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
-                              <span className="text-green-600 font-bold">
+                              <span className="text-green-600 font-bold text-sm">
                                 ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
                               </span>
                               {mainBook.estimatedPrice && (
