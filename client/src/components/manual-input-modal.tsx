@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useRecentISBNs } from "@/lib/storage";
 
 interface ManualInputModalProps {
   isOpen: boolean;
@@ -12,10 +13,12 @@ interface ManualInputModalProps {
 
 export default function ManualInputModal({ isOpen, onClose, onSubmit }: ManualInputModalProps) {
   const [isbn, setIsbn] = useState("");
+  const { recentISBNs, addRecentISBN } = useRecentISBNs();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isbn.trim()) {
+      addRecentISBN(isbn.trim()); // Track this ISBN as recent
       onSubmit(isbn.trim());
       setIsbn("");
     }
@@ -25,12 +28,6 @@ export default function ManualInputModal({ isOpen, onClose, onSubmit }: ManualIn
     setIsbn("");
     onClose();
   };
-
-  // Recent ISBNs for demo (in real app, this would come from local storage)
-  const recentIsbns = [
-    "9780143129394",
-    "9780547928227"
-  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -69,10 +66,10 @@ export default function ManualInputModal({ isOpen, onClose, onSubmit }: ManualIn
         </form>
 
         {/* Recent ISBNs */}
-        {recentIsbns.length > 0 && (
+        {recentISBNs.length > 0 && (
           <div className="space-y-3 pt-4 border-t">
-            <h3 className="text-sm font-medium text-slate-700">Recent Scans</h3>
-            {recentIsbns.map((recentIsbn) => (
+            <h3 className="text-sm font-medium text-slate-700">Recent</h3>
+            {recentISBNs.map((recentIsbn) => (
               <div 
                 key={recentIsbn} 
                 className="p-3 bg-slate-50 rounded-lg flex items-center justify-between"
@@ -82,6 +79,7 @@ export default function ManualInputModal({ isOpen, onClose, onSubmit }: ManualIn
                   variant="ghost" 
                   size="sm"
                   onClick={() => {
+                    addRecentISBN(recentIsbn); // Track usage
                     onSubmit(recentIsbn);
                     setIsbn("");
                   }}
