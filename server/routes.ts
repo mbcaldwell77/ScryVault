@@ -242,14 +242,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
       console.log('[eBay Webhook] Query params:', JSON.stringify(req.query, null, 2));
       
-      // Handle GET request (for testing)
-      if (req.method === 'GET' && !req.query.challenge_code) {
-        return res.json({ status: "eBay webhook endpoint is active", timestamp: new Date().toISOString() });
+      // Handle GET request for testing or eBay verification
+      if (req.method === 'GET') {
+        const challengeCode = req.query.challenge_code;
+        
+        if (challengeCode) {
+          // eBay verification - return the challenge code directly
+          console.log('[eBay Webhook] GET verification challenge received:', challengeCode);
+          return res.status(200).send(challengeCode);
+        } else {
+          // Testing endpoint
+          return res.json({ status: "eBay webhook endpoint is active", timestamp: new Date().toISOString() });
+        }
       }
       
-      // Extract challenge data from query params or body
-      const challengeCode = req.query.challenge_code || req.body.challengeCode;
-      const verificationToken = req.query.verification_token || req.body.verificationToken;
+      // Extract challenge data from request body (for POST requests)
+      const challengeCode = req.body.challengeCode;
+      const verificationToken = req.body.verificationToken;
       const { notificationId, eventDate, publishDate, notificationType } = req.body;
       
       // Handle verification challenge
