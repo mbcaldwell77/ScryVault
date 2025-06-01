@@ -400,19 +400,32 @@ export default function Inventory() {
                       <p className="text-xs text-slate-600">
                         {mainBook.author} • {mainBook.year}
                       </p>
+                      
+                      {/* ISBN and Publisher - Always shown for all copies */}
+                      <div className="space-y-1 mt-2">
+                        <p className="text-xs text-slate-600 font-medium">
+                          ISBN: {mainBook.isbn}
+                        </p>
+                        {mainBook.publisher && (
+                          <p className="text-xs text-slate-600">
+                            {mainBook.publisher}
+                          </p>
+                        )}
+                      </div>
+                      
                       {copyCount === 1 ? (
-                        <div className="space-y-1">
+                        <div className="space-y-1 mt-2">
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col">
                               <span className="text-green-600 font-bold">
-                                ${parseFloat(mainBook.purchasePrice).toFixed(2)}
+                                ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
                               </span>
                               {mainBook.estimatedPrice && (
                                 <span className="text-xs text-slate-500">
                                   Est: ${parseFloat(mainBook.estimatedPrice).toFixed(2)}
-                                  {parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice) && (
+                                  {parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice || 0) && (
                                     <span className="text-green-600 ml-1">
-                                      (+${(parseFloat(mainBook.estimatedPrice) - parseFloat(mainBook.purchasePrice)).toFixed(2)})
+                                      (+${(parseFloat(mainBook.estimatedPrice) - parseFloat(mainBook.purchasePrice || 0)).toFixed(2)})
                                     </span>
                                   )}
                                 </span>
@@ -446,20 +459,12 @@ export default function Inventory() {
                               </Button>
                             </div>
                           </div>
-                          <p className="text-xs text-slate-600 font-medium">
-                            ISBN: {mainBook.isbn}
-                          </p>
-                          {mainBook.publisher && (
-                            <p className="text-xs text-slate-600">
-                              {mainBook.publisher}
-                            </p>
-                          )}
                           <p className="text-xs text-slate-500">
                             {mainBook.format || "Other"} • SKU: {mainBook.sku}
                           </p>
                         </div>
                       ) : (
-                        <div className="text-xs text-slate-600">
+                        <div className="text-xs text-slate-600 mt-2">
                           Click to view {copyCount} copies
                         </div>
                       )}
@@ -473,54 +478,22 @@ export default function Inventory() {
                     <div className="p-3 space-y-3">
                       {isbnBooks.map((book: any, index: number) => (
                         <div key={book.id} className="bg-white rounded-lg p-3 border border-slate-200">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-3">
                               <span className="text-xs font-medium text-slate-500">Copy {index + 1}</span>
-                              {book.sku && (
-                                <div className="text-xs text-slate-400 font-mono mt-1">
-                                  SKU: {book.sku}
-                                </div>
-                              )}
-                            </div>
-                            <div className="text-right">
                               <span className="text-green-600 font-bold text-sm">
-                                ${parseFloat(book.purchasePrice).toFixed(2)}
+                                ${parseFloat(book.purchasePrice || 0).toFixed(2)}
                               </span>
                               {book.estimatedPrice && (
-                                <div className="text-xs text-slate-500">
+                                <span className="text-xs text-slate-500">
                                   Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
-                                  {parseFloat(book.estimatedPrice) > parseFloat(book.purchasePrice) && (
-                                    <div className="text-green-600">
-                                      +${(parseFloat(book.estimatedPrice) - parseFloat(book.purchasePrice)).toFixed(2)}
-                                    </div>
-                                  )}
-                                </div>
+                                </span>
                               )}
                             </div>
-                          </div>
-                          {/* ISBN and Publisher - Same as main cards */}
-                          <div className="mb-2">
-                            <p className="text-xs text-slate-600 font-medium">
-                              ISBN: {book.isbn}
-                            </p>
-                            {book.publisher && (
-                              <p className="text-xs text-slate-600">
-                                {book.publisher}
-                              </p>
-                            )}
-                          </div>
-                          
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-1">
                               <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
                                 {book.condition}
                               </span>
-                              <span className="text-xs text-slate-500">
-                                {book.format || "Other"} • SKU: {book.sku}
-                              </span>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <span className="text-xs text-slate-600">{book.type}</span>
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -538,6 +511,9 @@ export default function Inventory() {
                                 <Trash2 className="w-3 h-3" />
                               </Button>
                             </div>
+                          </div>
+                          <div className="text-xs text-slate-400 font-mono">
+                            SKU: {book.sku}
                           </div>
                         </div>
                       ))}
