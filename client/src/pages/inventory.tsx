@@ -238,7 +238,9 @@ export default function Inventory() {
   return (
     <div 
       className="flex-1 flex flex-col pb-24 min-h-screen relative"
-      {...pullToRefresh}
+      onTouchStart={pullToRefresh.onTouchStart}
+      onTouchMove={pullToRefresh.onTouchMove}
+      onTouchEnd={pullToRefresh.onTouchEnd}
     >
       {/* Pull to refresh indicator */}
       {pullToRefresh.isPulling && (
