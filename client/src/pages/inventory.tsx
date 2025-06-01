@@ -445,8 +445,13 @@ export default function Inventory() {
                             </div>
                           </div>
                           <p className="text-xs text-slate-600">
-                            {mainBook.location || "Unknown location"} • {mainBook.type}
+                            {mainBook.format || "Other"} • {mainBook.condition} • {mainBook.type}
                           </p>
+                          {mainBook.location && (
+                            <p className="text-xs text-slate-500">
+                              Location: {mainBook.location}
+                            </p>
+                          )}
                           <p className="text-xs text-slate-400">
                             Added {formatDate(mainBook.dateAdded)}
                           </p>
