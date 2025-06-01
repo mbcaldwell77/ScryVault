@@ -49,6 +49,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update book in inventory
+  app.put("/api/books/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid book ID" });
+      }
+
+      const validatedData = insertBookSchema.parse(req.body);
+      const updatedBook = await storage.updateBook(id, validatedData);
+      
+      if (!updatedBook) {
+        return res.status(404).json({ error: "Book not found" });
+      }
+      
+      res.json(updatedBook);
+    } catch (error) {
+      console.error("Database error updating book:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          error: "Validation failed", 
+          details: error.errors 
+        });
+      }
+      res.status(500).json({ error: "Failed to update book" });
+    }
+  });
+
   // Delete book from inventory
   app.delete("/api/books/:id", async (req, res) => {
     try {
