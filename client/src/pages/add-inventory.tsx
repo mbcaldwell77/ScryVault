@@ -18,49 +18,24 @@ interface AddInventoryProps {
 }
 
 export default function AddInventory({ isbn }: AddInventoryProps) {
-  const [, setLocation] = useLocation();
+  const [, setLocationPath] = useLocation();
   const { toast } = useToast();
-  const { getSuggestions, addLocation } = useLocationAutocomplete();
   const [lastCondition, setLastCondition] = useLocalStorage("last-condition", "");
   const [lastFormat, setLastFormat] = useLocalStorage("last-format", "Other");
   
   const [purchasePrice, setPurchasePrice] = useState("");
   const [condition, setCondition] = useState(lastCondition);
   const [format, setFormat] = useState(lastFormat);
-  const [location, setLocationField] = useState("");
+  const [location, setLocation] = useState("");
   const [notes, setNotes] = useState("");
-  const [classification, setClassification] = useState("COGS");
+  const [storageLocation, setStorageLocation] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
-  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
-  const locationInputRef = useRef<HTMLInputElement>(null);
   
   const { data: bookData } = useQuery({
     queryKey: [`/api/book-lookup/${isbn}`],
   });
 
-  // Handle location autocomplete
-  useEffect(() => {
-    const suggestions = getSuggestions(location);
-    setLocationSuggestions(suggestions);
-  }, [location, getSuggestions]);
 
-  const handleLocationFocus = () => {
-    setShowLocationSuggestions(true);
-    const suggestions = getSuggestions(location);
-    setLocationSuggestions(suggestions);
-  };
-
-  const handleLocationBlur = () => {
-    // Delay hiding to allow clicking on suggestions
-    setTimeout(() => setShowLocationSuggestions(false), 200);
-  };
-
-  const selectLocationSuggestion = (suggestion: string) => {
-    setLocationField(suggestion);
-    setShowLocationSuggestions(false);
-    locationInputRef.current?.focus();
-  };
 
   const addToInventoryMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -123,7 +98,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       condition,
       format,
       location: location || null,
-      type: classification,
+      type: 'COGS', // Fixed classification for V2
       purchaseDate: purchaseDate,
     };
 
@@ -308,36 +283,19 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             </Select>
           </div>
 
-          {/* Type Toggle */}
+          {/* Storage Location */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-slate-700">Classification</Label>
-            <div className="flex bg-slate-100 rounded-lg p-1 gap-1">
-              <button
-                type="button"
-                onClick={() => setClassification("COGS")}
-                className={`flex-1 py-3 px-4 rounded-md font-medium transition-all duration-200 ${
-                  classification === "COGS" 
-                    ? "bg-green-600 text-white shadow-sm" 
-                    : "text-slate-600 hover:bg-slate-200 bg-transparent"
-                }`}
-              >
-                COGS
-              </button>
-              <button
-                type="button"
-                onClick={() => setClassification("Expense")}
-                className={`flex-1 py-3 px-4 rounded-md font-medium transition-all duration-200 ${
-                  classification === "Expense" 
-                    ? "bg-green-600 text-white shadow-sm" 
-                    : "text-slate-600 hover:bg-slate-200 bg-transparent"
-                }`}
-              >
-                Expense
-              </button>
-            </div>
-            <p className="text-xs text-slate-600">
-              COGS for resale inventory, Expense for reference/research books
-            </p>
+            <Label htmlFor="storageLocation" className="text-sm font-medium text-slate-700">
+              Storage Location
+            </Label>
+            <Input
+              id="storageLocation"
+              type="text"
+              placeholder="Shelf A, Box 1, etc."
+              value={storageLocation}
+              onChange={(e) => setStorageLocation(e.target.value)}
+              className="text-lg"
+            />
           </div>
 
           {/* Submit Button */}
