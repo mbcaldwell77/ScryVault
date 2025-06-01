@@ -384,6 +384,11 @@ export default function Inventory() {
                           {mainBook.title}
                         </h3>
                         <div className="flex items-center space-x-2 ml-2">
+                          {copyCount === 1 && (
+                            <span className="bg-slate-100 px-3 py-1 rounded-md text-sm font-medium">
+                              {mainBook.condition}
+                            </span>
+                          )}
                           {copyCount > 1 && (
                             <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                               {copyCount} copies
@@ -435,9 +440,6 @@ export default function Inventory() {
                               )}
                             </div>
                             <div className="flex items-center space-x-2">
-                              <span className="bg-slate-100 px-3 py-1 rounded-md text-sm font-medium">
-                                {mainBook.condition}
-                              </span>
                               <Button
                                 variant="outline"
                                 size="sm"
