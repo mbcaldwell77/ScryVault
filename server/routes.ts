@@ -22,6 +22,11 @@ if (process.env.EBAY_APP_ID) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Test route to verify deployment
+  app.get("/api/test", (req, res) => {
+    res.json({ message: "API is working", timestamp: new Date().toISOString() });
+  });
+
   // Get all books in inventory
   app.get("/api/books", async (req, res) => {
     try {
