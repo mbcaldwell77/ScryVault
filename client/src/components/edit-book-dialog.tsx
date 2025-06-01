@@ -19,6 +19,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
     purchasePrice: book?.purchasePrice || '',
     estimatedPrice: book?.estimatedPrice || '',
     condition: book?.condition || 'Good',
+    format: book?.format || 'Other',
     location: book?.location || '',
     type: book?.type || 'COGS'
   });
@@ -33,6 +34,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
         purchasePrice: parseFloat(data.purchasePrice) || 0,
         estimatedPrice: data.estimatedPrice ? parseFloat(data.estimatedPrice) : null,
         condition: data.condition,
+        format: data.format,
         location: data.location,
         type: data.type
       };
@@ -130,6 +132,22 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
                 <SelectItem value="Very Good">Very Good</SelectItem>
                 <SelectItem value="Good">Good</SelectItem>
                 <SelectItem value="Acceptable">Acceptable</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="format">Book Format</Label>
+            <Select value={formData.format} onValueChange={(value) => handleInputChange('format', value)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Hardcover">Hardcover</SelectItem>
+                <SelectItem value="Mass Market Paperback">Mass Market Paperback</SelectItem>
+                <SelectItem value="Trade Paperback">Trade Paperback</SelectItem>
+                <SelectItem value="Oversize">Oversize</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
