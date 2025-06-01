@@ -232,12 +232,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // eBay webhook endpoint for marketplace compliance
-  app.get("/api/ebay/webhook", (req, res) => {
-    res.json({ status: "eBay webhook endpoint is active", timestamp: new Date().toISOString() });
-  });
-
-  app.post("/api/ebay/webhook", async (req, res) => {
+  // eBay webhook endpoint for marketplace compliance - handles all methods
+  app.all("/api/ebay/webhook", async (req, res) => {
     try {
       console.log('[eBay Webhook] === INCOMING REQUEST ===');
       console.log('[eBay Webhook] Method:', req.method);
@@ -246,7 +242,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
       console.log('[eBay Webhook] Query params:', JSON.stringify(req.query, null, 2));
       
-      const { challengeCode, verificationToken, notificationId, eventDate, publishDate, notificationType } = req.body;
+      // Handle GET request (for testing)
+      if (req.method === 'GET' && !req.query.challenge_code) {
+        return res.json({ status: "eBay webhook endpoint is active", timestamp: new Date().toISOString() });
+      }
+      
+      // Extract challenge data from query params or body
+      const challengeCode = req.query.challenge_code || req.body.challengeCode;
+      const verificationToken = req.query.verification_token || req.body.verificationToken;
+      const { notificationId, eventDate, publishDate, notificationType } = req.body;
       
       // Handle verification challenge
       if (challengeCode) {
