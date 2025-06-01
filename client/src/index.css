@@ -8,79 +8,49 @@
 }
 
 :root {
-  /* ScryVault Premium Theme - Emerald & Gold */
-  --background: 210 11% 98%; /* #F8F9FA - Light gray page background */
-  --foreground: 210 12% 23%; /* #36454F - Charcoal text */
-  --muted: 210 11% 90%; /* #E5E4E2 - Platinum silver */
-  --muted-foreground: 210 9% 46%; /* #6C757D - Medium gray */
-  --popover: 0 0% 100%; /* #FFFFFF - Pure white */
-  --popover-foreground: 210 12% 23%;
-  --card: 0 0% 100%; /* #FFFFFF - Pure white cards */
-  --card-foreground: 210 12% 23%;
-  --border: 210 11% 90%; /* #E5E4E2 - Platinum silver borders */
-  --input: 210 11% 90%;
-  --primary: 145 41% 20%; /* #284139 - Deep emerald */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 60 30% 31%; /* #556B2F - Forest green */
-  --secondary-foreground: 0 0% 100%;
-  --accent: 51 78% 54%; /* #D4AF37 - Antique gold */
-  --accent-foreground: 210 12% 23%;
-  --destructive: 0 79% 63%; /* #FF6B6B - Muted coral */
-  --destructive-foreground: 0 0% 100%;
-  --ring: 145 41% 20%; /* Focus ring matches primary */
-  --radius: 0.5rem; /* 8px for modern feel */
-  
-  /* Custom emerald theme variables */
-  --emerald-primary: #284139;
-  --forest-secondary: #556B2F;
-  --sage-accent: #808F57;
-  --platinum-silver: #E5E4E2;
-  --antique-gold: #D4AF37;
-  --charcoal-text: #36454F;
-  
-  /* Premium gradients and effects */
-  --premium-gradient: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
-  --emerald-glow: 0 0 20px rgba(40, 65, 57, 0.15);
-  --card-shadow: 0 2px 8px rgba(40, 65, 57, 0.08);
-  --hover-shadow: 0 4px 12px rgba(40, 65, 57, 0.12);
+  /* Clean Professional Theme */
+  --background: 0 0% 100%; /* Pure white */
+  --foreground: 224 71.4% 4.1%; /* Very dark blue-gray */
+  --muted: 220 14.3% 95.9%; /* Light gray */
+  --muted-foreground: 220 8.9% 46.1%; /* Medium gray */
+  --popover: 0 0% 100%;
+  --popover-foreground: 224 71.4% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 224 71.4% 4.1%;
+  --border: 220 13% 91%; /* Light border */
+  --input: 220 13% 91%;
+  --primary: 221.2 83.2% 53.3%; /* Clean blue */
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
 }
 
 .dark {
-  /* Dark emerald theme - Premium dark mode */
-  --background: 145 25% 8%; /* #0F1B17 - Very dark emerald */
-  --foreground: 0 0% 95%; /* #F2F2F2 - Light text */
-  --muted: 145 20% 15%; /* #1E3329 - Dark emerald secondary */
-  --muted-foreground: 210 5% 65%; /* #9CA3AF - Light gray */
-  --popover: 145 25% 10%; /* #14241A - Dark emerald popover */
-  --popover-foreground: 0 0% 95%;
-  --card: 145 25% 10%; /* #14241A - Dark emerald cards */
-  --card-foreground: 0 0% 95%;
-  --border: 145 15% 20%; /* #2D4A3D - Dark emerald border */
-  --input: 145 15% 20%;
-  --primary: 145 41% 35%; /* #4A735E - Lighter emerald for dark mode */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 60 30% 45%; /* #7A9147 - Lighter forest green */
-  --secondary-foreground: 0 0% 100%;
-  --accent: 51 78% 65%; /* #E6C547 - Brighter gold for dark mode */
-  --accent-foreground: 145 25% 8%;
-  --destructive: 0 79% 70%; /* #FF8A8A - Lighter coral for dark mode */
-  --destructive-foreground: 0 0% 100%;
-  --ring: 145 41% 35%;
-  --radius: 0.5rem;
-  
-  /* Dark theme emerald variables */
-  --emerald-primary: #4A735E;
-  --forest-secondary: #7A9147;
-  --sage-accent: #A0B970;
-  --platinum-silver: #3D4F44;
-  --antique-gold: #E6C547;
-  --charcoal-text: #F2F2F2;
-  
-  /* Dark theme effects */
-  --premium-gradient: linear-gradient(135deg, #14241A 0%, #0F1B17 100%);
-  --emerald-glow: 0 0 20px rgba(74, 115, 94, 0.25);
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 84% 4.9%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 217.2 91.2% 59.8%;
 }
 
 @layer base {
@@ -126,123 +96,19 @@
   }
 }
 
-/* Premium emerald animations and effects */
-@keyframes emerald-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.02); }
-}
-
-@keyframes gold-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes premium-fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes emerald-glow {
-  0%, 100% { box-shadow: var(--card-shadow); }
-  50% { box-shadow: var(--hover-shadow); }
-}
-
-.emerald-pulse {
-  animation: emerald-pulse 3s ease-in-out infinite;
-}
-
-.premium-fade-in {
-  animation: premium-fade-in 0.5s ease-out;
-}
-
-.gold-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(212, 175, 55, 0.15),
-    transparent
-  );
-  background-size: 200% 100%;
-  animation: gold-shimmer 2s infinite;
-}
-
-.emerald-glow {
-  animation: emerald-glow 2s ease-in-out infinite;
-}
-
-/* Premium card styles */
-.premium-card {
-  background: var(--premium-gradient);
-  border: 1px solid hsl(var(--border));
-  box-shadow: var(--card-shadow);
-  transition: all 0.2s ease;
-}
-
-.premium-card:hover {
-  box-shadow: var(--hover-shadow);
-  transform: scale(1.01);
-}
-
-.emerald-button {
-  background: var(--emerald-primary);
-  color: white;
-  border: none;
-  transition: all 0.2s ease;
-}
-
-.emerald-button:hover {
-  background: var(--forest-secondary);
-  box-shadow: var(--emerald-glow);
-}
-
-.gold-accent {
-  color: var(--antique-gold);
-  font-weight: 600;
-}
-
-.sage-text {
-  color: var(--sage-accent);
-  font-weight: 500;
-}
-
-/* Enhanced scanner styles with emerald theme */
+/* Scanner overlay */
 .scanner-overlay {
   background: linear-gradient(
     to bottom,
-    rgba(40, 65, 57, 0.9) 0%,
+    rgba(0, 0, 0, 0.6) 0%,
     transparent 20%,
     transparent 80%,
-    rgba(40, 65, 57, 0.9) 100%
+    rgba(0, 0, 0, 0.6) 100%
   );
 }
 
 .scanner-frame {
-  border: 2px solid var(--antique-gold);
+  border: 2px solid hsl(var(--primary));
   border-radius: 8px;
-  box-shadow: 
-    0 0 0 2px rgba(212, 175, 55, 0.3),
-    var(--emerald-glow);
-}
-
-/* Premium typography styles */
-.premium-heading {
-  color: var(--emerald-primary);
-  font-weight: 700;
-  letter-spacing: -0.025em;
-}
-
-.premium-subheading {
-  color: var(--charcoal-text);
-  font-weight: 600;
-}
-
-.premium-body {
-  color: var(--charcoal-text);
-  font-weight: 400;
-}
-
-.premium-caption {
-  color: var(--sage-accent);
-  font-weight: 500;
-  font-size: 0.875rem;
+  box-shadow: 0 0 0 2px hsla(var(--primary), 0.3);
 }
