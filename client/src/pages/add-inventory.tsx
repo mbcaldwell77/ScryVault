@@ -286,19 +286,38 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             </p>
           </div>
 
-          {/* Location */}
-          <div className="space-y-2">
+          {/* Location with Auto-complete */}
+          <div className="space-y-2 relative">
             <Label htmlFor="location" className="text-sm font-medium text-slate-700">
               Purchase Location
             </Label>
             <Input
+              ref={locationInputRef}
               id="location"
               type="text"
               placeholder="Estate sale, thrift store, etc."
               value={location}
               onChange={(e) => setLocationField(e.target.value)}
+              onFocus={handleLocationFocus}
+              onBlur={handleLocationBlur}
               className="text-lg"
             />
+            
+            {/* Location Suggestions Dropdown */}
+            {showLocationSuggestions && locationSuggestions.length > 0 && (
+              <div className="absolute z-10 w-full bg-white border border-slate-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
+                {locationSuggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => selectLocationSuggestion(suggestion)}
+                    className="w-full text-left px-4 py-3 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none text-sm border-b border-slate-100 last:border-b-0"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Type Toggle */}
