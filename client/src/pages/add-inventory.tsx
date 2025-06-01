@@ -97,7 +97,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       format,
       location: location || null,
       type: classification,
-      purchaseDate: new Date(purchaseDate).toISOString(),
+      purchaseDate: purchaseDate,
     };
 
     try {

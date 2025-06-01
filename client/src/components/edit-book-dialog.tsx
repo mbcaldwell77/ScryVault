@@ -32,13 +32,13 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
     mutationFn: async (data: any) => {
       const updateData = {
         ...book,
-        purchasePrice: parseFloat(data.purchasePrice) || 0,
-        estimatedPrice: data.estimatedPrice ? parseFloat(data.estimatedPrice) : null,
+        purchasePrice: data.purchasePrice.toString(),
+        estimatedPrice: data.estimatedPrice ? data.estimatedPrice.toString() : null,
         condition: data.condition,
         format: data.format,
         location: data.location,
         type: data.type,
-        purchaseDate: new Date(data.purchaseDate).toISOString()
+        purchaseDate: data.purchaseDate
       };
 
       const response = await fetch(`/api/books/${book.id}`, {
@@ -72,7 +72,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.purchasePrice || parseFloat(formData.purchasePrice) <= 0) {
+    if (!formData.purchasePrice || formData.purchasePrice.trim() === "") {
       toast({
         title: "Invalid Price",
         description: "Please enter a valid purchase price.",
