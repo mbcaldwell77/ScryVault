@@ -47,7 +47,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
         title: "Success!",
         description: "Book added to inventory successfully",
       });
-      setLocation("/inventory");
+      setLocationPath("/inventory");
     },
     onError: (error: any) => {
       console.error("Add to inventory error:", error);
@@ -82,9 +82,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
     // Save last-used values for next session
     setLastCondition(condition);
     setLastFormat(format);
-    if (location.trim()) {
-      addLocation(location.trim());
-    }
+    // Location is now simplified dropdown
 
     const inventoryData = {
       isbn,
@@ -96,8 +94,10 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       purchasePrice: purchasePrice.toString(),
       estimatedPrice: null, // Will be populated by eBay API
       condition,
-      format,
+      format: (bookData as any)?.format || format, // Use API format if available, otherwise user selection
       location: location || null,
+      storageLocation: storageLocation || null,
+      notes: notes || null,
       type: 'COGS', // Fixed classification for V2
       purchaseDate: purchaseDate,
     };
@@ -224,7 +224,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
           </div>
 
           {/* Book Format - Only show if ISBN API didn't provide format */}
-          {!bookData?.format && (
+          {!(bookData as any)?.format && (
             <div className="space-y-2">
               <Label className="text-sm font-medium text-slate-700">
                 Book Format <span className="text-red-500">*</span>
