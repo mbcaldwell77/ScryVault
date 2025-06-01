@@ -24,6 +24,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
   const [format, setFormat] = useState("Other");
   const [location, setLocationField] = useState("");
   const [classification, setClassification] = useState("COGS");
+  const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   
   const { data: bookData } = useQuery<{
     title: string;
@@ -90,6 +91,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       format,
       location: location || null,
       type: classification,
+      purchaseDate: new Date(purchaseDate).toISOString(),
     };
 
     try {
@@ -177,10 +179,25 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             </div>
           </div>
 
+          {/* Purchase Date */}
+          <div className="space-y-2">
+            <Label htmlFor="purchase-date" className="text-sm font-medium text-slate-700">
+              Purchase Date <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="purchase-date"
+              type="date"
+              value={purchaseDate}
+              onChange={(e) => setPurchaseDate(e.target.value)}
+              className="text-lg"
+              required
+            />
+          </div>
+
           {/* Estimated Selling Price */}
           <div className="space-y-2">
             <Label htmlFor="estimated-price" className="text-sm font-medium text-slate-700">
-              Estimated Selling Price
+              Estimated Market Value (Optional)
             </Label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">$</span>
@@ -189,12 +206,15 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="0.00"
+                placeholder="Auto-calculated from APIs"
                 value={estimatedPrice}
                 onChange={(e) => setEstimatedPrice(e.target.value)}
                 className="pl-8 text-lg"
               />
             </div>
+            <p className="text-xs text-slate-500">
+              Leave blank to auto-estimate from market data
+            </p>
           </div>
 
           {/* Condition */}

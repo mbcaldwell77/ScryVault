@@ -21,7 +21,8 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
     condition: book?.condition || 'Good',
     format: book?.format || 'Other',
     location: book?.location || '',
-    type: book?.type || 'COGS'
+    type: book?.type || 'COGS',
+    purchaseDate: book?.purchaseDate ? new Date(book.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
   });
 
   const { toast } = useToast();
@@ -87,7 +88,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Book Details</DialogTitle>
         </DialogHeader>
