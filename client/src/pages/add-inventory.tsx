@@ -32,8 +32,14 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
     publisher?: string;
     year?: string;
     imageUrl?: string;
+    estimatedPrice?: number;
   }>({
     queryKey: [`/api/book-lookup/${isbn}`],
+    onSuccess: (data) => {
+      if (data?.estimatedPrice && !estimatedPrice) {
+        setEstimatedPrice(data.estimatedPrice.toString());
+      }
+    }
   });
 
   const addToInventoryMutation = useMutation({

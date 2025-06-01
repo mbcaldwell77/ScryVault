@@ -135,7 +135,8 @@ async function fetchFromOpenLibrary(isbn: string) {
       author: book.authors?.[0]?.name || "Unknown Author",
       publisher: book.publishers?.[0]?.name || "Unknown Publisher",
       year: book.publish_date || "Unknown",
-      imageUrl: book.cover?.large || book.cover?.medium || book.cover?.small || ""
+      imageUrl: book.cover?.large || book.cover?.medium || book.cover?.small || "",
+      estimatedPrice: null // Price data not available from OpenLibrary
     };
   } catch (error) {
     console.error("OpenLibrary API error:", error);
@@ -157,7 +158,8 @@ async function fetchFromGoogleBooks(isbn: string) {
       author: book.authors?.[0] || "Unknown Author",
       publisher: book.publisher || "Unknown Publisher",
       year: book.publishedDate?.split('-')[0] || "Unknown",
-      imageUrl: book.imageLinks?.thumbnail?.replace('http:', 'https:') || ""
+      imageUrl: book.imageLinks?.thumbnail?.replace('http:', 'https:') || "",
+      estimatedPrice: null // Price data not available from Google Books API
     };
   } catch (error) {
     console.error("Google Books API error:", error);
