@@ -18,6 +18,7 @@ export const books = pgTable("books", {
   location: text("location"),
   type: text("type").notNull(), // "COGS" or "Expense"
   status: text("status").notNull().default("available"), // "available", "sold", "listed"
+  purchaseDate: timestamp("purchase_date").notNull().defaultNow(),
   dateAdded: timestamp("date_added").notNull().defaultNow(),
 });
 

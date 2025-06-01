@@ -444,16 +444,16 @@ export default function Inventory() {
                               </Button>
                             </div>
                           </div>
-                          <p className="text-xs text-slate-600">
-                            {mainBook.format || "Other"} • {mainBook.condition} • {mainBook.type}
+                          <p className="text-xs text-slate-600 font-medium">
+                            ISBN: {mainBook.isbn}
                           </p>
-                          {mainBook.location && (
-                            <p className="text-xs text-slate-500">
-                              Location: {mainBook.location}
+                          {mainBook.publisher && (
+                            <p className="text-xs text-slate-600">
+                              {mainBook.publisher}
                             </p>
                           )}
-                          <p className="text-xs text-slate-400">
-                            Added {formatDate(mainBook.dateAdded)}
+                          <p className="text-xs text-slate-500">
+                            {mainBook.format || "Other"} • {mainBook.condition}
                           </p>
                         </div>
                       ) : (
