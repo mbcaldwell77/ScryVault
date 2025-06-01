@@ -283,12 +283,27 @@ async function fetchFromOpenLibrary(isbn: string) {
     
     if (!book) return null;
     
+    // Try to determine format from title or other metadata
+    const title = book.title || "Unknown Title";
+    let format = null;
+    
+    if (title.toLowerCase().includes('hardcover') || title.toLowerCase().includes('hardback')) {
+      format = 'Hardcover';
+    } else if (title.toLowerCase().includes('paperback')) {
+      if (title.toLowerCase().includes('mass market')) {
+        format = 'Mass Market Paperback';
+      } else {
+        format = 'Trade Paperback';
+      }
+    }
+
     return {
-      title: book.title || "Unknown Title",
+      title: title,
       author: book.authors?.[0]?.name || "Unknown Author",
       publisher: book.publishers?.[0]?.name || "Unknown Publisher",
       year: book.publish_date || "Unknown",
       imageUrl: book.cover?.large || book.cover?.medium || book.cover?.small || "",
+      format: format, // Include format when detectable
       estimatedPrice: null // Price data not available from OpenLibrary
     };
   } catch (error) {
@@ -306,12 +321,27 @@ async function fetchFromGoogleBooks(isbn: string) {
     
     const book = data.items[0].volumeInfo;
     
+    // Try to determine format from title or other metadata
+    const title = book.title || "Unknown Title";
+    let format = null;
+    
+    if (title.toLowerCase().includes('hardcover') || title.toLowerCase().includes('hardback')) {
+      format = 'Hardcover';
+    } else if (title.toLowerCase().includes('paperback')) {
+      if (title.toLowerCase().includes('mass market')) {
+        format = 'Mass Market Paperback';
+      } else {
+        format = 'Trade Paperback';
+      }
+    }
+
     return {
-      title: book.title || "Unknown Title",
+      title: title,
       author: book.authors?.[0] || "Unknown Author",
       publisher: book.publisher || "Unknown Publisher",
       year: book.publishedDate?.split('-')[0] || "Unknown",
       imageUrl: book.imageLinks?.thumbnail?.replace('http:', 'https:') || "",
+      format: format, // Include format when detectable
       estimatedPrice: null // Price data not available from Google Books API
     };
   } catch (error) {
