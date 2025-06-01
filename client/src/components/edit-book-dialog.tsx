@@ -55,7 +55,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
       const updateData = {
         ...book,
         format: data.format,
-        purchasePrice: parseFloat(data.purchasePrice),
+        purchasePrice: data.purchasePrice.toString(), // Keep as string to match schema
         purchaseDate: data.purchaseDate,
         location: data.location,
         condition: data.condition,
