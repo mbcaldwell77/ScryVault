@@ -21,6 +21,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
   const [purchasePrice, setPurchasePrice] = useState("");
   const [estimatedPrice, setEstimatedPrice] = useState("");
   const [condition, setCondition] = useState("");
+  const [format, setFormat] = useState("Other");
   const [location, setLocationField] = useState("");
   const [classification, setClassification] = useState("COGS");
   
@@ -86,6 +87,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       purchasePrice: purchasePrice,
       estimatedPrice: estimatedPrice || null,
       condition,
+      format,
       location: location || null,
       type: classification,
     };
