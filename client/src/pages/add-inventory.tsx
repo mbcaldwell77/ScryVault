@@ -166,6 +166,27 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Book Format - Only show if ISBN API didn't provide format */}
+          {!(bookData as any)?.format && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-slate-700">
+                Book Format <span className="text-red-500">*</span>
+              </Label>
+              <Select value={format} onValueChange={setFormat} required>
+                <SelectTrigger className="text-lg">
+                  <SelectValue placeholder="Select format..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Hardcover">Hardcover</SelectItem>
+                  <SelectItem value="Mass Market Paperback">Mass Market Paperback</SelectItem>
+                  <SelectItem value="Trade Paperback">Trade Paperback</SelectItem>
+                  <SelectItem value="Oversize">Oversize</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Purchase Price */}
           <div className="space-y-2">
             <Label htmlFor="purchase-price" className="text-sm font-medium text-slate-700">
@@ -202,67 +223,6 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             />
           </div>
 
-
-
-          {/* Condition */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-slate-700">
-              Condition <span className="text-red-500">*</span>
-            </Label>
-            <Select value={condition} onValueChange={setCondition} required>
-              <SelectTrigger className="text-lg">
-                <SelectValue placeholder="Select condition..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Brand New">Brand New</SelectItem>
-                <SelectItem value="Like New">Like New</SelectItem>
-                <SelectItem value="Very Good">Very Good</SelectItem>
-                <SelectItem value="Good">Good</SelectItem>
-                <SelectItem value="Acceptable">Acceptable</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Book Format - Only show if ISBN API didn't provide format */}
-          {!(bookData as any)?.format && (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-slate-700">
-                Book Format <span className="text-red-500">*</span>
-              </Label>
-              <Select value={format} onValueChange={setFormat} required>
-                <SelectTrigger className="text-lg">
-                  <SelectValue placeholder="Select format..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Hardcover">Hardcover</SelectItem>
-                  <SelectItem value="Mass Market Paperback">Mass Market Paperback</SelectItem>
-                  <SelectItem value="Trade Paperback">Trade Paperback</SelectItem>
-                  <SelectItem value="Oversize">Oversize</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {/* Notes */}
-          <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium text-slate-700">
-              Notes
-            </Label>
-            <Textarea
-              id="notes"
-              placeholder="Condition details, inscriptions, damage notes, etc."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              maxLength={500}
-              className="text-lg min-h-[80px]"
-              rows={3}
-            />
-            <p className="text-xs text-slate-500">
-              {notes.length}/500 characters
-            </p>
-          </div>
-
           {/* Purchase Location - Simplified Dropdown */}
           <div className="space-y-2">
             <Label htmlFor="location" className="text-sm font-medium text-slate-700">
@@ -281,6 +241,43 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
                 <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Condition + Notes - Grouped together */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-slate-700">
+              Condition <span className="text-red-500">*</span>
+            </Label>
+            <Select value={condition} onValueChange={setCondition} required>
+              <SelectTrigger className="text-lg">
+                <SelectValue placeholder="Select condition..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Brand New">Brand New</SelectItem>
+                <SelectItem value="Like New">Like New</SelectItem>
+                <SelectItem value="Very Good">Very Good</SelectItem>
+                <SelectItem value="Good">Good</SelectItem>
+                <SelectItem value="Acceptable">Acceptable</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-sm font-medium text-slate-700">
+              Notes
+            </Label>
+            <Textarea
+              id="notes"
+              placeholder="Condition details, inscriptions, damage notes, etc."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              maxLength={500}
+              className="text-lg min-h-[80px]"
+              rows={3}
+            />
+            <p className="text-xs text-slate-500">
+              {notes.length}/500 characters
+            </p>
           </div>
 
           {/* Storage Location */}
