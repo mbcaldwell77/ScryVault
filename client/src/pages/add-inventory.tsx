@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLocationAutocomplete } from "@/hooks/use-location-autocomplete";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { insertBookSchema } from "@shared/schema";
 
 interface AddInventoryProps {
@@ -17,30 +20,47 @@ interface AddInventoryProps {
 export default function AddInventory({ isbn }: AddInventoryProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { getSuggestions, addLocation } = useLocationAutocomplete();
+  const [lastCondition, setLastCondition] = useLocalStorage("last-condition", "");
+  const [lastFormat, setLastFormat] = useLocalStorage("last-format", "Other");
   
   const [purchasePrice, setPurchasePrice] = useState("");
-  const [estimatedPrice, setEstimatedPrice] = useState("");
-  const [condition, setCondition] = useState("");
-  const [format, setFormat] = useState("Other");
+  const [condition, setCondition] = useState(lastCondition);
+  const [format, setFormat] = useState(lastFormat);
   const [location, setLocationField] = useState("");
+  const [notes, setNotes] = useState("");
   const [classification, setClassification] = useState("COGS");
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  const locationInputRef = useRef<HTMLInputElement>(null);
   
-  const { data: bookData } = useQuery<{
-    title: string;
-    author: string;
-    publisher?: string;
-    year?: string;
-    imageUrl?: string;
-    estimatedPrice?: number;
-  }>({
+  const { data: bookData } = useQuery({
     queryKey: [`/api/book-lookup/${isbn}`],
-    onSuccess: (data) => {
-      if (data?.estimatedPrice && !estimatedPrice) {
-        setEstimatedPrice(data.estimatedPrice.toString());
-      }
-    }
   });
+
+  // Handle location autocomplete
+  useEffect(() => {
+    const suggestions = getSuggestions(location);
+    setLocationSuggestions(suggestions);
+  }, [location, getSuggestions]);
+
+  const handleLocationFocus = () => {
+    setShowLocationSuggestions(true);
+    const suggestions = getSuggestions(location);
+    setLocationSuggestions(suggestions);
+  };
+
+  const handleLocationBlur = () => {
+    // Delay hiding to allow clicking on suggestions
+    setTimeout(() => setShowLocationSuggestions(false), 200);
+  };
+
+  const selectLocationSuggestion = (suggestion: string) => {
+    setLocationField(suggestion);
+    setShowLocationSuggestions(false);
+    locationInputRef.current?.focus();
+  };
 
   const addToInventoryMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -84,15 +104,22 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       return;
     }
 
+    // Save last-used values for next session
+    setLastCondition(condition);
+    setLastFormat(format);
+    if (location.trim()) {
+      addLocation(location.trim());
+    }
+
     const inventoryData = {
       isbn,
-      title: bookData?.title || "Unknown Title",
-      author: bookData?.author || "Unknown Author",
-      publisher: bookData?.publisher || null,
-      year: bookData?.year || null,
-      imageUrl: bookData?.imageUrl || null,
+      title: (bookData as any)?.title || "Unknown Title",
+      author: (bookData as any)?.author || "Unknown Author",
+      publisher: (bookData as any)?.publisher || null,
+      year: (bookData as any)?.year || null,
+      imageUrl: (bookData as any)?.imageUrl || null,
       purchasePrice: purchasePrice.toString(),
-      estimatedPrice: estimatedPrice ? estimatedPrice.toString() : null,
+      estimatedPrice: null, // Will be populated by eBay API
       condition,
       format,
       location: location || null,
@@ -142,9 +169,9 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
         <div className="bg-slate-50 rounded-xl p-4">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-16 bg-slate-300 rounded flex items-center justify-center">
-              {bookData?.imageUrl ? (
+              {(bookData as any)?.imageUrl ? (
                 <img 
-                  src={bookData.imageUrl} 
+                  src={(bookData as any).imageUrl} 
                   alt="Book cover" 
                   className="w-12 h-16 object-cover rounded"
                 />
@@ -154,10 +181,10 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-slate-900 truncate">
-                {bookData?.title || "Loading..."}
+                {(bookData as any)?.title || "Loading..."}
               </h3>
               <p className="text-sm text-slate-600 truncate">
-                {bookData?.author || "Loading..."}
+                {(bookData as any)?.author || "Loading..."}
               </p>
             </div>
           </div>
@@ -200,28 +227,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             />
           </div>
 
-          {/* Estimated Selling Price */}
-          <div className="space-y-2">
-            <Label htmlFor="estimated-price" className="text-sm font-medium text-slate-700">
-              Estimated Market Value (Optional)
-            </Label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">$</span>
-              <Input
-                id="estimated-price"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Auto-calculated from APIs"
-                value={estimatedPrice}
-                onChange={(e) => setEstimatedPrice(e.target.value)}
-                className="pl-8 text-lg"
-              />
-            </div>
-            <p className="text-xs text-slate-500">
-              Leave blank to auto-estimate from market data
-            </p>
-          </div>
+
 
           {/* Condition */}
           <div className="space-y-2">
@@ -259,6 +265,25 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
                 <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Notes */}
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-sm font-medium text-slate-700">
+              Notes
+            </Label>
+            <Textarea
+              id="notes"
+              placeholder="Condition details, inscriptions, damage notes, etc."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              maxLength={500}
+              className="text-lg min-h-[80px]"
+              rows={3}
+            />
+            <p className="text-xs text-slate-500">
+              {notes.length}/500 characters
+            </p>
           </div>
 
           {/* Location */}
