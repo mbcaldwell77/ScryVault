@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw } from "lucide-react";
+import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw, Edit, Trash2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,11 +7,15 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
+import EditBookDialog from "@/components/edit-book-dialog";
+import DeleteBookDialog from "@/components/delete-book-dialog";
 
 export default function Inventory() {
   const [, setLocation] = useLocation();
   const [expandedISBNs, setExpandedISBNs] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingBook, setEditingBook] = useState<any>(null);
+  const [deletingBook, setDeletingBook] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -412,9 +416,33 @@ export default function Inventory() {
                                 </span>
                               )}
                             </div>
-                            <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
-                              {mainBook.condition}
-                            </span>
+                            <div className="flex items-center space-x-1">
+                              <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
+                                {mainBook.condition}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingBook(mainBook);
+                                }}
+                                className="h-6 w-6 p-0 hover:bg-blue-100"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeletingBook(mainBook);
+                                }}
+                                className="h-6 w-6 p-0 hover:bg-red-100 text-red-600"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
                           </div>
                           <p className="text-xs text-slate-600">
                             {mainBook.location || "Unknown location"} • {mainBook.type}
@@ -467,7 +495,25 @@ export default function Inventory() {
                             <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">
                               {book.condition}
                             </span>
-                            <span className="text-xs text-slate-600">{book.type}</span>
+                            <div className="flex items-center space-x-1">
+                              <span className="text-xs text-slate-600">{book.type}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setEditingBook(book)}
+                                className="h-6 w-6 p-0 hover:bg-blue-100"
+                              >
+                                <Edit className="w-3 h-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setDeletingBook(book)}
+                                className="h-6 w-6 p-0 hover:bg-red-100 text-red-600"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
                           </div>
                           <p className="text-xs text-slate-600 mb-1">
                             {book.location || "Unknown location"}
@@ -485,6 +531,19 @@ export default function Inventory() {
           })}
         </div>
       </div>
+
+      {/* Edit and Delete Dialogs */}
+      <EditBookDialog
+        book={editingBook}
+        isOpen={!!editingBook}
+        onClose={() => setEditingBook(null)}
+      />
+      
+      <DeleteBookDialog
+        book={deletingBook}
+        isOpen={!!deletingBook}
+        onClose={() => setDeletingBook(null)}
+      />
     </div>
   );
 }

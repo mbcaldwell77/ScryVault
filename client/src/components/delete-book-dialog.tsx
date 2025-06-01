@@ -16,9 +16,13 @@ export default function DeleteBookDialog({ book, isOpen, onClose }: DeleteBookDi
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest(`/api/books/${book.id}`, {
+      const response = await fetch(`/api/books/${book.id}`, {
         method: 'DELETE'
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete book');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
