@@ -414,8 +414,8 @@ export default function Inventory() {
                       </div>
                       
                       {copyCount === 1 ? (
-                        <div className="space-y-1 mt-2">
-                          <div className="flex items-center justify-between">
+                        <div className="space-y-3 mt-2">
+                          <div className="flex items-start justify-between">
                             <div className="flex flex-col">
                               <span className="text-green-600 font-bold">
                                 ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
@@ -431,41 +431,41 @@ export default function Inventory() {
                                 </span>
                               )}
                             </div>
-                            <div className="flex flex-col items-end space-y-2">
-                              <span className="bg-slate-100 px-3 py-2 rounded-md text-sm font-medium">
-                                {mainBook.condition}
-                              </span>
-                              <div className="flex items-center space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingBook(mainBook);
-                                  }}
-                                  className="h-8 px-3 text-xs hover:bg-blue-50"
-                                >
-                                  <Edit className="w-4 h-4 mr-1" />
-                                  Edit
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setDeletingBook(mainBook);
-                                  }}
-                                  className="h-8 px-3 text-xs hover:bg-red-50 text-red-600 border-red-200"
-                                >
-                                  <Trash2 className="w-4 h-4 mr-1" />
-                                  Delete
-                                </Button>
-                              </div>
+                            <span className="bg-slate-100 px-3 py-2 rounded-md text-sm font-medium">
+                              {mainBook.condition}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-slate-500">
+                              SKU: {mainBook.sku}
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingBook(mainBook);
+                                }}
+                                className="h-8 px-3 text-xs hover:bg-blue-50"
+                              >
+                                <Edit className="w-4 h-4 mr-1" />
+                                Edit
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setDeletingBook(mainBook);
+                                }}
+                                className="h-8 px-3 text-xs hover:bg-red-50 text-red-600 border-red-200"
+                              >
+                                <Trash2 className="w-4 h-4 mr-1" />
+                                Delete
+                              </Button>
                             </div>
                           </div>
-                          <p className="text-xs text-slate-500">
-                            SKU: {mainBook.sku}
-                          </p>
                         </div>
                       ) : (
                         <div className="text-xs text-slate-600 mt-2">
