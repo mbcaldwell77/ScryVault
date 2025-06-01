@@ -17,7 +17,7 @@ interface EditBookDialogProps {
 export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialogProps) {
   const [formData, setFormData] = useState({
     format: book?.format || 'Other',
-    purchasePrice: book?.purchasePrice || '',
+    purchasePrice: book?.purchasePrice ?? '', // Use nullish coalescing to preserve 0 values
     purchaseDate: book?.purchaseDate ? new Date(book.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     location: book?.location || '',
     condition: book?.condition || 'Good',

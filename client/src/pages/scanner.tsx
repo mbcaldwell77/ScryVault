@@ -4,13 +4,16 @@ import { ArrowLeft, Keyboard, Zap } from "lucide-react";
 import { useLocation } from "wouter";
 import CameraScanner from "@/components/camera-scanner";
 import ManualInputModal from "@/components/manual-input-modal";
+import { useRecentISBNs } from "@/lib/storage";
 
 export default function Scanner() {
   const [, setLocation] = useLocation();
   const [showManualInput, setShowManualInput] = useState(false);
   const [flashEnabled, setFlashEnabled] = useState(false);
+  const { addRecentISBN } = useRecentISBNs();
 
   const handleBarcodeDetected = (isbn: string) => {
+    addRecentISBN(isbn); // Track scanned ISBNs
     setLocation(`/book-details/${isbn}`);
   };
 
