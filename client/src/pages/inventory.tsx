@@ -408,7 +408,7 @@ export default function Inventory() {
                         </p>
                         {mainBook.publisher && (
                           <p className="text-xs text-slate-600">
-                            {mainBook.publisher}
+                            {mainBook.publisher} • {mainBook.year || "Unknown"}
                           </p>
                         )}
                       </div>
@@ -460,7 +460,7 @@ export default function Inventory() {
                             </div>
                           </div>
                           <p className="text-xs text-slate-500">
-                            {mainBook.year || "Unknown"} • SKU: {mainBook.sku}
+                            SKU: {mainBook.sku}
                           </p>
                         </div>
                       ) : (
