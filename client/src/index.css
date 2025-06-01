@@ -8,61 +8,79 @@
 }
 
 :root {
-  /* Scrying Theme - Mystical Deep Blues and Purples */
-  --background: 225 15% 97%; /* #F5F6FA - Very light blue-gray */
-  --foreground: 230 25% 15%; /* #1E2139 - Deep blue-gray */
-  --muted: 240 20% 92%; /* #E8E9F3 - Light indigo-gray */
-  --muted-foreground: 230 15% 45%; /* #6B7280 - Medium gray */
-  --popover: 0 0% 100%;
-  --popover-foreground: 230 25% 15%;
+  /* ScryVault Premium Theme - Emerald & Gold */
+  --background: 210 11% 98%; /* #F8F9FA - Light gray page background */
+  --foreground: 210 12% 23%; /* #36454F - Charcoal text */
+  --muted: 210 11% 90%; /* #E5E4E2 - Platinum silver */
+  --muted-foreground: 210 9% 46%; /* #6C757D - Medium gray */
+  --popover: 0 0% 100%; /* #FFFFFF - Pure white */
+  --popover-foreground: 210 12% 23%;
   --card: 0 0% 100%; /* #FFFFFF - Pure white cards */
-  --card-foreground: 230 25% 15%;
-  --border: 240 15% 88%; /* #E2E4E9 - Subtle border */
-  --input: 240 15% 88%;
-  --primary: 250 75% 60%; /* #6366F1 - Mystical indigo */
+  --card-foreground: 210 12% 23%;
+  --border: 210 11% 90%; /* #E5E4E2 - Platinum silver borders */
+  --input: 210 11% 90%;
+  --primary: 145 41% 20%; /* #284139 - Deep emerald */
   --primary-foreground: 0 0% 100%;
-  --secondary: 280 65% 85%; /* #E0C3FC - Light mystical purple */
-  --secondary-foreground: 230 25% 15%;
-  --accent: 280 65% 85%; /* #E0C3FC - Light mystical purple */
-  --accent-foreground: 230 25% 15%;
-  --destructive: 0 75% 60%; /* #EF4444 - Error red */
+  --secondary: 60 30% 31%; /* #556B2F - Forest green */
+  --secondary-foreground: 0 0% 100%;
+  --accent: 51 78% 54%; /* #D4AF37 - Antique gold */
+  --accent-foreground: 210 12% 23%;
+  --destructive: 0 79% 63%; /* #FF6B6B - Muted coral */
   --destructive-foreground: 0 0% 100%;
-  --ring: 250 75% 60%; /* Focus ring matches primary */
-  --radius: 0.75rem; /* Slightly more rounded */
+  --ring: 145 41% 20%; /* Focus ring matches primary */
+  --radius: 0.5rem; /* 8px for modern feel */
   
-  /* Custom scrying theme variables */
-  --scrying-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --mystical-glow: 0 0 20px rgba(99, 102, 241, 0.3);
-  --oracle-shadow: 0 4px 20px rgba(118, 75, 162, 0.15);
+  /* Custom emerald theme variables */
+  --emerald-primary: #284139;
+  --forest-secondary: #556B2F;
+  --sage-accent: #808F57;
+  --platinum-silver: #E5E4E2;
+  --antique-gold: #D4AF37;
+  --charcoal-text: #36454F;
+  
+  /* Premium gradients and effects */
+  --premium-gradient: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+  --emerald-glow: 0 0 20px rgba(40, 65, 57, 0.15);
+  --card-shadow: 0 2px 8px rgba(40, 65, 57, 0.08);
+  --hover-shadow: 0 4px 12px rgba(40, 65, 57, 0.12);
 }
 
 .dark {
-  /* Dark scrying theme - Deep mystical colors */
-  --background: 230 25% 8%; /* #0F1419 - Very dark blue */
-  --foreground: 225 15% 95%; /* #F1F2F6 - Light text */
-  --muted: 230 20% 18%; /* #252A3A - Dark secondary */
-  --muted-foreground: 230 10% 65%; /* #9CA3AF - Light gray */
-  --popover: 230 20% 12%; /* #1A1D29 - Dark popover */
-  --popover-foreground: 225 15% 95%;
-  --card: 230 20% 12%; /* #1A1D29 - Dark cards */
-  --card-foreground: 225 15% 95%;
-  --border: 230 15% 20%; /* #2D3748 - Dark border */
-  --input: 230 15% 20%;
-  --primary: 250 75% 65%; /* #7C3AED - Bright mystical purple */
+  /* Dark emerald theme - Premium dark mode */
+  --background: 145 25% 8%; /* #0F1B17 - Very dark emerald */
+  --foreground: 0 0% 95%; /* #F2F2F2 - Light text */
+  --muted: 145 20% 15%; /* #1E3329 - Dark emerald secondary */
+  --muted-foreground: 210 5% 65%; /* #9CA3AF - Light gray */
+  --popover: 145 25% 10%; /* #14241A - Dark emerald popover */
+  --popover-foreground: 0 0% 95%;
+  --card: 145 25% 10%; /* #14241A - Dark emerald cards */
+  --card-foreground: 0 0% 95%;
+  --border: 145 15% 20%; /* #2D4A3D - Dark emerald border */
+  --input: 145 15% 20%;
+  --primary: 145 41% 35%; /* #4A735E - Lighter emerald for dark mode */
   --primary-foreground: 0 0% 100%;
-  --secondary: 280 65% 25%; /* #4C1D95 - Dark mystical purple */
-  --secondary-foreground: 225 15% 95%;
-  --accent: 280 65% 25%; /* #4C1D95 - Dark mystical purple */
-  --accent-foreground: 225 15% 95%;
-  --destructive: 0 75% 55%; /* #DC2626 - Dark error red */
+  --secondary: 60 30% 45%; /* #7A9147 - Lighter forest green */
+  --secondary-foreground: 0 0% 100%;
+  --accent: 51 78% 65%; /* #E6C547 - Brighter gold for dark mode */
+  --accent-foreground: 145 25% 8%;
+  --destructive: 0 79% 70%; /* #FF8A8A - Lighter coral for dark mode */
   --destructive-foreground: 0 0% 100%;
-  --ring: 250 75% 65%;
-  --radius: 0.75rem;
+  --ring: 145 41% 35%;
+  --radius: 0.5rem;
   
-  /* Dark theme custom variables */
-  --scrying-gradient: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
-  --mystical-glow: 0 0 25px rgba(124, 58, 237, 0.4);
-  --oracle-shadow: 0 6px 25px rgba(59, 130, 246, 0.2);
+  /* Dark theme emerald variables */
+  --emerald-primary: #4A735E;
+  --forest-secondary: #7A9147;
+  --sage-accent: #A0B970;
+  --platinum-silver: #3D4F44;
+  --antique-gold: #E6C547;
+  --charcoal-text: #F2F2F2;
+  
+  /* Dark theme effects */
+  --premium-gradient: linear-gradient(135deg, #14241A 0%, #0F1B17 100%);
+  --emerald-glow: 0 0 20px rgba(74, 115, 94, 0.25);
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 @layer base {
@@ -108,65 +126,123 @@
   }
 }
 
-/* Mystical animations and effects */
-@keyframes mystical-pulse {
+/* Premium emerald animations and effects */
+@keyframes emerald-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.02); }
+  50% { opacity: 0.9; transform: scale(1.02); }
 }
 
-@keyframes scrying-glow {
-  0%, 100% { box-shadow: var(--mystical-glow); }
-  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
-}
-
-@keyframes oracle-fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes crystal-shimmer {
+@keyframes gold-shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-.mystical-pulse {
-  animation: mystical-pulse 3s ease-in-out infinite;
+@keyframes premium-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.scrying-glow {
-  animation: scrying-glow 2s ease-in-out infinite;
+@keyframes emerald-glow {
+  0%, 100% { box-shadow: var(--card-shadow); }
+  50% { box-shadow: var(--hover-shadow); }
 }
 
-.oracle-fade-in {
-  animation: oracle-fade-in 0.5s ease-out;
+.emerald-pulse {
+  animation: emerald-pulse 3s ease-in-out infinite;
 }
 
-.crystal-shimmer {
+.premium-fade-in {
+  animation: premium-fade-in 0.5s ease-out;
+}
+
+.gold-shimmer {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.2),
+    rgba(212, 175, 55, 0.15),
     transparent
   );
   background-size: 200% 100%;
-  animation: crystal-shimmer 2s infinite;
+  animation: gold-shimmer 2s infinite;
 }
 
-/* Enhanced scanner styles with mystical theme */
+.emerald-glow {
+  animation: emerald-glow 2s ease-in-out infinite;
+}
+
+/* Premium card styles */
+.premium-card {
+  background: var(--premium-gradient);
+  border: 1px solid hsl(var(--border));
+  box-shadow: var(--card-shadow);
+  transition: all 0.2s ease;
+}
+
+.premium-card:hover {
+  box-shadow: var(--hover-shadow);
+  transform: scale(1.01);
+}
+
+.emerald-button {
+  background: var(--emerald-primary);
+  color: white;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.emerald-button:hover {
+  background: var(--forest-secondary);
+  box-shadow: var(--emerald-glow);
+}
+
+.gold-accent {
+  color: var(--antique-gold);
+  font-weight: 600;
+}
+
+.sage-text {
+  color: var(--sage-accent);
+  font-weight: 500;
+}
+
+/* Enhanced scanner styles with emerald theme */
 .scanner-overlay {
   background: linear-gradient(
     to bottom,
-    rgba(15, 20, 25, 0.8) 0%,
+    rgba(40, 65, 57, 0.9) 0%,
     transparent 20%,
     transparent 80%,
-    rgba(15, 20, 25, 0.8) 100%
+    rgba(40, 65, 57, 0.9) 100%
   );
 }
 
 .scanner-frame {
-  border: 2px solid hsl(var(--primary));
-  border-radius: 12px;
+  border: 2px solid var(--antique-gold);
+  border-radius: 8px;
   box-shadow: 
-    0 0 0 2px hsla(var(--primary), 0.3),
-    var(--mystical-glow);
+    0 0 0 2px rgba(212, 175, 55, 0.3),
+    var(--emerald-glow);
+}
+
+/* Premium typography styles */
+.premium-heading {
+  color: var(--emerald-primary);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.premium-subheading {
+  color: var(--charcoal-text);
+  font-weight: 600;
+}
+
+.premium-body {
+  color: var(--charcoal-text);
+  font-weight: 400;
+}
+
+.premium-caption {
+  color: var(--sage-accent);
+  font-weight: 500;
+  font-size: 0.875rem;
 }

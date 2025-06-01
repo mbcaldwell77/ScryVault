@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Camera, List, BarChart3 } from "lucide-react";
+import { Camera, Package, Eye, Sparkles, TrendingUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
@@ -11,62 +11,120 @@ export default function Home() {
   });
 
   const totalBooks = books.length;
-  const totalValue = books.reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
+  const totalInvestment = books.reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
+  const totalEstimatedValue = books.reduce((sum: number, book: any) => sum + parseFloat(book.estimatedPrice || book.purchasePrice || 0), 0);
+  const potentialProfit = totalEstimatedValue - totalInvestment;
+  const profitMargin = totalInvestment > 0 ? (potentialProfit / totalInvestment) * 100 : 0;
 
   return (
-    <div className="flex-1 flex flex-col pb-24 min-h-screen">
-      {/* Header */}
-      <div className="bg-primary text-white p-4 shadow-sm">
-        <h1 className="text-xl font-semibold">ScryVault</h1>
-        <p className="text-blue-100 text-sm">ISBN Scanner for Book Resellers</p>
+    <div className="flex-1 flex flex-col pb-24 min-h-screen bg-background">
+      {/* Premium Header with Emerald Gradient */}
+      <div className="relative overflow-hidden">
+        <div 
+          className="bg-gradient-to-br from-primary via-secondary to-primary text-primary-foreground p-6 pb-8"
+          style={{ background: 'linear-gradient(135deg, var(--emerald-primary) 0%, var(--forest-secondary) 50%, var(--emerald-primary) 100%)' }}
+        >
+          {/* Gold shimmer overlay */}
+          <div className="absolute inset-0 gold-shimmer opacity-20"></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-2">
+              <Eye className="w-8 h-8 emerald-pulse" />
+              <h1 className="text-3xl font-bold tracking-wide premium-heading text-white">ScryVault</h1>
+              <Sparkles className="w-6 h-6 text-accent" />
+            </div>
+            <p className="text-white/90 text-lg font-medium">Professional Inventory Oracle</p>
+          </div>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-8">
-        <div className="text-center space-y-4">
-          <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-            <BarChart3 className="w-10 h-10 text-primary" />
+      {/* Premium Dashboard Cards */}
+      <div className="p-6 space-y-6">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="premium-card rounded-lg p-4 premium-fade-in">
+            <div className="text-3xl font-bold premium-heading">{totalBooks}</div>
+            <div className="premium-caption">Tomes Collected</div>
+            <Package className="w-5 h-5 text-muted-foreground mt-2" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900">Start Scanning</h2>
-          <p className="text-slate-600 text-center max-w-sm">
-            Scan ISBN barcodes to quickly add books to your inventory and track your purchases.
-          </p>
+          <div className="premium-card rounded-lg p-4 premium-fade-in">
+            <div className="text-3xl font-bold gold-accent">${totalInvestment.toFixed(2)}</div>
+            <div className="premium-caption">Investment</div>
+            <TrendingUp className="w-5 h-5 text-accent mt-2" />
+          </div>
         </div>
 
-        <div className="space-y-4 w-full max-w-sm">
+        {/* Profit Overview Card */}
+        {totalBooks > 0 && (
+          <div className="premium-card rounded-lg p-6 premium-fade-in">
+            <h3 className="premium-subheading text-lg mb-4">Portfolio Overview</h3>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-xl font-bold premium-body">${totalInvestment.toFixed(2)}</div>
+                <div className="premium-caption text-xs">Invested</div>
+              </div>
+              <div>
+                <div className="text-xl font-bold gold-accent">${totalEstimatedValue.toFixed(2)}</div>
+                <div className="premium-caption text-xs">Est. Value</div>
+              </div>
+              <div>
+                <div className={`text-xl font-bold ${potentialProfit >= 0 ? 'text-secondary' : 'text-destructive'}`}>
+                  ${potentialProfit.toFixed(2)}
+                </div>
+                <div className="premium-caption text-xs">{profitMargin.toFixed(1)}% Profit</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="space-y-4">
           <Button 
             onClick={() => setLocation("/scanner")} 
-            className="w-full bg-primary text-white py-4 px-6 rounded-xl font-semibold text-lg shadow-lg hover:bg-blue-700 transition-colors"
+            className="w-full h-16 text-lg emerald-button rounded-lg font-semibold shadow-lg"
             size="lg"
           >
-            <Camera className="w-6 h-6 mr-2" />
-            Scan Book
+            <Eye className="w-6 h-6 mr-3" />
+            <div className="text-left">
+              <div>Scry New Tome</div>
+              <div className="text-sm opacity-90 font-normal">Reveal hidden knowledge</div>
+            </div>
           </Button>
           
           <Button 
             onClick={() => setLocation("/inventory")} 
             variant="outline"
-            className="w-full border-2 border-slate-200 text-slate-700 py-3 px-6 rounded-xl font-medium hover:bg-slate-50 transition-colors"
+            className="w-full h-16 text-lg border-2 border-border hover:border-primary hover:bg-muted rounded-lg font-semibold"
             size="lg"
           >
-            <List className="w-5 h-5 mr-2" />
-            View Inventory
+            <Package className="w-6 h-6 mr-3 text-primary" />
+            <div className="text-left">
+              <div className="premium-subheading">Collection Archive</div>
+              <div className="premium-caption font-normal">Browse your tomes</div>
+            </div>
           </Button>
         </div>
-      </div>
 
-      {/* Quick Stats */}
-      <div className="p-4 bg-slate-50 border-t">
-        <div className="grid grid-cols-2 gap-4 text-center">
-          <div>
-            <div className="text-2xl font-bold text-slate-900">{totalBooks}</div>
-            <div className="text-sm text-slate-600">Books Scanned</div>
+        {/* Welcome Message for Empty State */}
+        {totalBooks === 0 && (
+          <div className="premium-card rounded-lg p-8 text-center premium-fade-in">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <Eye className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="premium-subheading text-xl mb-2">Welcome to ScryVault</h3>
+            <p className="premium-body mb-6 max-w-sm mx-auto">
+              Begin your mystical journey by scanning your first tome. 
+              The oracle awaits to reveal the hidden value within your collection.
+            </p>
+            <Button 
+              onClick={() => setLocation("/scanner")} 
+              className="emerald-button px-6 py-3 rounded-lg font-semibold"
+            >
+              <Eye className="w-5 h-5 mr-2" />
+              Begin Scrying
+            </Button>
           </div>
-          <div>
-            <div className="text-2xl font-bold text-green-600">${totalValue.toFixed(2)}</div>
-            <div className="text-sm text-slate-600">Total Investment</div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
