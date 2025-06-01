@@ -228,6 +228,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // eBay webhook endpoint for marketplace compliance
+  app.get("/api/ebay/webhook", (req, res) => {
+    res.json({ status: "eBay webhook endpoint is active", timestamp: new Date().toISOString() });
+  });
+
   app.post("/api/ebay/webhook", async (req, res) => {
     try {
       console.log('[eBay Webhook] Received request:', JSON.stringify(req.body, null, 2));
