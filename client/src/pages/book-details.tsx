@@ -84,12 +84,13 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
   return (
     <div className="flex-1 flex flex-col pb-20">
       {/* Header */}
-      <div className="bg-primary text-white p-4 flex items-center space-x-4">
+      <div className="p-4 flex items-center space-x-4" style={{ backgroundColor: 'var(--dark-background)', color: 'var(--text-light)' }}>
         <Button 
           variant="ghost" 
           size="icon"
           onClick={() => setLocation("/scanner")}
-          className="text-white hover:bg-blue-600"
+          className="hover:bg-gray-700"
+          style={{ color: 'var(--text-light)' }}
         >
           <ArrowLeft className="w-6 h-6" />
         </Button>
@@ -140,7 +141,8 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
         <div className="p-6 space-y-3">
           <Button 
             onClick={() => setLocation(`/add-inventory/${isbn}`)}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-xl font-semibold text-lg"
+            className="w-full py-4 px-6 rounded-xl font-semibold text-lg"
+            style={{ backgroundColor: 'var(--emerald-accent)', color: 'var(--pure-white)' }}
             size="lg"
           >
             <Plus className="w-5 h-5 mr-2" />
@@ -150,7 +152,8 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
           <Button 
             onClick={() => setLocation("/scanner")}
             variant="outline"
-            className="w-full border-2 border-slate-200 text-slate-700 py-3 px-6 rounded-xl font-medium"
+            className="w-full py-3 px-6 rounded-xl font-medium"
+            style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-secondary)' }}
             size="lg"
           >
             <X className="w-5 h-5 mr-2" />
