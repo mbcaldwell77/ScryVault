@@ -125,6 +125,8 @@ body {
 /* Dark theme overrides for form components */
 [data-radix-select-trigger],
 [data-radix-select-content],
+[data-radix-select-viewport],
+[data-radix-select-item],
 .select-trigger,
 .select-content {
   background-color: var(--dark-card) !important;
@@ -134,14 +136,29 @@ body {
 
 [data-radix-select-item],
 .select-item {
-  background-color: var(--dark-card) !important;
+  background-color: transparent !important;
   color: var(--text-light) !important;
 }
 
 [data-radix-select-item][data-highlighted],
+[data-radix-select-item]:hover,
 .select-item:hover {
   background-color: var(--dark-surface) !important;
   color: var(--text-light) !important;
+}
+
+/* Force all select dropdowns to be dark */
+[role="listbox"],
+[role="option"] {
+  background-color: var(--dark-card) !important;
+  color: var(--text-light) !important;
+}
+
+/* Radix UI Select specific overrides */
+.radix-select-content,
+[data-radix-popper-content-wrapper] {
+  background-color: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
 }
 
 /* Input and textarea dark styling */

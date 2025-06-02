@@ -244,7 +244,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
             <Button type="button" variant="outline" onClick={onClose} className="flex-1" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-secondary)' }}>
               Cancel
             </Button>
-            <Button type="submit" disabled={updateMutation.isPending} className="flex-1" style={{ backgroundColor: 'var(--emerald-accent)', color: 'var(--pure-white)' }}>
+            <Button type="submit" disabled={updateMutation.isPending} className="flex-1 border-2" style={{ backgroundColor: 'var(--emerald-accent)', borderColor: 'var(--emerald-accent)', color: 'var(--pure-white)', fontWeight: '600' }}>
               {updateMutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </div>
