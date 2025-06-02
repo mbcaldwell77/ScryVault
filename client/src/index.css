@@ -122,6 +122,39 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Dark theme overrides for form components */
+[data-radix-select-trigger],
+[data-radix-select-content],
+.select-trigger,
+.select-content {
+  background-color: var(--dark-card) !important;
+  border-color: var(--dark-border) !important;
+  color: var(--text-light) !important;
+}
+
+[data-radix-select-item],
+.select-item {
+  background-color: var(--dark-card) !important;
+  color: var(--text-light) !important;
+}
+
+[data-radix-select-item][data-highlighted],
+.select-item:hover {
+  background-color: var(--dark-surface) !important;
+  color: var(--text-light) !important;
+}
+
+/* Input and textarea dark styling */
+input, textarea, select {
+  background-color: var(--dark-card) !important;
+  border-color: var(--dark-border) !important;
+  color: var(--text-light) !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--text-secondary) !important;
+}
+
 :root {
   /* Clean Professional Theme */
   --background: 0 0% 100%; /* Pure white */
