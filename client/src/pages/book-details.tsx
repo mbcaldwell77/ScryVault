@@ -103,11 +103,11 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
         <div className="p-6" style={{ backgroundColor: 'var(--dark-card)' }}>
           <div className="flex space-x-4">
             <img 
-              src={bookData.imageUrl || "/placeholder-book.svg"}
+              src={bookData.imageUrl || "/placeholder-book-dark.svg"}
               alt="Book cover"
               className="w-24 h-36 object-cover rounded-lg shadow-md flex-shrink-0"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = "/placeholder-book.svg";
+                (e.target as HTMLImageElement).src = "/placeholder-book-dark.svg";
               }}
             />
             <div className="flex-1 space-y-2">
