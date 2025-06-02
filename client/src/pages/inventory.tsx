@@ -316,7 +316,11 @@ export default function Inventory() {
             >
               <Download className="w-5 h-5" />
             </Button>
-            <span style={{ backgroundColor: 'var(--gold-accent)' }} className="text-black px-3 py-1 rounded-full text-sm font-medium">
+            <span 
+              style={{ backgroundColor: 'var(--gold-accent)' }} 
+              className="text-black px-3 py-1 rounded-full text-sm font-medium"
+              title={`Total books in inventory: ${totalBooks}`}
+            >
               {totalBooks}
             </span>
           </div>

@@ -142,7 +142,7 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
           <Button 
             onClick={() => setLocation(`/add-inventory/${isbn}`)}
             className="w-full py-4 px-6 rounded-xl font-semibold text-lg border-2"
-            style={{ backgroundColor: 'var(--emerald-accent)', borderColor: 'var(--emerald-accent)', color: 'var(--pure-white)' }}
+            style={{ backgroundColor: '#10B981', borderColor: '#10B981', color: '#FFFFFF', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)', fontWeight: '700' }}
             size="lg"
             title="Add this book to your inventory"
           >
