@@ -5,6 +5,34 @@ import { insertBookSchema } from "@shared/schema";
 import { z } from "zod";
 import { EbayPricingService, type PricingServiceConfig } from "./pricing-service";
 
+// ISBN normalization functions
+function convertISBN10to13(isbn10: string): string {
+  const cleanISBN = isbn10.replace(/[-\s]/g, '');
+  if (cleanISBN.length !== 10) return isbn10;
+  
+  const prefix = '978' + cleanISBN.substr(0, 9);
+  let checksum = 0;
+  
+  for (let i = 0; i < 12; i++) {
+    checksum += parseInt(prefix[i]) * (i % 2 === 0 ? 1 : 3);
+  }
+  
+  const checkDigit = (10 - (checksum % 10)) % 10;
+  return prefix + checkDigit;
+}
+
+function normalizeISBN(isbn: string): string {
+  const cleanISBN = isbn.replace(/[-\s]/g, '');
+  
+  if (cleanISBN.length === 10) {
+    return convertISBN10to13(cleanISBN);
+  } else if (cleanISBN.length === 13) {
+    return cleanISBN;
+  }
+  
+  return isbn;
+}
+
 // Initialize eBay pricing service
 let pricingService: EbayPricingService | null = null;
 
@@ -246,10 +274,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('[eBay Webhook] Verification challenge received:', challengeCode);
         console.log('[eBay Webhook] Verification token received:', verificationToken);
         
-        const expectedToken = 'scryvaul_webhook_verification_2025';
+        const expectedToken = 'scryvaul_webhook_verification_token_2025_secure';
         if (verificationToken === expectedToken) {
           console.log('[eBay Webhook] Token verified successfully');
-          return res.status(200).json({ challengeResponse: challengeCode });
+          return res.status(200).type('text/plain').send(challengeCode);
         } else {
           console.error('[eBay Webhook] Token mismatch. Expected:', expectedToken, 'Received:', verificationToken);
           return res.status(401).json({ error: 'Invalid verification token' });

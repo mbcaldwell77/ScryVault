@@ -170,27 +170,27 @@ export default function Inventory() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col pb-20">
+      <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div className="bg-primary text-white p-4 flex items-center justify-between">
+        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
               size="icon"
               onClick={() => setLocation("/")}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
             >
               <ArrowLeft className="w-6 h-6" />
             </Button>
             <h1 className="text-xl font-semibold">Inventory</h1>
           </div>
-          <Skeleton className="h-6 w-8 bg-blue-400" />
+          <Skeleton className="h-6 w-8" style={{ backgroundColor: 'var(--dark-surface)' }} />
         </div>
 
         {/* Loading Skeletons */}
         <div className="p-4 space-y-3">
           {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-24 w-full" />
+            <Skeleton key={i} className="h-24 w-full" style={{ backgroundColor: 'var(--dark-card)' }} />
           ))}
         </div>
       </div>
@@ -199,36 +199,37 @@ export default function Inventory() {
 
   if (totalBooks === 0) {
     return (
-      <div className="flex-1 flex flex-col pb-20">
+      <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div className="bg-primary text-white p-4 flex items-center justify-between">
+        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
               size="icon"
               onClick={() => setLocation("/")}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
             >
               <ArrowLeft className="w-6 h-6" />
             </Button>
             <h1 className="text-xl font-semibold">Inventory</h1>
           </div>
-          <span className="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium">0</span>
+          <span style={{ backgroundColor: 'var(--gold-accent)' }} className="text-black px-3 py-1 rounded-full text-sm font-medium">0</span>
         </div>
 
         {/* Empty State */}
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
-              <Package className="w-8 h-8 text-slate-400" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ backgroundColor: 'var(--dark-card)' }}>
+              <Package className="w-8 h-8" style={{ color: 'var(--gold-accent)' }} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">No books yet</h3>
-              <p className="text-slate-600 text-sm">Start scanning to build your inventory</p>
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-light)' }}>No books yet</h3>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Start scanning to build your inventory</p>
             </div>
             <Button 
               onClick={() => setLocation("/scanner")} 
-              className="bg-primary text-white"
+              style={{ backgroundColor: 'var(--emerald-primary)' }}
+              className="text-white hover:opacity-90"
             >
               <Camera className="w-4 h-4 mr-2" />
               Scan First Book
@@ -242,6 +243,7 @@ export default function Inventory() {
   return (
     <div 
       className="flex-1 flex flex-col pb-24 min-h-screen relative"
+      style={{ backgroundColor: 'var(--pure-white)' }}
       onTouchStart={pullToRefresh.onTouchStart}
       onTouchMove={pullToRefresh.onTouchMove}
       onTouchEnd={pullToRefresh.onTouchEnd}
@@ -249,8 +251,9 @@ export default function Inventory() {
       {/* Pull to refresh indicator */}
       {pullToRefresh.isPulling && (
         <div 
-          className="fixed top-0 left-0 right-0 z-40 bg-primary/90 text-primary-foreground text-center py-2 transition-transform duration-200"
+          className="fixed top-0 left-0 right-0 z-40 text-white text-center py-2 transition-transform duration-200"
           style={{
+            backgroundColor: 'var(--emerald-primary)',
             transform: `translateY(${Math.min(pullToRefresh.pullDistance - 60, 0)}px)`
           }}
         >
@@ -265,14 +268,14 @@ export default function Inventory() {
       )}
 
       {/* Header */}
-      <div className="bg-primary text-white p-4">
+      <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
               size="icon"
               onClick={() => setLocation("/")}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
             >
               <ArrowLeft className="w-6 h-6" />
             </Button>
@@ -290,7 +293,7 @@ export default function Inventory() {
               variant="ghost"
               size="icon"
               onClick={() => document.getElementById('import-file')?.click()}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
               title="Import backup"
             >
               <Upload className="w-5 h-5" />
@@ -299,7 +302,7 @@ export default function Inventory() {
               variant="ghost"
               size="icon"
               onClick={exportToJSON}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
               title="Backup data"
             >
               <Package className="w-5 h-5" />
@@ -308,45 +311,47 @@ export default function Inventory() {
               variant="ghost"
               size="icon"
               onClick={exportToCSV}
-              className="text-white hover:bg-blue-600"
-              title="Export CSV"
+              className="text-white hover:bg-white/20"
+              title="Export inventory to CSV file"
             >
               <Download className="w-5 h-5" />
             </Button>
-            <span className="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium">
-              {totalBooks}
-            </span>
           </div>
         </div>
         
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-200" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
           <Input
             placeholder="Search books, authors, ISBN, SKU..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-blue-600 border-blue-500 text-white placeholder-blue-200 focus:bg-blue-500"
+            className="pl-10"
+            style={{ 
+              backgroundColor: 'var(--dark-card)', 
+              border: '1px solid var(--dark-border)', 
+              color: 'var(--text-light)'
+            }}
           />
         </div>
       </div>
 
       {/* Summary Stats */}
-      <div className="p-4 bg-blue-50 border-b">
+      <div className="p-4 border-b" style={{ backgroundColor: 'var(--dark-surface)', borderColor: 'var(--dark-border)' }}>
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-lg font-bold text-slate-900">${totalInvestment.toFixed(2)}</div>
-            <div className="text-xs text-slate-600">Total Investment</div>
+            <div className="text-lg font-bold" style={{ color: 'var(--text-light)' }}>${totalInvestment.toFixed(2)}</div>
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Total Investment</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-green-600">${totalEstimatedValue.toFixed(2)}</div>
-            <div className="text-xs text-slate-600">Est. Value</div>
+            <div className="text-lg font-bold" style={{ color: 'var(--gold-accent)' }}>${totalEstimatedValue.toFixed(2)}</div>
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Est. Value</div>
           </div>
           <div>
-            <div className={`text-lg font-bold ${potentialProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`text-lg font-bold`} style={{ color: potentialProfit >= 0 ? 'var(--gold-accent)' : '#ef4444' }}>
               ${potentialProfit.toFixed(2)}
             </div>
-            <div className="text-xs text-slate-600">
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               Profit ({profitMargin.toFixed(1)}%)
             </div>
           </div>
@@ -362,43 +367,44 @@ export default function Inventory() {
             const isExpanded = expandedISBNs.has(isbn);
             
             return (
-              <div key={isbn} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div key={isbn} className="rounded-xl shadow-sm border overflow-hidden premium-card">
                 {/* Main Book Display */}
                 <div 
-                  className="p-4 cursor-pointer hover:bg-slate-50 transition-colors"
+                  className="p-4 cursor-pointer transition-colors"
+                  style={{ backgroundColor: 'var(--dark-card)' }}
                   onClick={() => toggleISBN(isbn)}
                 >
                   <div className="flex space-x-3">
                     <img 
-                      src={mainBook.imageUrl || "/placeholder-book.svg"}
+                      src={mainBook.imageUrl || "/placeholder-book-dark.svg"}
                       alt={`${mainBook.title} cover`}
                       className="w-12 h-18 object-cover rounded flex-shrink-0"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/placeholder-book.svg";
+                        (e.target as HTMLImageElement).src = "/placeholder-book-dark.svg";
                       }}
                     />
                     <div className="flex-1 space-y-2">
                       {/* Title - Most prominent */}
                       <div className="flex items-start justify-between">
-                        <h3 className="font-bold text-base text-slate-900 leading-tight">
+                        <h3 className="font-bold text-base leading-tight" style={{ color: 'var(--text-light)' }}>
                           {mainBook.title}
                         </h3>
                         <div className="flex items-center space-x-2 ml-2">
                           {copyCount === 1 && (
-                            <span className="bg-slate-100 px-3 py-1 rounded-md text-sm font-medium">
+                            <span className="px-3 py-1 rounded-md text-sm font-medium" style={{ backgroundColor: 'var(--dark-surface)', color: 'var(--text-secondary)' }}>
                               {mainBook.condition}
                             </span>
                           )}
                           {copyCount > 1 && (
-                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                            <span className="px-3 py-1 rounded-md text-sm font-medium" style={{ backgroundColor: 'var(--dark-surface)', color: 'var(--text-secondary)' }}>
                               {copyCount} copies
                             </span>
                           )}
                           {copyCount > 1 && (
                             isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-slate-400" />
+                              <ChevronDown className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
                             ) : (
-                              <ChevronRight className="w-4 h-4 text-slate-400" />
+                              <ChevronRight className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
                             )
                           )}
                         </div>
@@ -406,18 +412,18 @@ export default function Inventory() {
                       
                       {/* Publisher and Format - Secondary info */}
                       {mainBook.publisher && (
-                        <p className="text-sm text-slate-700 font-medium">
+                        <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
                           {mainBook.publisher} • {mainBook.format || "Other"}
                         </p>
                       )}
                       
                       {/* ISBN - Important for identification */}
-                      <p className="text-xs text-slate-600 font-medium">
+                      <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                         ISBN: {mainBook.isbn}
                       </p>
                       
                       {/* Author and Year - Supporting details */}
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                         {mainBook.author} • {mainBook.year || "Unknown"}
                       </p>
                       
@@ -447,7 +453,8 @@ export default function Inventory() {
                                   e.stopPropagation();
                                   setEditingBook(mainBook);
                                 }}
-                                className="h-7 px-2 text-xs hover:bg-blue-50"
+                                className="h-7 px-2 text-xs"
+                                style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-secondary)' }}
                               >
                                 <Edit className="w-3 h-3" />
                               </Button>
@@ -458,18 +465,19 @@ export default function Inventory() {
                                   e.stopPropagation();
                                   setDeletingBook(mainBook);
                                 }}
-                                className="h-7 px-2 text-xs hover:bg-red-50 text-red-600 border-red-200"
+                                className="h-7 px-2 text-xs"
+                                style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: '#ef4444' }}
                               >
                                 <Trash2 className="w-3 h-3" />
                               </Button>
                             </div>
                           </div>
-                          <div className="text-xs text-slate-400 font-mono">
+                          <div className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>
                             SKU: {mainBook.sku}
                           </div>
                         </div>
                       ) : (
-                        <div className="text-xs text-slate-600 mt-2">
+                        <div className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
                           Click to view {copyCount} copies
                         </div>
                       )}
@@ -479,50 +487,50 @@ export default function Inventory() {
                 
                 {/* Expanded Copies */}
                 {isExpanded && copyCount > 1 && (
-                  <div className="border-t border-slate-100 bg-slate-50">
-                    <div className="p-3 space-y-3">
-                      {isbnBooks.map((book: any, index: number) => (
-                        <div key={book.id} className="bg-white rounded-lg p-3 border border-slate-200">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-3">
-                              <span className="text-xs font-medium text-slate-500">Copy {index + 1}</span>
-                              <span className="text-green-600 font-bold text-sm">
-                                ${parseFloat(book.purchasePrice || 0).toFixed(2)}
+                  <div className="border-t p-3 space-y-3" style={{ borderColor: 'var(--dark-border)', backgroundColor: 'var(--dark-surface)' }}>
+                    {isbnBooks.map((book: any, index: number) => (
+                      <div key={book.id} className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)' }}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Copy {index + 1}</span>
+                            <span className="font-bold text-sm" style={{ color: 'var(--gold-accent)' }}>
+                              ${parseFloat(book.purchasePrice || 0).toFixed(2)}
+                            </span>
+                            {book.estimatedPrice && (
+                              <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
                               </span>
-                              {book.estimatedPrice && (
-                                <span className="text-xs text-slate-500">
-                                  Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className="bg-slate-100 px-3 py-1 rounded-md text-sm font-medium">
-                                {book.condition}
-                              </span>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setEditingBook(book)}
-                                className="h-7 px-2 text-xs hover:bg-blue-50"
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setDeletingBook(book)}
-                                className="h-7 px-2 text-xs hover:bg-red-50 text-red-600 border-red-200"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
+                            )}
                           </div>
-                          <div className="text-xs text-slate-400 font-mono">
-                            SKU: {book.sku}
+                          <div className="flex items-center space-x-2">
+                            <span className="px-3 py-1 rounded-md text-sm font-medium" style={{ backgroundColor: 'var(--dark-surface)', color: 'var(--text-secondary)' }}>
+                              {book.condition}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setEditingBook(book)}
+                              className="h-7 px-2 text-xs"
+                              style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-secondary)' }}
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setDeletingBook(book)}
+                              className="h-7 px-2 text-xs"
+                              style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: '#ef4444' }}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        <div className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>
+                          SKU: {book.sku}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

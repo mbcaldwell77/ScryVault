@@ -47,16 +47,16 @@ export default function DeleteBookDialog({ book, isOpen, onClose }: DeleteBookDi
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)' }}>
         <DialogHeader>
-          <DialogTitle>Delete Book</DialogTitle>
-          <DialogDescription>
+          <DialogTitle style={{ color: 'var(--text-light)' }}>Delete Book</DialogTitle>
+          <DialogDescription style={{ color: 'var(--text-secondary)' }}>
             Are you sure you want to delete "{book?.title}"? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         
         <div className="flex gap-2 pt-4">
-          <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+          <Button type="button" variant="outline" onClick={onClose} className="flex-1" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-secondary)' }}>
             Cancel
           </Button>
           <Button 
@@ -65,6 +65,7 @@ export default function DeleteBookDialog({ book, isOpen, onClose }: DeleteBookDi
             onClick={handleDelete}
             disabled={deleteMutation.isPending}
             className="flex-1"
+            style={{ backgroundColor: '#ef4444', color: 'var(--pure-white)' }}
           >
             {deleteMutation.isPending ? "Deleting..." : "Delete"}
           </Button>

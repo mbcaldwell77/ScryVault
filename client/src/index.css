@@ -2,9 +2,222 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dark Theme Base */
+body {
+  background-color: #1a1d1e;
+  color: #e8eaed;
+  min-height: 100vh;
+}
+
+:root {
+  /* ScryVault Premium Dark Theme Color Palette */
+  --emerald-primary: #3a5b4f;
+  --forest-secondary: #6a7f3a;
+  --sage-accent: #9bb068;
+  --platinum-silver: #2a2d2e;
+  --antique-gold: #D4AF37;
+  --charcoal-text: #e8eaed;
+  --pure-white: #1a1d1e;
+  --light-gray: #242729;
+  --medium-gray: #9aa0a6;
+  --muted-coral: #FF6B6B;
+  --dark-surface: #1e2124;
+  --dark-card: #2a2d30;
+  --dark-border: #3c4043;
+}
+
+/* Premium Dark Card Design */
+.premium-card {
+  background: linear-gradient(135deg, var(--dark-card) 0%, var(--dark-surface) 100%);
+  border: 1px solid var(--dark-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.premium-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* Premium Button Styles */
+.btn-primary {
+  background-color: var(--emerald-primary);
+  color: var(--pure-white);
+  border-radius: 6px;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #2d4a3f;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+}
+
+.btn-secondary {
+  background-color: var(--platinum-silver);
+  color: var(--charcoal-text);
+  border-radius: 6px;
+  font-weight: 500;
+  min-height: 44px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-accent {
+  background-color: var(--forest-secondary);
+  color: var(--pure-white);
+  border-radius: 6px;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-accent:hover {
+  background-color: #618335;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+}
+
+/* Premium Typography */
+.text-emerald-primary {
+  color: var(--emerald-primary);
+}
+
+.text-forest-secondary {
+  color: var(--forest-secondary);
+}
+
+.text-sage-accent {
+  color: var(--sage-accent);
+}
+
+.text-charcoal {
+  color: var(--charcoal-text);
+}
+
+.text-antique-gold {
+  color: var(--antique-gold);
+}
+
+/* Data Visualization Colors */
+.profit-positive {
+  color: var(--forest-secondary);
+}
+
+.profit-negative {
+  color: var(--muted-coral);
+}
+
+.value-highlight {
+  color: var(--antique-gold);
+  font-weight: 600;
+}
+
+
+
 /* Safe area support for mobile devices */
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Dark theme overrides for form components */
+[data-radix-select-trigger],
+[data-radix-select-content],
+[data-radix-select-viewport],
+[data-radix-select-item],
+.select-trigger,
+.select-content {
+  background-color: var(--dark-card) !important;
+  border-color: var(--dark-border) !important;
+  color: var(--text-light) !important;
+}
+
+[data-radix-select-item],
+.select-item {
+  background-color: transparent !important;
+  color: var(--text-light) !important;
+}
+
+[data-radix-select-item][data-highlighted],
+[data-radix-select-item]:hover,
+.select-item:hover {
+  background-color: var(--dark-surface) !important;
+  color: var(--text-light) !important;
+}
+
+/* Force all select dropdowns to be dark */
+[role="listbox"],
+[role="option"] {
+  background-color: var(--dark-card) !important;
+  color: var(--text-light) !important;
+}
+
+/* Radix UI Select specific overrides */
+.radix-select-content,
+[data-radix-popper-content-wrapper] {
+  background-color: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
+}
+
+/* Input and textarea dark styling */
+input, textarea, select,
+[data-radix-select-trigger] {
+  background-color: var(--dark-card) !important;
+  border-color: var(--dark-border) !important;
+  color: var(--text-light) !important;
+}
+
+/* Comprehensive placeholder styling for all form fields */
+input::placeholder, 
+textarea::placeholder,
+select::placeholder,
+[data-radix-select-trigger]::placeholder,
+.placeholder\:text-muted-foreground::placeholder {
+  color: #6B7280 !important;
+  opacity: 0.5 !important;
+}
+
+/* Webkit specific placeholder styling */
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #6B7280 !important;
+  opacity: 0.5 !important;
+}
+
+/* Firefox specific placeholder styling */
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #6B7280 !important;
+  opacity: 0.5 !important;
+}
+
+/* Edge specific placeholder styling */
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #6B7280 !important;
+  opacity: 0.5 !important;
+}
+
+/* Force dark styling on all input variants */
+.border-input,
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+textarea,
+select {
+  background-color: var(--dark-card) !important;
+  border: 1px solid var(--dark-border) !important;
+  color: var(--text-light) !important;
+}
+
+/* Date input specific styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
 :root {
@@ -111,4 +324,94 @@
   border: 2px solid hsl(var(--primary));
   border-radius: 8px;
   box-shadow: 0 0 0 2px hsla(var(--primary), 0.3);
+}
+
+/* Calendar dark theme override - comprehensive and final */
+.rdp,
+.rdp-months,
+.rdp-month,
+.rdp-table,
+.rdp-tbody,
+.rdp-head,
+.rdp-row,
+.rdp-cell,
+.rdp-head_cell,
+.rdp-caption,
+.rdp-weekdays {
+  background-color: #1F2937 !important;
+  color: #F3F4F6 !important;
+}
+
+.rdp {
+  border-radius: 8px !important;
+  padding: 16px !important;
+  border: 1px solid #374151 !important;
+}
+
+.rdp-day,
+.rdp-button {
+  background-color: transparent !important;
+  color: #F3F4F6 !important;
+  border-radius: 6px !important;
+}
+
+.rdp-day:hover,
+.rdp-button:hover {
+  background-color: #10B981 !important;
+  color: #FFFFFF !important;
+}
+
+.rdp-day_selected {
+  background-color: #10B981 !important;
+  color: #FFFFFF !important;
+}
+
+.rdp-day_today {
+  color: #10B981 !important;
+  background-color: transparent !important;
+  font-weight: 600 !important;
+}
+
+.rdp-head_cell {
+  color: #9CA3AF !important;
+  background-color: transparent !important;
+}
+
+.rdp-caption_label {
+  color: #F3F4F6 !important;
+  background-color: transparent !important;
+  font-weight: 600 !important;
+}
+
+.rdp-nav_button {
+  background-color: transparent !important;
+  color: #F3F4F6 !important;
+  border: 1px solid #374151 !important;
+}
+
+.rdp-nav_button:hover {
+  background-color: #10B981 !important;
+  color: #FFFFFF !important;
+}
+
+/* Instant tooltips - no delay */
+[title]:hover::after {
+  content: attr(title);
+  position: fixed;
+  z-index: 1000;
+  top: calc(var(--mouse-y, 50%) - 40px);
+  left: calc(var(--mouse-x, 50%) - 50px);
+  transform: translateX(-50%);
+  background: #1F2937;
+  color: #F3F4F6;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid #374151;
+  max-width: 250px;
+  white-space: normal;
+  word-wrap: break-word;
 }

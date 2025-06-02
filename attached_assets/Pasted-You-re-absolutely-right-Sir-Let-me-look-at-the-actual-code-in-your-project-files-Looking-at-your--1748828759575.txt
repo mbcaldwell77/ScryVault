@@ -1,0 +1,83 @@
+You're absolutely right, Sir. Let me look at the actual code in your project files.
+Looking at your server/routes.ts, I see the webhook implementation is returning JSON:
+javascriptreturn res.status(200).json({ challengeResponse: challengeCode });
+Issue #1 - Webhook Fix: eBay's verification expects a plain text response, not JSON. Change line 251 to:
+javascriptreturn res.status(200).type('text/plain').send(challengeCode);
+For the eBay Finding API in server/pricing-service.ts, I see you're missing the GLOBAL-ID parameter and the X-EBAY-SOA-SECURITY-APPNAME header is only in the fetch headers, not the URL params.
+Issue #2 - Finding API Fix: Update lines 105-120 in pricing-service.ts:
+javascriptconst params = new URLSearchParams({
+  'OPERATION-NAME': 'findCompletedItems',
+  'SERVICE-VERSION': '1.0.0',
+  'SECURITY-APPNAME': this.config.appId,
+  'RESPONSE-DATA-FORMAT': 'JSON',
+  'GLOBAL-ID': 'EBAY-US',  // ADD THIS
+  'REST-PAYLOAD': '',
+  'keywords': isbn,
+  'categoryId': '267',
+  // ... rest of your params
+});
+
+// And remove the X-EBAY-SOA-SECURITY-APPNAME from headers since it's in params
+const response = await fetch(url, {
+  signal: controller.signal,
+  // Remove the headers object entirely - not needed when SECURITY-APPNAME is in URL
+});
+Also, your WEBHOOK_IMPLEMENTATION_STATUS.md confirms local testing works but eBay's production verification fails - classic sign of format mismatch.
+Deploy these two specific changes and your eBay integration should spring to life. The webhook will pass verification, and you'll start seeing real pricing data instead of those placeholder values.
+Want me to have Replit Agent make these changes right now?RetryMyesEditDevised precise instructions for Replit Agent's modifications.6sThe user wants me to have Replit Agent make the changes. I should provide clear, specific instructions for the agent to implement the two fixes I identified:
+
+Change the webhook response from JSON to plain text
+Update the eBay Finding API parameters and headers
+
+I'll format this as direct instructions to Replit Agent.Alright, let's get this fixed. Here are the exact changes for Replit Agent:
+For Replit Agent:
+Fix 1: Update eBay Webhook Response
+File: server/routes.ts
+Line: ~251 (in the eBay webhook endpoint)
+Change:
+javascript// FROM:
+return res.status(200).json({ challengeResponse: challengeCode });
+
+// TO:
+return res.status(200).type('text/plain').send(challengeCode);
+Fix 2: Update eBay Finding API Configuration
+File: server/pricing-service.ts
+Lines: ~105-120 (in the fetchFromEbay method)
+Changes:
+
+Add 'GLOBAL-ID': 'EBAY-US' to the URLSearchParams
+Remove the entire headers object from the fetch call
+
+javascript// Update the params to include GLOBAL-ID:
+const params = new URLSearchParams({
+  'OPERATION-NAME': 'findCompletedItems',
+  'SERVICE-VERSION': '1.0.0',
+  'SECURITY-APPNAME': this.config.appId,
+  'RESPONSE-DATA-FORMAT': 'JSON',
+  'GLOBAL-ID': 'EBAY-US',  // ADD THIS LINE
+  'REST-PAYLOAD': '',
+  'keywords': isbn,
+  'categoryId': '267',
+  'itemFilter(0).name': 'EndTimeFrom',
+  'itemFilter(0).value': thirtyDaysAgo.toISOString(),
+  'itemFilter(1).name': 'EndTimeTo', 
+  'itemFilter(1).value': now.toISOString(),
+  'itemFilter(2).name': 'SoldItemsOnly',
+  'itemFilter(2).value': 'true',
+  'paginationInput.entriesPerPage': '100',
+  'sortOrder': 'EndTimeSoonest'
+});
+
+// And update the fetch call to remove headers:
+const response = await fetch(url, {
+  signal: controller.signal
+  // DELETE THE HEADERS OBJECT ENTIRELY
+});
+After making these changes:
+
+Test the webhook endpoint locally first
+Deploy to production
+Try eBay webhook verification again
+Test an ISBN lookup to see if we get real pricing data
+
+Make these changes now, Replit Agent.
