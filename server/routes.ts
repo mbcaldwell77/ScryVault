@@ -85,22 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/books", async (req, res) => {
     try {
       const validatedData = insertBookSchema.parse(req.body);
-      
-      // Normalize ISBN to prevent duplicates between ISBN-10 and ISBN-13
-      const normalizedISBN = normalizeISBN(validatedData.isbn);
-      const dataWithNormalizedISBN = { ...validatedData, isbn: normalizedISBN };
-      
-      // Check if book with this normalized ISBN already exists
-      const existingBook = await storage.getBookByIsbn(normalizedISBN);
-      if (existingBook) {
-        return res.status(409).json({ 
-          error: "Book already exists", 
-          message: "A book with this ISBN is already in your inventory",
-          existingBook 
-        });
-      }
-      
-      const book = await storage.createBook(dataWithNormalizedISBN);
+      const book = await storage.createBook(validatedData);
       res.status(201).json(book);
     } catch (error) {
       console.error("Database error creating book:", error);
