@@ -42,19 +42,32 @@ export default function Home() {
       </div>
 
       {/* Dashboard */}
-      <div className="p-6 space-y-6" style={{ backgroundColor: 'var(--dark-background)' }}>
-        {/* Premium Stats */}
-        {totalBooks > 0 && (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="premium-card">
-              <div className="text-2xl font-bold" style={{ color: 'var(--emerald-accent)' }}>{totalBooks}</div>
-              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Books</div>
+     <div className="grid grid-cols-2 gap-4">
+              <div 
+                className="relative overflow-hidden rounded-xl p-6 border-2 transform transition-all duration-300 hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)',
+                  border: '2px solid #D4AF37',
+                  boxShadow: '0 8px 32px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+                }}
+              >
+                <div className="text-4xl font-black mb-2 text-white">{totalBooks}</div>
+                <div className="text-sm font-semibold tracking-wide" style={{ color: '#D4AF37' }}>RARE BOOKS</div>
+                <div className="absolute top-2 right-2 w-12 h-12 rounded-full opacity-20" style={{ backgroundColor: '#D4AF37' }} />
+              </div>
+              <div 
+                className="relative overflow-hidden rounded-xl p-6 border-2 transform transition-all duration-300 hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)',
+                  border: '2px solid #D4AF37',
+                  boxShadow: '0 8px 32px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+                }}
+              >
+                <div className="text-4xl font-black mb-2" style={{ color: '#D4AF37' }}>${totalInvestment.toFixed(2)}</div>
+                <div className="text-sm font-semibold tracking-wide" style={{ color: '#D4AF37' }}>INVESTED CAPITAL</div>
+                <div className="absolute top-2 right-2 w-12 h-12 rounded-full opacity-20" style={{ backgroundColor: '#284139' }} />
+              </div>
             </div>
-            <div className="premium-card">
-              <div className="text-2xl font-bold" style={{ color: 'var(--gold-accent)' }}>${totalInvestment.toFixed(2)}</div>
-              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Investment</div>
-            </div>
-          </div>
         )}
 
         {/* Premium Profit Overview */}
