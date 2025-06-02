@@ -143,7 +143,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
         {/* Book Summary */}
         <div className="rounded-xl p-4 premium-card">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-16 bg-slate-300 rounded flex items-center justify-center">
+            <div className="w-12 h-16 rounded flex items-center justify-center" style={{ backgroundColor: 'var(--dark-surface)' }}>
               {(bookData as any)?.imageUrl ? (
                 <img 
                   src={(bookData as any).imageUrl} 
@@ -151,14 +151,14 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
                   className="w-12 h-16 object-cover rounded"
                 />
               ) : (
-                <span className="text-slate-500">📚</span>
+                <span style={{ color: 'var(--text-secondary)' }}>📚</span>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-slate-900 truncate">
+              <h3 className="font-medium truncate" style={{ color: 'var(--text-light)' }}>
                 {(bookData as any)?.title || "Loading..."}
               </h3>
-              <p className="text-sm text-slate-600 truncate">
+              <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>
                 {(bookData as any)?.author || "Loading..."}
               </p>
             </div>
@@ -169,14 +169,14 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
           {/* Book Format - Only show if ISBN API didn't provide format */}
           {!(bookData as any)?.format && (
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-slate-700">
-                Book Format <span className="text-red-500">*</span>
+              <Label className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
+                Book Format <span style={{ color: 'var(--gold-accent)' }}>*</span>
               </Label>
               <Select value={format} onValueChange={setFormat} required>
-                <SelectTrigger className="text-lg">
+                <SelectTrigger className="text-lg" style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}>
                   <SelectValue placeholder="Select format..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent style={{ backgroundColor: 'var(--dark-surface)', border: '1px solid var(--dark-border)' }}>
                   <SelectItem value="Hardcover">Hardcover</SelectItem>
                   <SelectItem value="Mass Market Paperback">Mass Market Paperback</SelectItem>
                   <SelectItem value="Trade Paperback">Trade Paperback</SelectItem>
@@ -189,11 +189,11 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
 
           {/* Purchase Price */}
           <div className="space-y-2">
-            <Label htmlFor="purchase-price" className="text-sm font-medium text-slate-700">
-              Purchase Price <span className="text-red-500">*</span>
+            <Label htmlFor="purchase-price" className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
+              Purchase Price <span style={{ color: 'var(--gold-accent)' }}>*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">$</span>
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: 'var(--text-secondary)' }}>$</span>
               <Input
                 id="purchase-price"
                 type="number"
@@ -203,6 +203,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
                 value={purchasePrice}
                 onChange={(e) => setPurchasePrice(e.target.value)}
                 className="pl-8 text-lg"
+                style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}
                 required
               />
             </div>
@@ -210,8 +211,8 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
 
           {/* Purchase Date */}
           <div className="space-y-2">
-            <Label htmlFor="purchase-date" className="text-sm font-medium text-slate-700">
-              Purchase Date <span className="text-red-500">*</span>
+            <Label htmlFor="purchase-date" className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
+              Purchase Date <span style={{ color: 'var(--gold-accent)' }}>*</span>
             </Label>
             <Input
               id="purchase-date"
@@ -219,20 +220,21 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
               value={purchaseDate}
               onChange={(e) => setPurchaseDate(e.target.value)}
               className="text-lg"
+              style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}
               required
             />
           </div>
 
           {/* Purchase Location - Simplified Dropdown */}
           <div className="space-y-2">
-            <Label htmlFor="location" className="text-sm font-medium text-slate-700">
+            <Label htmlFor="location" className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
               Purchase Location
             </Label>
             <Select value={location} onValueChange={setLocation}>
-              <SelectTrigger className="text-lg">
+              <SelectTrigger className="text-lg" style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}>
                 <SelectValue placeholder="Select location..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent style={{ backgroundColor: 'var(--dark-surface)', border: '1px solid var(--dark-border)' }}>
                 <SelectItem value="Garage Sale">Garage Sale</SelectItem>
                 <SelectItem value="Estate Sale">Estate Sale</SelectItem>
                 <SelectItem value="Thrift Store">Thrift Store</SelectItem>
@@ -245,14 +247,14 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
 
           {/* Condition + Notes - Grouped together */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-slate-700">
-              Condition <span className="text-red-500">*</span>
+            <Label className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
+              Condition <span style={{ color: 'var(--gold-accent)' }}>*</span>
             </Label>
             <Select value={condition} onValueChange={setCondition} required>
-              <SelectTrigger className="text-lg">
+              <SelectTrigger className="text-lg" style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}>
                 <SelectValue placeholder="Select condition..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent style={{ backgroundColor: 'var(--dark-surface)', border: '1px solid var(--dark-border)' }}>
                 <SelectItem value="Brand New">Brand New</SelectItem>
                 <SelectItem value="Like New">Like New</SelectItem>
                 <SelectItem value="Very Good">Very Good</SelectItem>
@@ -263,7 +265,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium text-slate-700">
+            <Label htmlFor="notes" className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
               Notes
             </Label>
             <Textarea
@@ -273,16 +275,17 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
               onChange={(e) => setNotes(e.target.value)}
               maxLength={500}
               className="text-lg min-h-[80px]"
+              style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}
               rows={3}
             />
-            <p className="text-xs text-slate-500">
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               {notes.length}/500 characters
             </p>
           </div>
 
           {/* Storage Location */}
           <div className="space-y-2">
-            <Label htmlFor="storageLocation" className="text-sm font-medium text-slate-700">
+            <Label htmlFor="storageLocation" className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
               Storage Location
             </Label>
             <Input
@@ -292,6 +295,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
               value={storageLocation}
               onChange={(e) => setStorageLocation(e.target.value)}
               className="text-lg"
+              style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}
             />
           </div>
 

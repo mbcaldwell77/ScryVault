@@ -324,32 +324,38 @@ export default function Inventory() {
         
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-blue-200" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
           <Input
             placeholder="Search books, authors, ISBN, SKU..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-blue-600 border-blue-500 text-white placeholder-blue-200 focus:bg-blue-500"
+            className="pl-10"
+            style={{ 
+              backgroundColor: 'var(--dark-card)', 
+              border: '1px solid var(--dark-border)', 
+              color: 'var(--text-light)',
+              '::placeholder': { color: 'var(--text-secondary)' }
+            }}
           />
         </div>
       </div>
 
       {/* Summary Stats */}
-      <div className="p-4 bg-blue-50 border-b">
+      <div className="p-4 border-b" style={{ backgroundColor: 'var(--dark-surface)', borderColor: 'var(--dark-border)' }}>
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <div className="text-lg font-bold text-slate-900">${totalInvestment.toFixed(2)}</div>
-            <div className="text-xs text-slate-600">Total Investment</div>
+            <div className="text-lg font-bold" style={{ color: 'var(--text-light)' }}>${totalInvestment.toFixed(2)}</div>
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Total Investment</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-green-600">${totalEstimatedValue.toFixed(2)}</div>
-            <div className="text-xs text-slate-600">Est. Value</div>
+            <div className="text-lg font-bold" style={{ color: 'var(--gold-accent)' }}>${totalEstimatedValue.toFixed(2)}</div>
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>Est. Value</div>
           </div>
           <div>
-            <div className={`text-lg font-bold ${potentialProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`text-lg font-bold`} style={{ color: potentialProfit >= 0 ? 'var(--gold-accent)' : '#ef4444' }}>
               ${potentialProfit.toFixed(2)}
             </div>
-            <div className="text-xs text-slate-600">
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               Profit ({profitMargin.toFixed(1)}%)
             </div>
           </div>
@@ -365,10 +371,11 @@ export default function Inventory() {
             const isExpanded = expandedISBNs.has(isbn);
             
             return (
-              <div key={isbn} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+              <div key={isbn} className="rounded-xl shadow-sm border overflow-hidden premium-card">
                 {/* Main Book Display */}
                 <div 
-                  className="p-4 cursor-pointer hover:bg-slate-50 transition-colors"
+                  className="p-4 cursor-pointer transition-colors"
+                  style={{ backgroundColor: 'var(--dark-card)' }}
                   onClick={() => toggleISBN(isbn)}
                 >
                   <div className="flex space-x-3">
@@ -383,25 +390,25 @@ export default function Inventory() {
                     <div className="flex-1 space-y-2">
                       {/* Title - Most prominent */}
                       <div className="flex items-start justify-between">
-                        <h3 className="font-bold text-base text-slate-900 leading-tight">
+                        <h3 className="font-bold text-base leading-tight" style={{ color: 'var(--text-light)' }}>
                           {mainBook.title}
                         </h3>
                         <div className="flex items-center space-x-2 ml-2">
                           {copyCount === 1 && (
-                            <span className="bg-slate-100 px-3 py-1 rounded-md text-sm font-medium">
+                            <span className="px-3 py-1 rounded-md text-sm font-medium" style={{ backgroundColor: 'var(--dark-surface)', color: 'var(--text-secondary)' }}>
                               {mainBook.condition}
                             </span>
                           )}
                           {copyCount > 1 && (
-                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                            <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--emerald-accent)', color: 'var(--pure-white)' }}>
                               {copyCount} copies
                             </span>
                           )}
                           {copyCount > 1 && (
                             isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-slate-400" />
+                              <ChevronDown className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
                             ) : (
-                              <ChevronRight className="w-4 h-4 text-slate-400" />
+                              <ChevronRight className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
                             )
                           )}
                         </div>
@@ -409,18 +416,18 @@ export default function Inventory() {
                       
                       {/* Publisher and Format - Secondary info */}
                       {mainBook.publisher && (
-                        <p className="text-sm text-slate-700 font-medium">
+                        <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
                           {mainBook.publisher} • {mainBook.format || "Other"}
                         </p>
                       )}
                       
                       {/* ISBN - Important for identification */}
-                      <p className="text-xs text-slate-600 font-medium">
+                      <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                         ISBN: {mainBook.isbn}
                       </p>
                       
                       {/* Author and Year - Supporting details */}
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                         {mainBook.author} • {mainBook.year || "Unknown"}
                       </p>
                       
