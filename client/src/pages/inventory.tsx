@@ -400,7 +400,7 @@ export default function Inventory() {
                             </span>
                           )}
                           {copyCount > 1 && (
-                            <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: 'var(--emerald-accent)', color: 'var(--pure-white)' }}>
+                            <span className="px-3 py-1 rounded-md text-sm font-medium" style={{ backgroundColor: 'var(--dark-surface)', color: 'var(--text-secondary)' }}>
                               {copyCount} copies
                             </span>
                           )}
@@ -457,7 +457,8 @@ export default function Inventory() {
                                   e.stopPropagation();
                                   setEditingBook(mainBook);
                                 }}
-                                className="h-7 px-2 text-xs hover:bg-blue-50"
+                                className="h-7 px-2 text-xs"
+                                style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-secondary)' }}
                               >
                                 <Edit className="w-3 h-3" />
                               </Button>
@@ -468,18 +469,19 @@ export default function Inventory() {
                                   e.stopPropagation();
                                   setDeletingBook(mainBook);
                                 }}
-                                className="h-7 px-2 text-xs hover:bg-red-50 text-red-600 border-red-200"
+                                className="h-7 px-2 text-xs"
+                                style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: '#ef4444' }}
                               >
                                 <Trash2 className="w-3 h-3" />
                               </Button>
                             </div>
                           </div>
-                          <div className="text-xs text-slate-400 font-mono">
+                          <div className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>
                             SKU: {mainBook.sku}
                           </div>
                         </div>
                       ) : (
-                        <div className="text-xs text-slate-600 mt-2">
+                        <div className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
                           Click to view {copyCount} copies
                         </div>
                       )}
@@ -489,50 +491,50 @@ export default function Inventory() {
                 
                 {/* Expanded Copies */}
                 {isExpanded && copyCount > 1 && (
-                  <div className="border-t border-slate-100 bg-slate-50">
-                    <div className="p-3 space-y-3">
-                      {isbnBooks.map((book: any, index: number) => (
-                        <div key={book.id} className="bg-white rounded-lg p-3 border border-slate-200">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-3">
-                              <span className="text-xs font-medium text-slate-500">Copy {index + 1}</span>
-                              <span className="text-green-600 font-bold text-sm">
-                                ${parseFloat(book.purchasePrice || 0).toFixed(2)}
+                  <div className="border-t p-3 space-y-3" style={{ borderColor: 'var(--dark-border)', backgroundColor: 'var(--dark-surface)' }}>
+                    {isbnBooks.map((book: any, index: number) => (
+                      <div key={book.id} className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)' }}>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Copy {index + 1}</span>
+                            <span className="font-bold text-sm" style={{ color: 'var(--gold-accent)' }}>
+                              ${parseFloat(book.purchasePrice || 0).toFixed(2)}
+                            </span>
+                            {book.estimatedPrice && (
+                              <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
                               </span>
-                              {book.estimatedPrice && (
-                                <span className="text-xs text-slate-500">
-                                  Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <span className="bg-slate-100 px-3 py-1 rounded-md text-sm font-medium">
-                                {book.condition}
-                              </span>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setEditingBook(book)}
-                                className="h-7 px-2 text-xs hover:bg-blue-50"
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setDeletingBook(book)}
-                                className="h-7 px-2 text-xs hover:bg-red-50 text-red-600 border-red-200"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
+                            )}
                           </div>
-                          <div className="text-xs text-slate-400 font-mono">
-                            SKU: {book.sku}
+                          <div className="flex items-center space-x-2">
+                            <span className="px-3 py-1 rounded-md text-sm font-medium" style={{ backgroundColor: 'var(--dark-surface)', color: 'var(--text-secondary)' }}>
+                              {book.condition}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setEditingBook(book)}
+                              className="h-7 px-2 text-xs"
+                              style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-secondary)' }}
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setDeletingBook(book)}
+                              className="h-7 px-2 text-xs"
+                              style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: '#ef4444' }}
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        <div className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>
+                          SKU: {book.sku}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
