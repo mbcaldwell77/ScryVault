@@ -380,11 +380,11 @@ export default function Inventory() {
                 >
                   <div className="flex space-x-3">
                     <img 
-                      src={mainBook.imageUrl || "/placeholder-book.svg"}
+                      src={mainBook.imageUrl || "/placeholder-book-dark.svg"}
                       alt={`${mainBook.title} cover`}
                       className="w-12 h-18 object-cover rounded flex-shrink-0"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/placeholder-book.svg";
+                        (e.target as HTMLImageElement).src = "/placeholder-book-dark.svg";
                       }}
                     />
                     <div className="flex-1 space-y-2">
