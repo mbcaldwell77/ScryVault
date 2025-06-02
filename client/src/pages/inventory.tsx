@@ -330,8 +330,7 @@ export default function Inventory() {
             style={{ 
               backgroundColor: 'var(--dark-card)', 
               border: '1px solid var(--dark-border)', 
-              color: 'var(--text-light)',
-              '::placeholder': { color: 'var(--text-secondary)' }
+              color: 'var(--text-light)'
             }}
           />
         </div>
