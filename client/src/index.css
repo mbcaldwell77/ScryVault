@@ -355,10 +355,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Instant tooltips - no delay */
 [title]:hover::after {
   content: attr(title);
-  position: absolute;
+  position: fixed;
   z-index: 1000;
-  bottom: 100%;
-  left: 50%;
+  top: calc(var(--mouse-y, 50%) - 40px);
+  left: calc(var(--mouse-x, 50%) - 50px);
   transform: translateX(-50%);
   background: #1F2937;
   color: #F3F4F6;
@@ -369,9 +369,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   white-space: nowrap;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 1px solid #374151;
-  margin-bottom: 4px;
-}
-
-[title] {
-  position: relative;
+  max-width: 250px;
+  white-space: normal;
+  word-wrap: break-word;
 }
