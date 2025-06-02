@@ -2,6 +2,111 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* ScryVault Premium Color Palette */
+  --emerald-primary: #284139;
+  --forest-secondary: #556B2F;
+  --sage-accent: #808F57;
+  --platinum-silver: #E5E4E2;
+  --antique-gold: #D4AF37;
+  --charcoal-text: #36454F;
+  --pure-white: #FFFFFF;
+  --light-gray: #F8F9FA;
+  --medium-gray: #6C757D;
+  --muted-coral: #FF6B6B;
+}
+
+/* Premium Card Design */
+.premium-card {
+  background: linear-gradient(135deg, var(--pure-white) 0%, var(--light-gray) 100%);
+  border: 1px solid var(--platinum-silver);
+  box-shadow: 0 2px 8px rgba(40, 65, 57, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.premium-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(40, 65, 57, 0.12);
+  transition: all 0.3s ease;
+}
+
+/* Premium Button Styles */
+.btn-primary {
+  background-color: var(--emerald-primary);
+  color: var(--pure-white);
+  border-radius: 6px;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #2d4a3f;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+}
+
+.btn-secondary {
+  background-color: var(--platinum-silver);
+  color: var(--charcoal-text);
+  border-radius: 6px;
+  font-weight: 500;
+  min-height: 44px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-accent {
+  background-color: var(--forest-secondary);
+  color: var(--pure-white);
+  border-radius: 6px;
+  font-weight: 600;
+  min-height: 44px;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-accent:hover {
+  background-color: #618335;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+}
+
+/* Premium Typography */
+.text-emerald-primary {
+  color: var(--emerald-primary);
+}
+
+.text-forest-secondary {
+  color: var(--forest-secondary);
+}
+
+.text-sage-accent {
+  color: var(--sage-accent);
+}
+
+.text-charcoal {
+  color: var(--charcoal-text);
+}
+
+.text-antique-gold {
+  color: var(--antique-gold);
+}
+
+/* Data Visualization Colors */
+.profit-positive {
+  color: var(--forest-secondary);
+}
+
+.profit-negative {
+  color: var(--muted-coral);
+}
+
+.value-highlight {
+  color: var(--antique-gold);
+  font-weight: 600;
+}
+
 /* Safe area support for mobile devices */
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom);
