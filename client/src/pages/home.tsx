@@ -18,54 +18,54 @@ export default function Home() {
 
   return (
     <div className="flex-1 flex flex-col pb-24 min-h-screen">
-      {/* Clean Header */}
-      <div className="bg-primary text-primary-foreground p-6">
-        <h1 className="text-2xl font-semibold">ScryVault</h1>
-        <p className="text-primary-foreground/80">Book Inventory Management</p>
+      {/* Premium Header */}
+      <div className="p-6" style={{ background: 'linear-gradient(135deg, var(--emerald-primary) 0%, var(--forest-secondary) 100%)' }}>
+        <h1 className="text-2xl font-semibold text-white">ScryVault</h1>
+        <p className="text-white/80">Professional Book Inventory Management</p>
       </div>
 
       {/* Dashboard */}
       <div className="p-6 space-y-6">
-        {/* Stats */}
+        {/* Premium Stats */}
         {totalBooks > 0 && (
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-card border rounded-lg p-4">
-              <div className="text-2xl font-bold">{totalBooks}</div>
-              <div className="text-sm text-muted-foreground">Books</div>
+            <div className="premium-card">
+              <div className="text-2xl font-bold text-emerald-primary">{totalBooks}</div>
+              <div className="text-sm text-sage-accent">Books</div>
             </div>
-            <div className="bg-card border rounded-lg p-4">
-              <div className="text-2xl font-bold text-green-600">${totalInvestment.toFixed(2)}</div>
-              <div className="text-sm text-muted-foreground">Investment</div>
+            <div className="premium-card">
+              <div className="text-2xl font-bold value-highlight">${totalInvestment.toFixed(2)}</div>
+              <div className="text-sm text-sage-accent">Investment</div>
             </div>
           </div>
         )}
 
-        {/* Profit Overview */}
+        {/* Premium Profit Overview */}
         {totalBooks > 0 && totalEstimatedValue > totalInvestment && (
-          <div className="bg-card border rounded-lg p-4">
-            <h3 className="font-semibold mb-3">Profit Overview</h3>
+          <div className="premium-card">
+            <h3 className="font-semibold mb-3 text-emerald-primary">Profit Overview</h3>
             <div className="grid grid-cols-3 gap-4 text-center text-sm">
               <div>
-                <div className="font-semibold">${totalInvestment.toFixed(2)}</div>
-                <div className="text-muted-foreground">Invested</div>
+                <div className="font-semibold text-charcoal">${totalInvestment.toFixed(2)}</div>
+                <div className="text-sage-accent">Invested</div>
               </div>
               <div>
-                <div className="font-semibold text-blue-600">${totalEstimatedValue.toFixed(2)}</div>
-                <div className="text-muted-foreground">Est. Value</div>
+                <div className="font-semibold text-forest-secondary">${totalEstimatedValue.toFixed(2)}</div>
+                <div className="text-sage-accent">Est. Value</div>
               </div>
               <div>
-                <div className="font-semibold text-green-600">+${potentialProfit.toFixed(2)}</div>
-                <div className="text-muted-foreground">{profitMargin.toFixed(1)}% Profit</div>
+                <div className="font-semibold profit-positive">+${potentialProfit.toFixed(2)}</div>
+                <div className="text-sage-accent">{profitMargin.toFixed(1)}% Profit</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Actions */}
+        {/* Premium Actions */}
         <div className="space-y-3">
           <Button 
             onClick={() => setLocation("/scanner")} 
-            className="w-full h-14 text-lg"
+            className="btn-primary w-full h-14 text-lg"
             size="lg"
           >
             <Camera className="w-5 h-5 mr-2" />
@@ -74,8 +74,8 @@ export default function Home() {
           
           <Button 
             onClick={() => setLocation("/inventory")} 
+            className="btn-secondary w-full h-14 text-lg"
             variant="outline"
-            className="w-full h-14 text-lg"
             size="lg"
           >
             <Package className="w-5 h-5 mr-2" />
@@ -83,14 +83,14 @@ export default function Home() {
           </Button>
         </div>
 
-        {/* Empty State */}
+        {/* Premium Empty State */}
         {totalBooks === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <Camera className="w-8 h-8 text-muted-foreground" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--platinum-silver)' }}>
+              <Camera className="w-8 h-8 text-sage-accent" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Start Your Inventory</h3>
-            <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+            <h3 className="text-lg font-semibold mb-2 text-emerald-primary">Start Your Inventory</h3>
+            <p className="text-sage-accent mb-6 max-w-sm mx-auto">
               Scan your first book to begin tracking your collection and profits.
             </p>
           </div>
