@@ -17,11 +17,28 @@ export default function Home() {
   const profitMargin = totalInvestment > 0 ? (potentialProfit / totalInvestment) * 100 : 0;
 
   return (
-    <div className="flex-1 flex flex-col pb-24 min-h-screen">
-      {/* Premium Header */}
-      <div className="p-6" style={{ background: 'linear-gradient(135deg, var(--emerald-primary) 0%, var(--forest-secondary) 100%)' }}>
-        <h1 className="text-2xl font-semibold text-white">ScryVault</h1>
-        <p className="text-white/80">Professional Book Inventory Management</p>
+     <div 
+        className="p-8 relative overflow-hidden"
+        style={{ 
+          background: 'linear-gradient(135deg, #284139 0%, #556B2F 50%, #808F57 100%)',
+          boxShadow: '0 8px 32px rgba(40, 65, 57, 0.4)'
+        }}
+      >
+        <div 
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: `radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.3) 0%, transparent 50%)`
+          }}
+        />
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold text-white mb-2">ScryVault</h1>
+          <p className="text-white/90 text-lg">Professional Book Inventory Management</p>
+          <div className="mt-4 flex items-center space-x-2">
+            <div className="w-12 h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
+            <div className="w-8 h-1 bg-gradient-to-r from-yellow-600 to-yellow-800 rounded-full" />
+            <div className="w-4 h-1 bg-yellow-800 rounded-full" />
+          </div>
+        </div>
       </div>
 
       {/* Dashboard */}
