@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Keyboard, Zap } from "lucide-react";
+import { ArrowLeft, Keyboard, Zap, Monitor, Search } from "lucide-react";
 import { useLocation } from "wouter";
 import CameraScanner from "@/components/camera-scanner";
 import ManualInputModal from "@/components/manual-input-modal";

@@ -296,3 +296,58 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-radius: 8px;
   box-shadow: 0 0 0 2px hsla(var(--primary), 0.3);
 }
+
+/* Calendar dark theme override */
+.rdp {
+  background-color: #1F2937 !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+}
+
+.rdp *, .rdp-month *, .rdp-table *, .rdp-cell *, .rdp-head_cell * {
+  background-color: #1F2937 !important;
+  color: #F3F4F6 !important;
+}
+
+.rdp-button {
+  background: #1F2937 !important;
+  color: #F3F4F6 !important;
+  border-radius: 6px !important;
+}
+
+.rdp-button:hover {
+  background-color: #10B981 !important;
+  color: #FFFFFF !important;
+}
+
+.rdp-day_selected {
+  background-color: #10B981 !important;
+  color: #FFFFFF !important;
+}
+
+.rdp-day_today {
+  color: #10B981 !important;
+  background-color: #1F2937 !important;
+  font-weight: 600 !important;
+}
+
+.rdp-head_cell {
+  color: #9CA3AF !important;
+  background-color: #1F2937 !important;
+}
+
+.rdp-caption_label {
+  color: #F3F4F6 !important;
+  background-color: #1F2937 !important;
+  font-weight: 600 !important;
+}
+
+.rdp-nav_button {
+  background: #1F2937 !important;
+  color: #F3F4F6 !important;
+}
+
+.rdp-nav_button:hover {
+  background-color: #10B981 !important;
+  color: #FFFFFF !important;
+}
