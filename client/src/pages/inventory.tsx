@@ -170,27 +170,27 @@ export default function Inventory() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col pb-20">
+      <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div className="bg-primary text-white p-4 flex items-center justify-between">
+        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
               size="icon"
               onClick={() => setLocation("/")}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
             >
               <ArrowLeft className="w-6 h-6" />
             </Button>
             <h1 className="text-xl font-semibold">Inventory</h1>
           </div>
-          <Skeleton className="h-6 w-8 bg-blue-400" />
+          <Skeleton className="h-6 w-8" style={{ backgroundColor: 'var(--dark-surface)' }} />
         </div>
 
         {/* Loading Skeletons */}
         <div className="p-4 space-y-3">
           {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-24 w-full" />
+            <Skeleton key={i} className="h-24 w-full" style={{ backgroundColor: 'var(--dark-card)' }} />
           ))}
         </div>
       </div>
@@ -199,36 +199,37 @@ export default function Inventory() {
 
   if (totalBooks === 0) {
     return (
-      <div className="flex-1 flex flex-col pb-20">
+      <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div className="bg-primary text-white p-4 flex items-center justify-between">
+        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
               size="icon"
               onClick={() => setLocation("/")}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
             >
               <ArrowLeft className="w-6 h-6" />
             </Button>
             <h1 className="text-xl font-semibold">Inventory</h1>
           </div>
-          <span className="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium">0</span>
+          <span style={{ backgroundColor: 'var(--gold-accent)' }} className="text-black px-3 py-1 rounded-full text-sm font-medium">0</span>
         </div>
 
         {/* Empty State */}
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center space-y-4">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
-              <Package className="w-8 h-8 text-slate-400" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ backgroundColor: 'var(--dark-card)' }}>
+              <Package className="w-8 h-8" style={{ color: 'var(--gold-accent)' }} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">No books yet</h3>
-              <p className="text-slate-600 text-sm">Start scanning to build your inventory</p>
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-light)' }}>No books yet</h3>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Start scanning to build your inventory</p>
             </div>
             <Button 
               onClick={() => setLocation("/scanner")} 
-              className="bg-primary text-white"
+              style={{ backgroundColor: 'var(--emerald-primary)' }}
+              className="text-white hover:opacity-90"
             >
               <Camera className="w-4 h-4 mr-2" />
               Scan First Book
@@ -242,6 +243,7 @@ export default function Inventory() {
   return (
     <div 
       className="flex-1 flex flex-col pb-24 min-h-screen relative"
+      style={{ backgroundColor: 'var(--pure-white)' }}
       onTouchStart={pullToRefresh.onTouchStart}
       onTouchMove={pullToRefresh.onTouchMove}
       onTouchEnd={pullToRefresh.onTouchEnd}
@@ -249,8 +251,9 @@ export default function Inventory() {
       {/* Pull to refresh indicator */}
       {pullToRefresh.isPulling && (
         <div 
-          className="fixed top-0 left-0 right-0 z-40 bg-primary/90 text-primary-foreground text-center py-2 transition-transform duration-200"
+          className="fixed top-0 left-0 right-0 z-40 text-white text-center py-2 transition-transform duration-200"
           style={{
+            backgroundColor: 'var(--emerald-primary)',
             transform: `translateY(${Math.min(pullToRefresh.pullDistance - 60, 0)}px)`
           }}
         >
@@ -265,14 +268,14 @@ export default function Inventory() {
       )}
 
       {/* Header */}
-      <div className="bg-primary text-white p-4">
+      <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
               size="icon"
               onClick={() => setLocation("/")}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
             >
               <ArrowLeft className="w-6 h-6" />
             </Button>
@@ -290,7 +293,7 @@ export default function Inventory() {
               variant="ghost"
               size="icon"
               onClick={() => document.getElementById('import-file')?.click()}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
               title="Import backup"
             >
               <Upload className="w-5 h-5" />
@@ -299,7 +302,7 @@ export default function Inventory() {
               variant="ghost"
               size="icon"
               onClick={exportToJSON}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
               title="Backup data"
             >
               <Package className="w-5 h-5" />
@@ -308,12 +311,12 @@ export default function Inventory() {
               variant="ghost"
               size="icon"
               onClick={exportToCSV}
-              className="text-white hover:bg-blue-600"
+              className="text-white hover:bg-white/20"
               title="Export CSV"
             >
               <Download className="w-5 h-5" />
             </Button>
-            <span className="bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium">
+            <span style={{ backgroundColor: 'var(--gold-accent)' }} className="text-black px-3 py-1 rounded-full text-sm font-medium">
               {totalBooks}
             </span>
           </div>

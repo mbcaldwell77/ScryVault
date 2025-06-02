@@ -18,14 +18,14 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex flex-col pb-20">
+      <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div className="bg-primary text-white p-4 flex items-center space-x-4">
+        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center space-x-4">
           <Button 
             variant="ghost" 
             size="icon"
             onClick={() => setLocation("/scanner")}
-            className="text-white hover:bg-blue-600"
+            className="text-white hover:bg-white/20"
           >
             <ArrowLeft className="w-6 h-6" />
           </Button>
@@ -35,8 +35,8 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
         {/* Loading State */}
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="text-center space-y-4">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-slate-600">Looking up book information...</p>
+            <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto" style={{ borderColor: 'var(--emerald-primary)', borderTopColor: 'transparent' }}></div>
+            <p style={{ color: 'var(--text-secondary)' }}>Looking up book information...</p>
           </div>
         </div>
       </div>
@@ -45,9 +45,9 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
 
   if (error || !bookData) {
     return (
-      <div className="flex-1 flex flex-col pb-20">
+      <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div className="bg-primary text-white p-4 flex items-center space-x-4">
+        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center space-x-4">
           <Button 
             variant="ghost" 
             size="icon"
@@ -99,7 +99,7 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
       {/* Book Info */}
       <div className="flex-1 overflow-auto">
         {/* Book Cover and Basic Info */}
-        <div className="p-6 bg-white">
+        <div className="p-6" style={{ backgroundColor: 'var(--dark-card)' }}>
           <div className="flex space-x-4">
             <img 
               src={bookData.imageUrl || "/placeholder-book.svg"}
@@ -110,28 +110,28 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
               }}
             />
             <div className="flex-1 space-y-2">
-              <h2 className="text-lg font-bold text-slate-900 leading-tight">{bookData.title}</h2>
-              <p className="text-slate-600">{bookData.author}</p>
+              <h2 className="text-lg font-bold leading-tight" style={{ color: 'var(--text-light)' }}>{bookData.title}</h2>
+              <p style={{ color: 'var(--text-secondary)' }}>{bookData.author}</p>
               <div className="space-y-1 text-sm">
-                <p><span className="font-medium">Publisher:</span> {bookData.publisher}</p>
-                <p><span className="font-medium">Year:</span> {bookData.year}</p>
-                <p><span className="font-medium">ISBN:</span> <span className="font-mono">{isbn}</span></p>
+                <p style={{ color: 'var(--text-secondary)' }}><span className="font-medium">Publisher:</span> {bookData.publisher}</p>
+                <p style={{ color: 'var(--text-secondary)' }}><span className="font-medium">Year:</span> {bookData.year}</p>
+                <p style={{ color: 'var(--text-secondary)' }}><span className="font-medium">ISBN:</span> <span className="font-mono">{isbn}</span></p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Market Information Placeholder */}
-        <div className="p-6 bg-slate-50 border-t">
-          <h3 className="font-semibold text-slate-900 mb-3">Market Insights</h3>
+        {/* Market Information */}
+        <div className="p-6 border-t" style={{ backgroundColor: 'var(--dark-surface)', borderColor: 'var(--dark-border)' }}>
+          <h3 className="font-semibold mb-3" style={{ color: 'var(--text-light)' }}>Market Insights</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="bg-white p-3 rounded-lg">
-              <div className="text-xs text-slate-600 uppercase tracking-wide">Avg. Used Price</div>
-              <div className="text-lg font-bold text-green-600">Est. $8-15</div>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--dark-card)' }}>
+              <div className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>Avg. Used Price</div>
+              <div className="text-lg font-bold" style={{ color: 'var(--gold-accent)' }}>Est. $8-15</div>
             </div>
-            <div className="bg-white p-3 rounded-lg">
-              <div className="text-xs text-slate-600 uppercase tracking-wide">Market Demand</div>
-              <div className="text-lg font-bold text-orange-600">Medium</div>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--dark-card)' }}>
+              <div className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>Market Demand</div>
+              <div className="text-lg font-bold" style={{ color: 'var(--emerald-accent)' }}>Medium</div>
             </div>
           </div>
         </div>
