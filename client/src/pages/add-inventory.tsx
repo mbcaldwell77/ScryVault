@@ -219,6 +219,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
               type="date"
               value={purchaseDate}
               onChange={(e) => setPurchaseDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
               className="text-lg"
               style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}
               required
