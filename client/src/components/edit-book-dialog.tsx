@@ -208,7 +208,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium text-slate-700">
+            <Label htmlFor="notes" className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
               Notes
             </Label>
             <Textarea
@@ -220,14 +220,14 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
               className="text-lg min-h-[80px]"
               rows={3}
             />
-            <p className="text-xs text-slate-500">
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               {formData.notes.length}/500 characters
             </p>
           </div>
 
           {/* Storage Location */}
           <div className="space-y-2">
-            <Label htmlFor="storageLocation" className="text-sm font-medium text-slate-700">
+            <Label htmlFor="storageLocation" className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
               Storage Location
             </Label>
             <Input
@@ -241,10 +241,10 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-secondary)' }}>
               Cancel
             </Button>
-            <Button type="submit" disabled={updateMutation.isPending} className="flex-1">
+            <Button type="submit" disabled={updateMutation.isPending} className="flex-1" style={{ backgroundColor: 'var(--emerald-accent)', color: 'var(--pure-white)' }}>
               {updateMutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </div>
