@@ -16,11 +16,10 @@ export default function Scanner() {
   useEffect(() => {
     const checkDevice = () => {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const hasTouch = 'ontouchstart' in window;
       const screenWidth = window.innerWidth;
       
-      // Consider it desktop if not mobile, no touch, and wide screen
-      setIsDesktop(!isMobile && !hasTouch && screenWidth >= 1024);
+      // More aggressive desktop detection - any screen >= 1024px without mobile user agent
+      setIsDesktop(!isMobile && screenWidth >= 1024);
     };
     
     checkDevice();
@@ -145,15 +144,8 @@ export default function Scanner() {
           <h1 className="text-xl font-semibold">Scan ISBN Barcode</h1>
         </div>
         
-        {/* Flash toggle in header */}
-        <Button 
-          onClick={() => setFlashEnabled(!flashEnabled)}
-          variant="ghost"
-          size="icon"
-          className={`text-white hover:bg-white/20 ${flashEnabled ? 'bg-white/20' : ''}`}
-        >
-          <Zap className="w-5 h-5" />
-        </Button>
+        {/* Empty space to balance header */}
+        <div className="w-10"></div>
       </div>
 
       {/* Camera View */}
