@@ -112,6 +112,9 @@ export class EbayPricingService {
 
     const url = `https://svcs.ebay.com/services/search/FindingService/v1?${params.toString()}`;
     
+    console.log('[EbayPricing] Making API request for ISBN:', isbn);
+    console.log('[EbayPricing] API URL:', url);
+    
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeoutMs);
 
