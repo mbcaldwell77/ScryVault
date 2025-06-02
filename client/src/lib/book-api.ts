@@ -96,3 +96,50 @@ export function validateISBN(isbn: string): boolean {
   // Check if it's 10 or 13 digits
   return /^\d{10}$/.test(cleaned) || /^\d{13}$/.test(cleaned);
 }
+
+// Convert ISBN-10 to ISBN-13
+export function convertISBN10to13(isbn10: string): string {
+  const cleanISBN = isbn10.replace(/[-\s]/g, '');
+  if (cleanISBN.length !== 10) return isbn10;
+  
+  const prefix = '978' + cleanISBN.substr(0, 9);
+  let checksum = 0;
+  
+  for (let i = 0; i < 12; i++) {
+    checksum += parseInt(prefix[i]) * (i % 2 === 0 ? 1 : 3);
+  }
+  
+  const checkDigit = (10 - (checksum % 10)) % 10;
+  return prefix + checkDigit;
+}
+
+// Convert ISBN-13 to ISBN-10 (if possible)
+export function convertISBN13to10(isbn13: string): string | null {
+  const cleanISBN = isbn13.replace(/[-\s]/g, '');
+  if (cleanISBN.length !== 13 || !cleanISBN.startsWith('978')) return null;
+  
+  const base = cleanISBN.substr(3, 9);
+  let checksum = 0;
+  
+  for (let i = 0; i < 9; i++) {
+    checksum += parseInt(base[i]) * (10 - i);
+  }
+  
+  const checkDigit = (11 - (checksum % 11)) % 11;
+  const checkChar = checkDigit === 10 ? 'X' : checkDigit.toString();
+  
+  return base + checkChar;
+}
+
+// Normalize ISBN to always use ISBN-13 format for consistency
+export function normalizeISBN(isbn: string): string {
+  const cleanISBN = isbn.replace(/[-\s]/g, '');
+  
+  if (cleanISBN.length === 10) {
+    return convertISBN10to13(cleanISBN);
+  } else if (cleanISBN.length === 13) {
+    return cleanISBN;
+  }
+  
+  return isbn; // Return original if invalid
+}

@@ -163,6 +163,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
               type="date"
               value={formData.purchaseDate}
               onChange={(e) => handleInputChange('purchaseDate', e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
               className="text-lg"
               required
             />
