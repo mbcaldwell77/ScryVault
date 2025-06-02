@@ -31,14 +31,14 @@ export default function ManualInputModal({ isOpen, onClose, onSubmit }: ManualIn
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" style={{ backgroundColor: 'var(--dark-surface)', border: '1px solid var(--dark-border)' }}>
         <DialogHeader>
-          <DialogTitle>Enter ISBN Manually</DialogTitle>
+          <DialogTitle style={{ color: 'var(--text-light)' }}>Enter ISBN Manually</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="isbn" className="text-sm font-medium text-slate-700">
+            <Label htmlFor="isbn" className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
               ISBN Number
             </Label>
             <Input
@@ -48,18 +48,19 @@ export default function ManualInputModal({ isOpen, onClose, onSubmit }: ManualIn
               value={isbn}
               onChange={(e) => setIsbn(e.target.value)}
               className="text-lg font-mono tracking-wider"
+              style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}
               autoFocus
             />
-            <p className="text-xs text-slate-600">
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               Enter 10 or 13 digit ISBN without spaces or dashes
             </p>
           </div>
 
           <div className="flex space-x-3">
-            <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
+            <Button type="button" variant="outline" onClick={handleClose} className="flex-1" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-light)' }}>
               Cancel
             </Button>
-            <Button type="submit" className="flex-1 bg-primary text-white">
+            <Button type="submit" className="flex-1 text-white" style={{ backgroundColor: 'var(--emerald-primary)' }}>
               Look Up Book
             </Button>
           </div>
@@ -67,14 +68,15 @@ export default function ManualInputModal({ isOpen, onClose, onSubmit }: ManualIn
 
         {/* Recent ISBNs */}
         {recentISBNs.length > 0 && (
-          <div className="space-y-3 pt-4 border-t">
-            <h3 className="text-sm font-medium text-slate-700">Recent</h3>
+          <div className="space-y-3 pt-4 border-t" style={{ borderColor: 'var(--dark-border)' }}>
+            <h3 className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>Recent</h3>
             {recentISBNs.map((recentIsbn) => (
               <div 
                 key={recentIsbn} 
-                className="p-3 bg-slate-50 rounded-lg flex items-center justify-between"
+                className="p-3 rounded-lg flex items-center justify-between"
+                style={{ backgroundColor: 'var(--dark-card)' }}
               >
-                <span className="font-mono text-sm">{recentIsbn}</span>
+                <span className="font-mono text-sm" style={{ color: 'var(--text-secondary)' }}>{recentIsbn}</span>
                 <Button 
                   variant="ghost" 
                   size="sm"
@@ -83,7 +85,8 @@ export default function ManualInputModal({ isOpen, onClose, onSubmit }: ManualIn
                     onSubmit(recentIsbn);
                     setIsbn("");
                   }}
-                  className="text-primary text-sm font-medium"
+                  className="text-sm font-medium"
+                  style={{ color: 'var(--emerald-accent)' }}
                 >
                   Use
                 </Button>
