@@ -172,7 +172,7 @@ export default function Inventory() {
     return (
       <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
+        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
@@ -201,7 +201,7 @@ export default function Inventory() {
     return (
       <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
+        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
@@ -228,7 +228,7 @@ export default function Inventory() {
             </div>
             <Button 
               onClick={() => setLocation("/scanner")} 
-              style={{ backgroundColor: 'var(--emerald-primary)' }}
+              style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }}
               className="text-white hover:opacity-90"
             >
               <Camera className="w-4 h-4 mr-2" />
@@ -253,7 +253,7 @@ export default function Inventory() {
         <div 
           className="fixed top-0 left-0 right-0 z-40 text-white text-center py-2 transition-transform duration-200"
           style={{
-            backgroundColor: 'var(--emerald-primary)',
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)',
             transform: `translateY(${Math.min(pullToRefresh.pullDistance - 60, 0)}px)`
           }}
         >
@@ -268,7 +268,7 @@ export default function Inventory() {
       )}
 
       {/* Header */}
-      <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4">
+      <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
             <Button 

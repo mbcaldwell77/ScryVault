@@ -20,7 +20,7 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
     return (
       <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center space-x-4">
+        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center space-x-4">
           <Button 
             variant="ghost" 
             size="icon"
@@ -47,7 +47,7 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
     return (
       <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Header */}
-        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center space-x-4">
+        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center space-x-4">
           <Button 
             variant="ghost" 
             size="icon"

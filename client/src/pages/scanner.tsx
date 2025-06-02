@@ -42,7 +42,7 @@ export default function Scanner() {
     return (
       <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--dark-background)' }}>
         {/* Header */}
-        <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
+        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button 
               variant="ghost" 
@@ -131,7 +131,7 @@ export default function Scanner() {
   return (
     <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--dark-background)' }}>
       {/* Header */}
-      <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
+      <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button 
             variant="ghost" 

@@ -22,8 +22,8 @@ export default function Home() {
       <div 
         className="p-8 relative overflow-hidden"
         style={{ 
-          background: 'linear-gradient(135deg, #0D9488 0%, #10B981 50%, #34D399 100%)',
-          boxShadow: '0 8px 32px rgba(13, 148, 136, 0.4)'
+          background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)',
+          boxShadow: '0 8px 32px rgba(45, 74, 63, 0.4)'
         }}
       >
         <div 
