@@ -5,6 +5,34 @@ import { insertBookSchema } from "@shared/schema";
 import { z } from "zod";
 import { EbayPricingService, type PricingServiceConfig } from "./pricing-service";
 
+// ISBN normalization functions
+function convertISBN10to13(isbn10: string): string {
+  const cleanISBN = isbn10.replace(/[-\s]/g, '');
+  if (cleanISBN.length !== 10) return isbn10;
+  
+  const prefix = '978' + cleanISBN.substr(0, 9);
+  let checksum = 0;
+  
+  for (let i = 0; i < 12; i++) {
+    checksum += parseInt(prefix[i]) * (i % 2 === 0 ? 1 : 3);
+  }
+  
+  const checkDigit = (10 - (checksum % 10)) % 10;
+  return prefix + checkDigit;
+}
+
+function normalizeISBN(isbn: string): string {
+  const cleanISBN = isbn.replace(/[-\s]/g, '');
+  
+  if (cleanISBN.length === 10) {
+    return convertISBN10to13(cleanISBN);
+  } else if (cleanISBN.length === 13) {
+    return cleanISBN;
+  }
+  
+  return isbn;
+}
+
 // Initialize eBay pricing service
 let pricingService: EbayPricingService | null = null;
 
@@ -57,7 +85,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/books", async (req, res) => {
     try {
       const validatedData = insertBookSchema.parse(req.body);
-      const book = await storage.createBook(validatedData);
+      
+      // Normalize ISBN to prevent duplicates between ISBN-10 and ISBN-13
+      const normalizedISBN = normalizeISBN(validatedData.isbn);
+      const dataWithNormalizedISBN = { ...validatedData, isbn: normalizedISBN };
+      
+      // Check if book with this normalized ISBN already exists
+      const existingBook = await storage.getBookByIsbn(normalizedISBN);
+      if (existingBook) {
+        return res.status(409).json({ 
+          error: "Book already exists", 
+          message: "A book with this ISBN is already in your inventory",
+          existingBook 
+        });
+      }
+      
+      const book = await storage.createBook(dataWithNormalizedISBN);
       res.status(201).json(book);
     } catch (error) {
       console.error("Database error creating book:", error);
