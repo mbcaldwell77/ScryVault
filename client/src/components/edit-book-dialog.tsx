@@ -110,16 +110,16 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)' }}>
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Edit Book Details</DialogTitle>
+          <DialogTitle className="text-xl font-semibold" style={{ color: 'var(--text-light)' }}>Edit Book Details</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Book Format - Always shown in edit */}
           <div className="space-y-2">
-            <Label htmlFor="format" className="text-sm font-medium text-slate-700">
-              Book Format <span className="text-red-500">*</span>
+            <Label htmlFor="format" className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+              Book Format <span style={{ color: '#ef4444' }}>*</span>
             </Label>
             <Select value={formData.format} onValueChange={(value) => handleInputChange('format', value)} required>
               <SelectTrigger className="text-lg">
@@ -137,8 +137,8 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
 
           {/* Purchase Price */}
           <div className="space-y-2">
-            <Label htmlFor="purchasePrice" className="text-sm font-medium text-slate-700">
-              Purchase Price <span className="text-red-500">*</span>
+            <Label htmlFor="purchasePrice" className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+              Purchase Price <span style={{ color: '#ef4444' }}>*</span>
             </Label>
             <Input
               id="purchasePrice"
@@ -155,8 +155,8 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
 
           {/* Purchase Date */}
           <div className="space-y-2">
-            <Label htmlFor="purchaseDate" className="text-sm font-medium text-slate-700">
-              Purchase Date <span className="text-red-500">*</span>
+            <Label htmlFor="purchaseDate" className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+              Purchase Date <span style={{ color: '#ef4444' }}>*</span>
             </Label>
             <Input
               id="purchaseDate"
@@ -170,7 +170,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
 
           {/* Purchase Location - Dropdown */}
           <div className="space-y-2">
-            <Label htmlFor="location" className="text-sm font-medium text-slate-700">
+            <Label htmlFor="location" className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
               Purchase Location
             </Label>
             <Select value={formData.location} onValueChange={(value) => handleInputChange('location', value)}>
@@ -190,8 +190,8 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
 
           {/* Condition and Notes - Grouped */}
           <div className="space-y-2">
-            <Label htmlFor="condition" className="text-sm font-medium text-slate-700">
-              Condition <span className="text-red-500">*</span>
+            <Label htmlFor="condition" className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
+              Condition <span style={{ color: '#ef4444' }}>*</span>
             </Label>
             <Select value={formData.condition} onValueChange={(value) => handleInputChange('condition', value)} required>
               <SelectTrigger className="text-lg">
