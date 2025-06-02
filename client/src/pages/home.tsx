@@ -65,8 +65,8 @@ export default function Home() {
         <div className="space-y-3">
           <Button 
             onClick={() => setLocation("/scanner")} 
-            className="w-full h-14 text-lg"
-            style={{ backgroundColor: 'var(--emerald-accent)', color: 'var(--pure-white)' }}
+            className="w-full h-14 text-lg border-2"
+            style={{ backgroundColor: '#10B981', borderColor: '#10B981', color: '#FFFFFF', fontWeight: '700', boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)' }}
             size="lg"
             title="Start scanning books with your camera"
           >
