@@ -246,7 +246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('[eBay Webhook] Verification challenge received:', challengeCode);
         console.log('[eBay Webhook] Verification token received:', verificationToken);
         
-        const expectedToken = 'scryvaul_webhook_verification_2025';
+        const expectedToken = 'scryvaul_webhook_token_2025';
         if (verificationToken === expectedToken) {
           console.log('[eBay Webhook] Token verified successfully');
           return res.status(200).type('text/plain').send(challengeCode);
