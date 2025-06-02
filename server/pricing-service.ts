@@ -97,6 +97,7 @@ export class EbayPricingService {
       'SERVICE-VERSION': '1.0.0',
       'SECURITY-APPNAME': this.config.appId,
       'RESPONSE-DATA-FORMAT': 'JSON',
+      'GLOBAL-ID': 'EBAY-US',
       'REST-PAYLOAD': '',
       'keywords': isbn,
       'categoryId': '267', // Books category
@@ -122,10 +123,7 @@ export class EbayPricingService {
       this.requestCount++;
       
       const response = await fetch(url, {
-        signal: controller.signal,
-        headers: {
-          'X-EBAY-SOA-SECURITY-APPNAME': this.config.appId,
-        }
+        signal: controller.signal
       });
 
       clearTimeout(timeoutId);
