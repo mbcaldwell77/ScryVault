@@ -10,15 +10,15 @@ export default function Home() {
     queryKey: ["/api/books"],
   });
 
-  const totalBooks = books.length;
-  const totalInvestment = books.reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
-  const totalEstimatedValue = books.reduce((sum: number, book: any) => sum + parseFloat(book.estimatedPrice || book.purchasePrice || 0), 0);
+  const totalBooks = (books as any[]).length;
+  const totalInvestment = (books as any[]).reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
+  const totalEstimatedValue = (books as any[]).reduce((sum: number, book: any) => sum + parseFloat(book.estimatedPrice || book.purchasePrice || 0), 0);
   const potentialProfit = totalEstimatedValue - totalInvestment;
   const profitMargin = totalInvestment > 0 ? (potentialProfit / totalInvestment) * 100 : 0;
 
   return (
     <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--dark-background)' }}>
-      {/* New Premium Header */}
+      {/* Premium Header */}
       <div 
         className="p-8 relative overflow-hidden"
         style={{ 
@@ -43,80 +43,99 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Dashboard */}
       <div className="p-6 space-y-6" style={{ backgroundColor: 'var(--dark-background)' }}>
-        {/* Premium Stats */}
+        {/* Premium Dashboard - Only show when books exist */}
         {totalBooks > 0 && (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="premium-card">
-              <div className="text-2xl font-bold" style={{ color: 'var(--emerald-accent)' }}>{totalBooks}</div>
-              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Books</div>
-            </div>
-            <div className="premium-card">
-              <div className="text-2xl font-bold" style={{ color: 'var(--gold-accent)' }}>${totalInvestment.toFixed(2)}</div>
-              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Investment</div>
-            </div>
-          </div>
-        )}
-
-        {/* Quick Actions Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <Button 
-            onClick={() => setLocation("/scanner")}
-            className="aspect-square flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white border-0 rounded-xl h-auto py-6"
-          >
-            <Camera className="w-8 h-8" />
-            <span className="text-sm font-medium">Scan Book</span>
-          </Button>
-          
-          <Button 
-            onClick={() => setLocation("/inventory")}
-            className="aspect-square flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 rounded-xl h-auto py-6"
-          >
-            <Package className="w-8 h-8" />
-            <span className="text-sm font-medium">View Inventory</span>
-          </Button>
-        </div>
-
-        {/* Business Metrics */}
-        {totalBooks > 0 && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold" style={{ color: 'var(--text-light)' }}>Business Overview</h3>
-            <div className="grid grid-cols-1 gap-4">
-              <div className="premium-card">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Collection Value</div>
-                    <div className="text-xl font-bold" style={{ color: 'var(--emerald-accent)' }}>
-                      ${totalEstimatedValue.toFixed(2)}
-                    </div>
-                  </div>
-                  <TrendingUp className="w-6 h-6" style={{ color: 'var(--emerald-accent)' }} />
+          <div className="premium-dashboard">
+            {/* 3-Column Stats Grid */}
+            <div className="grid grid-cols-3 gap-6 mb-6">
+              <div className="text-center">
+                <div className="mystical-number text-white">{totalBooks}</div>
+                <div className="mystical-label mt-1">Collection</div>
+              </div>
+              <div className="text-center">
+                <div className="mystical-number" style={{ color: '#D4AF37' }}>
+                  ${totalInvestment.toFixed(0)}
                 </div>
-                
-                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--dark-border)' }}>
-                  <div className="flex justify-between text-sm">
-                    <span style={{ color: 'var(--text-secondary)' }}>Potential Profit:</span>
-                    <span style={{ color: potentialProfit >= 0 ? 'var(--emerald-accent)' : 'var(--muted-coral)' }}>
-                      ${potentialProfit.toFixed(2)} ({profitMargin.toFixed(1)}%)
-                    </span>
-                  </div>
+                <div className="mystical-label mt-1">Invested</div>
+              </div>
+              <div className="text-center">
+                <div className="mystical-number" style={{ color: '#9bb068' }}>
+                  ${totalEstimatedValue.toFixed(0)}
                 </div>
+                <div className="mystical-label mt-1">Est. Value</div>
+              </div>
+            </div>
+
+            {/* Profit Row */}
+            <div 
+              className="pt-4 border-t text-center"
+              style={{ borderColor: 'rgba(212, 175, 55, 0.3)' }}
+            >
+              <div className="flex items-center justify-center space-x-4">
+                <TrendingUp className="w-5 h-5" style={{ color: '#D4AF37' }} />
+                <span className="text-lg font-bold" style={{ 
+                  color: potentialProfit >= 0 ? '#9bb068' : '#FF6B6B' 
+                }}>
+                  ${potentialProfit.toFixed(2)} Profit ({profitMargin.toFixed(1)}%)
+                </span>
               </div>
             </div>
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Premium Action Buttons */}
+        <div className="grid grid-cols-1 gap-4">
+          <Button 
+            onClick={() => setLocation("/scanner")}
+            className="mystical-button h-16 text-white text-lg font-semibold rounded-xl"
+          >
+            <Camera className="w-6 h-6 mr-3" />
+            Scan Book
+          </Button>
+          
+          <Button 
+            onClick={() => setLocation("/inventory")}
+            className="h-16 text-lg font-semibold rounded-xl border-2 transition-all duration-300 hover:scale-102"
+            style={{
+              background: 'linear-gradient(135deg, #2a2d30 0%, #1e2124 100%)',
+              borderColor: '#9bb068',
+              color: '#9bb068'
+            }}
+          >
+            <Package className="w-6 h-6 mr-3" />
+            View Inventory
+          </Button>
+        </div>
+
+        {/* Mystical Empty State */}
         {totalBooks === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--platinum-silver)' }}>
-              <Camera className="w-8 h-8 text-sage-accent" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2 text-emerald-primary">Start Your Inventory</h3>
-            <p className="text-sage-accent mb-6 max-w-sm mx-auto">
-              Scan your first book to begin tracking your collection and profits.
+          <div className="text-center py-16">
+            <div className="mystical-orb mx-auto mb-8"></div>
+            
+            <h2 className="text-2xl font-bold text-white mb-4">
+              Begin Your Mystical Journey
+            </h2>
+            
+            <p className="text-lg mb-8 max-w-md mx-auto leading-relaxed" style={{ color: '#9bb068' }}>
+              Unlock the hidden value within your books. Each scan reveals market insights 
+              and profit potential through our mystical intelligence.
             </p>
+
+            <div className="space-y-3 text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#D4AF37' }}></div>
+                <span>Real-time market analysis</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#D4AF37' }}></div>
+                <span>Profit optimization insights</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#D4AF37' }}></div>
+                <span>Professional inventory tracking</span>
+              </div>
+            </div>
           </div>
         )}
       </div>
