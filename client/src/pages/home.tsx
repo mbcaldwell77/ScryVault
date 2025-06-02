@@ -17,7 +17,9 @@ export default function Home() {
   const profitMargin = totalInvestment > 0 ? (potentialProfit / totalInvestment) * 100 : 0;
 
   return (
-     <div 
+    <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--dark-background)' }}>
+      {/* New Premium Header */}
+      <div 
         className="p-8 relative overflow-hidden"
         style={{ 
           background: 'linear-gradient(135deg, #284139 0%, #556B2F 50%, #808F57 100%)',
@@ -42,82 +44,70 @@ export default function Home() {
       </div>
 
       {/* Dashboard */}
-     <div className="grid grid-cols-2 gap-4">
-              <div 
-                className="relative overflow-hidden rounded-xl p-6 border-2 transform transition-all duration-300 hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)',
-                  border: '2px solid #D4AF37',
-                  boxShadow: '0 8px 32px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
-                }}
-              >
-                <div className="text-4xl font-black mb-2 text-white">{totalBooks}</div>
-                <div className="text-sm font-semibold tracking-wide" style={{ color: '#D4AF37' }}>RARE BOOKS</div>
-                <div className="absolute top-2 right-2 w-12 h-12 rounded-full opacity-20" style={{ backgroundColor: '#D4AF37' }} />
-              </div>
-              <div 
-                className="relative overflow-hidden rounded-xl p-6 border-2 transform transition-all duration-300 hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)',
-                  border: '2px solid #D4AF37',
-                  boxShadow: '0 8px 32px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
-                }}
-              >
-                <div className="text-4xl font-black mb-2" style={{ color: '#D4AF37' }}>${totalInvestment.toFixed(2)}</div>
-                <div className="text-sm font-semibold tracking-wide" style={{ color: '#D4AF37' }}>INVESTED CAPITAL</div>
-                <div className="absolute top-2 right-2 w-12 h-12 rounded-full opacity-20" style={{ backgroundColor: '#284139' }} />
-              </div>
+      <div className="p-6 space-y-6" style={{ backgroundColor: 'var(--dark-background)' }}>
+        {/* Premium Stats */}
+        {totalBooks > 0 && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="premium-card">
+              <div className="text-2xl font-bold" style={{ color: 'var(--emerald-accent)' }}>{totalBooks}</div>
+              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Books</div>
             </div>
+            <div className="premium-card">
+              <div className="text-2xl font-bold" style={{ color: 'var(--gold-accent)' }}>${totalInvestment.toFixed(2)}</div>
+              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Investment</div>
+            </div>
+          </div>
         )}
 
-        {/* Premium Profit Overview */}
-        {totalBooks > 0 && totalEstimatedValue > totalInvestment && (
-          <div className="premium-card">
-            <h3 className="font-semibold mb-3" style={{ color: 'var(--emerald-accent)' }}>Profit Overview</h3>
-            <div className="grid grid-cols-3 gap-4 text-center text-sm">
-              <div>
-                <div className="font-semibold" style={{ color: 'var(--text-light)' }}>${totalInvestment.toFixed(2)}</div>
-                <div style={{ color: 'var(--text-secondary)' }}>Invested</div>
-              </div>
-              <div>
-                <div className="font-semibold" style={{ color: 'var(--gold-accent)' }}>${totalEstimatedValue.toFixed(2)}</div>
-                <div style={{ color: 'var(--text-secondary)' }}>Est. Value</div>
-              </div>
-              <div>
-                <div className="font-semibold" style={{ color: 'var(--emerald-accent)' }}>+${potentialProfit.toFixed(2)}</div>
-                <div style={{ color: 'var(--text-secondary)' }}>{profitMargin.toFixed(1)}% Profit</div>
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          <Button 
+            onClick={() => setLocation("/scanner")}
+            className="aspect-square flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white border-0 rounded-xl h-auto py-6"
+          >
+            <Camera className="w-8 h-8" />
+            <span className="text-sm font-medium">Scan Book</span>
+          </Button>
+          
+          <Button 
+            onClick={() => setLocation("/inventory")}
+            className="aspect-square flex flex-col items-center justify-center space-y-3 bg-gradient-to-br from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white border-0 rounded-xl h-auto py-6"
+          >
+            <Package className="w-8 h-8" />
+            <span className="text-sm font-medium">View Inventory</span>
+          </Button>
+        </div>
+
+        {/* Business Metrics */}
+        {totalBooks > 0 && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold" style={{ color: 'var(--text-light)' }}>Business Overview</h3>
+            <div className="grid grid-cols-1 gap-4">
+              <div className="premium-card">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Collection Value</div>
+                    <div className="text-xl font-bold" style={{ color: 'var(--emerald-accent)' }}>
+                      ${totalEstimatedValue.toFixed(2)}
+                    </div>
+                  </div>
+                  <TrendingUp className="w-6 h-6" style={{ color: 'var(--emerald-accent)' }} />
+                </div>
+                
+                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--dark-border)' }}>
+                  <div className="flex justify-between text-sm">
+                    <span style={{ color: 'var(--text-secondary)' }}>Potential Profit:</span>
+                    <span style={{ color: potentialProfit >= 0 ? 'var(--emerald-accent)' : 'var(--muted-coral)' }}>
+                      ${potentialProfit.toFixed(2)} ({profitMargin.toFixed(1)}%)
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Premium Actions */}
-        <div className="space-y-3">
-          <Button 
-            onClick={() => setLocation("/scanner")} 
-            className="w-full h-14 text-lg border-2"
-            style={{ backgroundColor: '#10B981', borderColor: '#10B981', color: '#FFFFFF', fontWeight: '700', boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)' }}
-            size="lg"
-            title="Start scanning books with your camera"
-          >
-            <Camera className="w-5 h-5 mr-2" />
-            Scan Book
-          </Button>
-          
-          <Button 
-            onClick={() => setLocation("/inventory")} 
-            className="w-full h-14 text-lg"
-            style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-light)' }}
-            variant="outline"
-            size="lg"
-            title={`View your collection of ${totalBooks} books`}
-          >
-            <Package className="w-5 h-5 mr-2" />
-            View Inventory ({totalBooks})
-          </Button>
-        </div>
-
-        {/* Premium Empty State */}
+        {/* Empty State */}
         {totalBooks === 0 && (
           <div className="text-center py-12">
             <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'var(--platinum-silver)' }}>
