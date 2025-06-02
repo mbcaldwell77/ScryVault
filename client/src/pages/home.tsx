@@ -60,7 +60,7 @@ export default function Home() {
                 <div className="mystical-label mt-1" style={{ color: '#9aa0a6' }}>Invested</div>
               </div>
               <div className="text-center">
-                <div className="mystical-number" style={{ color: '#6a7f3a' }}>
+                <div className="mystical-number" style={{ color: '#3a5b4f' }}>
                   ${totalEstimatedValue.toFixed(0)}
                 </div>
                 <div className="mystical-label mt-1" style={{ color: '#9aa0a6' }}>Est. Value</div>
@@ -75,7 +75,7 @@ export default function Home() {
               <div className="flex items-center justify-center space-x-4">
                 <TrendingUp className="w-5 h-5" style={{ color: '#9aa0a6' }} />
                 <span className="text-lg font-bold" style={{ 
-                  color: potentialProfit >= 0 ? '#6a7f3a' : '#FF6B6B' 
+                  color: potentialProfit >= 0 ? '#3a5b4f' : '#FF6B6B' 
                 }}>
                   ${potentialProfit.toFixed(2)} Profit ({profitMargin.toFixed(1)}%)
                 </span>
@@ -124,15 +124,15 @@ export default function Home() {
 
             <div className="space-y-3 text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#6a7f3a' }}></div>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#3a5b4f' }}></div>
                 <span>Real-time market analysis</span>
               </div>
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#6a7f3a' }}></div>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#3a5b4f' }}></div>
                 <span>Profit optimization insights</span>
               </div>
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#6a7f3a' }}></div>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#3a5b4f' }}></div>
                 <span>Professional inventory tracking</span>
               </div>
             </div>
