@@ -25,7 +25,7 @@ export default function Home() {
       </div>
 
       {/* Dashboard */}
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6" style={{ backgroundColor: 'var(--pure-white)' }}>
         {/* Premium Stats */}
         {totalBooks > 0 && (
           <div className="grid grid-cols-2 gap-4">

@@ -12,7 +12,7 @@ import PWAInstallBanner from "@/components/pwa-install-banner";
 
 function Router() {
   return (
-    <div className="min-h-screen bg-slate-50 max-w-md mx-auto bg-white">
+    <div className="min-h-screen max-w-md mx-auto" style={{ backgroundColor: 'var(--pure-white)' }}>
       <PWAInstallBanner />
       <Switch>
         <Route path="/" component={Home} />
