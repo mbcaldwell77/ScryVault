@@ -169,8 +169,35 @@ input, textarea, select,
   color: var(--text-light) !important;
 }
 
-input::placeholder, textarea::placeholder {
-  color: var(--text-secondary) !important;
+/* Comprehensive placeholder styling for all form fields */
+input::placeholder, 
+textarea::placeholder,
+select::placeholder,
+[data-radix-select-trigger]::placeholder,
+.placeholder\:text-muted-foreground::placeholder {
+  color: #6B7280 !important;
+  opacity: 0.5 !important;
+}
+
+/* Webkit specific placeholder styling */
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #6B7280 !important;
+  opacity: 0.5 !important;
+}
+
+/* Firefox specific placeholder styling */
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #6B7280 !important;
+  opacity: 0.5 !important;
+}
+
+/* Edge specific placeholder styling */
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #6B7280 !important;
+  opacity: 0.5 !important;
 }
 
 /* Force dark styling on all input variants */
