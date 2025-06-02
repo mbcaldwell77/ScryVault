@@ -25,17 +25,17 @@ export default function Home() {
       </div>
 
       {/* Dashboard */}
-      <div className="p-6 space-y-6" style={{ backgroundColor: 'var(--pure-white)' }}>
+      <div className="p-6 space-y-6" style={{ backgroundColor: 'var(--dark-background)' }}>
         {/* Premium Stats */}
         {totalBooks > 0 && (
           <div className="grid grid-cols-2 gap-4">
             <div className="premium-card">
-              <div className="text-2xl font-bold text-emerald-primary">{totalBooks}</div>
-              <div className="text-sm text-sage-accent">Books</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--emerald-accent)' }}>{totalBooks}</div>
+              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Books</div>
             </div>
             <div className="premium-card">
-              <div className="text-2xl font-bold value-highlight">${totalInvestment.toFixed(2)}</div>
-              <div className="text-sm text-sage-accent">Investment</div>
+              <div className="text-2xl font-bold" style={{ color: 'var(--gold-accent)' }}>${totalInvestment.toFixed(2)}</div>
+              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Investment</div>
             </div>
           </div>
         )}
@@ -43,19 +43,19 @@ export default function Home() {
         {/* Premium Profit Overview */}
         {totalBooks > 0 && totalEstimatedValue > totalInvestment && (
           <div className="premium-card">
-            <h3 className="font-semibold mb-3 text-emerald-primary">Profit Overview</h3>
+            <h3 className="font-semibold mb-3" style={{ color: 'var(--emerald-accent)' }}>Profit Overview</h3>
             <div className="grid grid-cols-3 gap-4 text-center text-sm">
               <div>
-                <div className="font-semibold text-charcoal">${totalInvestment.toFixed(2)}</div>
-                <div className="text-sage-accent">Invested</div>
+                <div className="font-semibold" style={{ color: 'var(--text-light)' }}>${totalInvestment.toFixed(2)}</div>
+                <div style={{ color: 'var(--text-secondary)' }}>Invested</div>
               </div>
               <div>
-                <div className="font-semibold text-forest-secondary">${totalEstimatedValue.toFixed(2)}</div>
-                <div className="text-sage-accent">Est. Value</div>
+                <div className="font-semibold" style={{ color: 'var(--gold-accent)' }}>${totalEstimatedValue.toFixed(2)}</div>
+                <div style={{ color: 'var(--text-secondary)' }}>Est. Value</div>
               </div>
               <div>
-                <div className="font-semibold profit-positive">+${potentialProfit.toFixed(2)}</div>
-                <div className="text-sage-accent">{profitMargin.toFixed(1)}% Profit</div>
+                <div className="font-semibold" style={{ color: 'var(--emerald-accent)' }}>+${potentialProfit.toFixed(2)}</div>
+                <div style={{ color: 'var(--text-secondary)' }}>{profitMargin.toFixed(1)}% Profit</div>
               </div>
             </div>
           </div>
@@ -65,8 +65,10 @@ export default function Home() {
         <div className="space-y-3">
           <Button 
             onClick={() => setLocation("/scanner")} 
-            className="btn-primary w-full h-14 text-lg"
+            className="w-full h-14 text-lg"
+            style={{ backgroundColor: 'var(--emerald-accent)', color: 'var(--pure-white)' }}
             size="lg"
+            title="Start scanning books with your camera"
           >
             <Camera className="w-5 h-5 mr-2" />
             Scan Book
@@ -74,9 +76,11 @@ export default function Home() {
           
           <Button 
             onClick={() => setLocation("/inventory")} 
-            className="btn-secondary w-full h-14 text-lg"
+            className="w-full h-14 text-lg"
+            style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)', color: 'var(--text-light)' }}
             variant="outline"
             size="lg"
+            title={`View your collection of ${totalBooks} books`}
           >
             <Package className="w-5 h-5 mr-2" />
             View Inventory ({totalBooks})
