@@ -54,28 +54,28 @@ export default function Home() {
                 <div className="mystical-label mt-1">Collection</div>
               </div>
               <div className="text-center">
-                <div className="mystical-number" style={{ color: '#D4AF37' }}>
+                <div className="mystical-number" style={{ color: '#e8eaed' }}>
                   ${totalInvestment.toFixed(0)}
                 </div>
-                <div className="mystical-label mt-1">Invested</div>
+                <div className="mystical-label mt-1" style={{ color: '#9aa0a6' }}>Invested</div>
               </div>
               <div className="text-center">
-                <div className="mystical-number" style={{ color: '#9bb068' }}>
+                <div className="mystical-number" style={{ color: '#6a7f3a' }}>
                   ${totalEstimatedValue.toFixed(0)}
                 </div>
-                <div className="mystical-label mt-1">Est. Value</div>
+                <div className="mystical-label mt-1" style={{ color: '#9aa0a6' }}>Est. Value</div>
               </div>
             </div>
 
             {/* Profit Row */}
             <div 
               className="pt-4 border-t text-center"
-              style={{ borderColor: 'rgba(212, 175, 55, 0.3)' }}
+              style={{ borderColor: 'rgba(154, 160, 166, 0.3)' }}
             >
               <div className="flex items-center justify-center space-x-4">
-                <TrendingUp className="w-5 h-5" style={{ color: '#D4AF37' }} />
+                <TrendingUp className="w-5 h-5" style={{ color: '#9aa0a6' }} />
                 <span className="text-lg font-bold" style={{ 
-                  color: potentialProfit >= 0 ? '#9bb068' : '#FF6B6B' 
+                  color: potentialProfit >= 0 ? '#6a7f3a' : '#FF6B6B' 
                 }}>
                   ${potentialProfit.toFixed(2)} Profit ({profitMargin.toFixed(1)}%)
                 </span>
@@ -99,8 +99,8 @@ export default function Home() {
             className="h-16 text-lg font-semibold rounded-xl border-2 transition-all duration-300 hover:scale-102"
             style={{
               background: 'linear-gradient(135deg, #2a2d30 0%, #1e2124 100%)',
-              borderColor: '#9bb068',
-              color: '#9bb068'
+              borderColor: '#9aa0a6',
+              color: '#9aa0a6'
             }}
           >
             <Package className="w-6 h-6 mr-3" />
@@ -117,22 +117,22 @@ export default function Home() {
               Begin Your Mystical Journey
             </h2>
             
-            <p className="text-lg mb-8 max-w-md mx-auto leading-relaxed" style={{ color: '#9bb068' }}>
+            <p className="text-lg mb-8 max-w-md mx-auto leading-relaxed" style={{ color: '#9aa0a6' }}>
               Unlock the hidden value within your books. Each scan reveals market insights 
-              and profit potential through our mystical intelligence.
+              and profit potential through our intelligence platform.
             </p>
 
             <div className="space-y-3 text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#D4AF37' }}></div>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#6a7f3a' }}></div>
                 <span>Real-time market analysis</span>
               </div>
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#D4AF37' }}></div>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#6a7f3a' }}></div>
                 <span>Profit optimization insights</span>
               </div>
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#D4AF37' }}></div>
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#6a7f3a' }}></div>
                 <span>Professional inventory tracking</span>
               </div>
             </div>
