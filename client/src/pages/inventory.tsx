@@ -312,17 +312,10 @@ export default function Inventory() {
               size="icon"
               onClick={exportToCSV}
               className="text-white hover:bg-white/20"
-              title="Export CSV"
+              title="Export inventory to CSV file"
             >
               <Download className="w-5 h-5" />
             </Button>
-            <span 
-              style={{ backgroundColor: 'var(--gold-accent)' }} 
-              className="text-black px-3 py-1 rounded-full text-sm font-medium"
-              title={`Total books in inventory: ${totalBooks}`}
-            >
-              {totalBooks}
-            </span>
           </div>
         </div>
         
