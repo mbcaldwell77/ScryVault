@@ -23,15 +23,15 @@ export default function Scanner() {
   };
 
   return (
-    <div className="flex-1 flex flex-col pb-24 min-h-screen">
+    <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--pure-white)' }}>
       {/* Header */}
-      <div className="bg-primary text-white p-4 flex items-center justify-between">
+      <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button 
             variant="ghost" 
             size="icon"
             onClick={() => setLocation("/")}
-            className="text-white hover:bg-blue-600"
+            className="text-white hover:bg-white/20"
           >
             <ArrowLeft className="w-6 h-6" />
           </Button>
@@ -43,7 +43,7 @@ export default function Scanner() {
           onClick={() => setFlashEnabled(!flashEnabled)}
           variant="ghost"
           size="icon"
-          className={`text-white hover:bg-blue-600 ${flashEnabled ? 'bg-blue-600' : ''}`}
+          className={`text-white hover:bg-white/20 ${flashEnabled ? 'bg-white/20' : ''}`}
         >
           <Zap className="w-5 h-5" />
         </Button>
