@@ -124,14 +124,14 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col pb-24 min-h-screen">
+    <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--pure-white)' }}>
       {/* Header */}
-      <div className="bg-green-600 text-white p-4 flex items-center space-x-4">
+      <div style={{ backgroundColor: 'var(--emerald-primary)' }} className="text-white p-4 flex items-center space-x-4">
         <Button 
           variant="ghost" 
           size="icon"
           onClick={() => setLocation(`/book-details/${isbn}`)}
-          className="text-white hover:bg-green-700"
+          className="text-white hover:bg-white/20"
         >
           <ArrowLeft className="w-6 h-6" />
         </Button>
@@ -141,7 +141,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       {/* Form */}
       <div className="flex-1 overflow-auto p-6 space-y-6">
         {/* Book Summary */}
-        <div className="bg-slate-50 rounded-xl p-4">
+        <div className="rounded-xl p-4 premium-card">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-16 bg-slate-300 rounded flex items-center justify-center">
               {(bookData as any)?.imageUrl ? (
