@@ -2,32 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* ScryVault Premium Color Palette */
-  --emerald-primary: #284139;
-  --forest-secondary: #556B2F;
-  --sage-accent: #808F57;
-  --platinum-silver: #E5E4E2;
-  --antique-gold: #D4AF37;
-  --charcoal-text: #36454F;
-  --pure-white: #FFFFFF;
-  --light-gray: #F8F9FA;
-  --medium-gray: #6C757D;
-  --muted-coral: #FF6B6B;
+/* Dark Theme Base */
+body {
+  background-color: #1a1d1e;
+  color: #e8eaed;
+  min-height: 100vh;
 }
 
-/* Premium Card Design */
+:root {
+  /* ScryVault Premium Dark Theme Color Palette */
+  --emerald-primary: #3a5b4f;
+  --forest-secondary: #6a7f3a;
+  --sage-accent: #9bb068;
+  --platinum-silver: #2a2d2e;
+  --antique-gold: #D4AF37;
+  --charcoal-text: #e8eaed;
+  --pure-white: #1a1d1e;
+  --light-gray: #242729;
+  --medium-gray: #9aa0a6;
+  --muted-coral: #FF6B6B;
+  --dark-surface: #1e2124;
+  --dark-card: #2a2d30;
+  --dark-border: #3c4043;
+}
+
+/* Premium Dark Card Design */
 .premium-card {
-  background: linear-gradient(135deg, var(--pure-white) 0%, var(--light-gray) 100%);
-  border: 1px solid var(--platinum-silver);
-  box-shadow: 0 2px 8px rgba(40, 65, 57, 0.08);
+  background: linear-gradient(135deg, var(--dark-card) 0%, var(--dark-surface) 100%);
+  border: 1px solid var(--dark-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   border-radius: 8px;
   padding: 16px;
 }
 
 .premium-card:hover {
   transform: scale(1.02);
-  box-shadow: 0 4px 16px rgba(40, 65, 57, 0.12);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
   transition: all 0.3s ease;
 }
 
