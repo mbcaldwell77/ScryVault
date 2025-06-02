@@ -232,77 +232,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // eBay webhook endpoint for marketplace compliance - handles all methods
-  app.all("/api/ebay/webhook", async (req, res) => {
+  // eBay webhook endpoint for marketplace compliance
+  app.post("/api/ebay/webhook", async (req, res) => {
     try {
-      console.log('[eBay Webhook] === INCOMING REQUEST ===');
-      console.log('[eBay Webhook] Method:', req.method);
-      console.log('[eBay Webhook] URL:', req.url);
-      console.log('[eBay Webhook] Body:', JSON.stringify(req.body, null, 2));
+      console.log('[eBay Webhook] === INCOMING POST REQUEST ===');
       console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
-      console.log('[eBay Webhook] Query params:', JSON.stringify(req.query, null, 2));
+      console.log('[eBay Webhook] Body:', JSON.stringify(req.body, null, 2));
       
-      // Handle GET request for testing or eBay verification
-      if (req.method === 'GET') {
-        const challengeCode = req.query.challenge_code;
-        
-        if (challengeCode) {
-          // eBay verification - return the challenge code directly
-          console.log('[eBay Webhook] GET verification challenge received:', challengeCode);
-          return res.status(200).send(challengeCode);
-        } else {
-          // Testing endpoint
-          return res.json({ status: "eBay webhook endpoint is active", timestamp: new Date().toISOString() });
-        }
-      }
-      
-      // Extract challenge data from request body (for POST requests)
-      const challengeCode = req.body.challengeCode;
-      const verificationToken = req.body.verificationToken;
-      const { notificationId, eventDate, publishDate, notificationType } = req.body;
+      const { challengeCode, verificationToken } = req.body;
       
       // Handle verification challenge
-      if (challengeCode) {
+      if (challengeCode && verificationToken) {
         console.log('[eBay Webhook] Verification challenge received:', challengeCode);
         console.log('[eBay Webhook] Verification token received:', verificationToken);
         
-        // Verify the token matches our configured token
         const expectedToken = 'scryvaul_webhook_verification_2025';
         if (verificationToken === expectedToken) {
           console.log('[eBay Webhook] Token verified successfully');
           return res.status(200).json({ challengeResponse: challengeCode });
         } else {
-          console.error('[eBay Webhook] Invalid verification token. Expected:', expectedToken, 'Received:', verificationToken);
+          console.error('[eBay Webhook] Token mismatch. Expected:', expectedToken, 'Received:', verificationToken);
           return res.status(401).json({ error: 'Invalid verification token' });
         }
       }
       
       // Handle marketplace account deletion notifications
+      const { notificationType, notificationId, eventDate, publishDate } = req.body;
       if (notificationType === 'MARKETPLACE_ACCOUNT_DELETION') {
-        console.log('[eBay Webhook] Account deletion notification received:', {
-          notificationId,
-          eventDate,
-          publishDate
-        });
-        
-        // TODO: Implement user account cleanup when we add user management
-        // For now, just log the notification for compliance
-        
-        return res.status(200).json({ status: 'received' });
+        console.log('[eBay Webhook] Account deletion notification:', { notificationId, eventDate, publishDate });
+        return res.status(200).json({ message: 'Account deletion notification processed', notificationId });
       }
       
-      // Handle other notification types
-      console.log('[eBay Webhook] Notification received:', {
-        notificationType,
-        notificationId,
-        eventDate
-      });
+      // Default response for other notifications
+      res.status(200).json({ message: 'Notification received' });
       
-      res.status(200).json({ status: 'received' });
     } catch (error) {
-      console.error('[eBay Webhook] Error processing notification:', error);
+      console.error('[eBay Webhook] Error:', error);
       res.status(500).json({ error: 'Webhook processing failed' });
     }
+  });
+
+  // GET endpoint for testing webhook accessibility
+  app.get("/api/ebay/webhook", (req, res) => {
+    res.json({ status: "eBay webhook endpoint is active", timestamp: new Date().toISOString() });
   });
 
   const httpServer = createServer(app);
