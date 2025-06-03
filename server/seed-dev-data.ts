@@ -188,8 +188,13 @@ export async function seedDevelopmentData() {
     await db.delete(books);
     console.log('[SEED] Cleared existing books');
     
-    // Insert development seed data
-    const insertedBooks = await db.insert(books).values(developmentBooks).returning();
+    // Insert development seed data with proper SKU generation
+    const booksWithSkus = developmentBooks.map((book, index) => ({
+      ...book,
+      sku: `DEV-${Date.now()}-${index.toString().padStart(3, '0')}`
+    }));
+    
+    const insertedBooks = await db.insert(books).values(booksWithSkus).returning();
     console.log(`[SEED] Inserted ${insertedBooks.length} development books`);
     
     console.log('[SEED] Development data seeding completed successfully');
