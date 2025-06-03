@@ -439,9 +439,9 @@ export default function Inventory() {
                               {mainBook.estimatedPrice && (
                                 <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                                   Est: ${parseFloat(mainBook.estimatedPrice).toFixed(2)}
-                                  {parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice || 0) && (
-                                    <span className="text-green-600 ml-1">
-                                      (+${(parseFloat(mainBook.estimatedPrice) - parseFloat(mainBook.purchasePrice || 0)).toFixed(2)})
+                                  {parseFloat(mainBook.estimatedPrice) !== parseFloat(mainBook.purchasePrice || 0) && (
+                                    <span className={`ml-1 ${parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice || 0) ? 'text-green-600' : 'text-red-600'}`}>
+                                      ({parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice || 0) ? '+' : ''}${(parseFloat(mainBook.estimatedPrice) - parseFloat(mainBook.purchasePrice || 0)).toFixed(2)})
                                     </span>
                                   )}
                                 </span>
@@ -501,9 +501,9 @@ export default function Inventory() {
                             {book.estimatedPrice && (
                               <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                                 Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
-                                {parseFloat(book.estimatedPrice) > parseFloat(book.purchasePrice || 0) && (
-                                  <span className="text-green-600 ml-1">
-                                    (+${(parseFloat(book.estimatedPrice) - parseFloat(book.purchasePrice || 0)).toFixed(2)})
+                                {parseFloat(book.estimatedPrice) !== parseFloat(book.purchasePrice || 0) && (
+                                  <span className={`ml-1 ${parseFloat(book.estimatedPrice) > parseFloat(book.purchasePrice || 0) ? 'text-green-600' : 'text-red-600'}`}>
+                                    ({parseFloat(book.estimatedPrice) > parseFloat(book.purchasePrice || 0) ? '+' : ''}${(parseFloat(book.estimatedPrice) - parseFloat(book.purchasePrice || 0)).toFixed(2)})
                                   </span>
                                 )}
                               </span>
