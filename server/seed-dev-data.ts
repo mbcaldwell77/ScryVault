@@ -45,13 +45,14 @@ const developmentBooks = [
     publisher: 'Random House',
     year: '2018',
     imageUrl: 'https://covers.openlibrary.org/b/isbn/9781984822178-M.jpg',
-    purchasePrice: 14.99,
-    estimatedPrice: 22.00,
+    purchasePrice: '14.99',
+    estimatedPrice: '22.00',
     condition: 'Very Good',
+    format: 'Trade Paperback',
     location: 'Shelf B-3',
     type: 'COGS' as const,
     status: 'available' as const,
-    dateAdded: new Date('2024-01-20')
+    purchaseDate: '2024-01-20'
   },
   {
     sku: '9780-345678',
@@ -61,13 +62,14 @@ const developmentBooks = [
     publisher: 'Harper',
     year: '2014',
     imageUrl: 'https://covers.openlibrary.org/b/isbn/9780062316097-M.jpg',
-    purchasePrice: 16.99,
-    estimatedPrice: 25.00,
+    purchasePrice: '16.99',
+    estimatedPrice: '25.00',
     condition: 'Good',
+    format: 'Hardcover',
     location: 'Shelf C-2',
     type: 'COGS' as const,
     status: 'available' as const,
-    dateAdded: new Date('2024-02-05')
+    purchaseDate: '2024-02-05'
   },
   {
     sku: '9780-456789',
@@ -77,13 +79,14 @@ const developmentBooks = [
     publisher: 'Atria Books',
     year: '2017',
     imageUrl: 'https://covers.openlibrary.org/b/isbn/9780593230572-M.jpg',
-    purchasePrice: 11.50,
-    estimatedPrice: 19.99,
+    purchasePrice: '11.50',
+    estimatedPrice: '19.99',
     condition: 'Like New',
+    format: 'Trade Paperback',
     location: 'Shelf D-1',
     type: 'COGS' as const,
     status: 'available' as const,
-    dateAdded: new Date('2024-02-15')
+    purchaseDate: '2024-02-15'
   },
   {
     sku: '9781-567890',
@@ -93,13 +96,14 @@ const developmentBooks = [
     publisher: 'Avery',
     year: '2018',
     imageUrl: 'https://covers.openlibrary.org/b/isbn/9780735211292-M.jpg',
-    purchasePrice: 13.99,
-    estimatedPrice: 21.50,
+    purchasePrice: '13.99',
+    estimatedPrice: '21.50',
     condition: 'Very Good',
+    format: 'Hardcover',
     location: 'Shelf E-4',
     type: 'COGS' as const,
     status: 'available' as const,
-    dateAdded: new Date('2024-03-01')
+    purchaseDate: '2024-03-01'
   },
   {
     sku: '9780-678901',
@@ -109,13 +113,14 @@ const developmentBooks = [
     publisher: 'Crown',
     year: '2018',
     imageUrl: 'https://covers.openlibrary.org/b/isbn/9780525559474-M.jpg',
-    purchasePrice: 18.00,
-    estimatedPrice: 28.99,
+    purchasePrice: '18.00',
+    estimatedPrice: '28.99',
     condition: 'Like New',
+    format: 'Hardcover',
     location: 'Shelf F-2',
     type: 'COGS' as const,
     status: 'available' as const,
-    dateAdded: new Date('2024-03-10')
+    purchaseDate: '2024-03-10'
   },
   {
     sku: '9781-789123',
@@ -125,13 +130,14 @@ const developmentBooks = [
     publisher: 'Celadon Books',
     year: '2019',
     imageUrl: 'https://covers.openlibrary.org/b/isbn/9780525521143-M.jpg',
-    purchasePrice: 9.99,
-    estimatedPrice: 16.00,
+    purchasePrice: '9.99',
+    estimatedPrice: '16.00',
     condition: 'Good',
+    format: 'Trade Paperback',
     location: 'Shelf G-1',
     type: 'COGS' as const,
     status: 'available' as const,
-    dateAdded: new Date('2024-03-15')
+    purchaseDate: '2024-03-15'
   },
   {
     sku: '9780-890234',
@@ -141,13 +147,14 @@ const developmentBooks = [
     publisher: 'HarperOne',
     year: '1988',
     imageUrl: 'https://covers.openlibrary.org/b/isbn/9780062457714-M.jpg',
-    purchasePrice: 7.50,
-    estimatedPrice: 14.99,
+    purchasePrice: '7.50',
+    estimatedPrice: '14.99',
     condition: 'Acceptable',
+    format: 'Mass Market Paperback',
     location: 'Shelf H-3',
     type: 'COGS' as const,
     status: 'available' as const,
-    dateAdded: new Date('2024-03-20')
+    purchaseDate: '2024-03-20'
   },
   {
     sku: '9781-901345',
@@ -157,19 +164,25 @@ const developmentBooks = [
     publisher: 'G.P. Putnam\'s Sons',
     year: '2018',
     imageUrl: 'https://covers.openlibrary.org/b/isbn/9780525436287-M.jpg',
-    purchasePrice: 15.99,
-    estimatedPrice: 24.00,
+    purchasePrice: '15.99',
+    estimatedPrice: '24.00',
     condition: 'Very Good',
+    format: 'Trade Paperback',
     location: 'Shelf I-2',
     type: 'COGS' as const,
     status: 'available' as const,
-    dateAdded: new Date('2024-04-01')
+    purchaseDate: '2024-04-01'
   }
 ];
 
 export async function seedDevelopmentData() {
   try {
     console.log('[SEED] Starting development data seeding...');
+    
+    // Safety check: Only allow in development environment
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[SEED] Cannot seed development data in production environment');
+    }
     
     // Clear existing data in development
     await db.delete(books);
