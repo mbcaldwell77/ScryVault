@@ -495,12 +495,17 @@ export default function Inventory() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
                             <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Copy {index + 1}</span>
-                            <span className="font-bold text-sm" style={{ color: 'var(--gold-accent)' }}>
+                            <span className="font-bold text-sm text-green-600">
                               ${parseFloat(book.purchasePrice || 0).toFixed(2)}
                             </span>
                             {book.estimatedPrice && (
                               <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                                 Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
+                                {parseFloat(book.estimatedPrice) > parseFloat(book.purchasePrice || 0) && (
+                                  <span className="text-green-600 ml-1">
+                                    (+${(parseFloat(book.estimatedPrice) - parseFloat(book.purchasePrice || 0)).toFixed(2)})
+                                  </span>
+                                )}
                               </span>
                             )}
                           </div>
