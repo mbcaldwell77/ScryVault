@@ -1,5 +1,6 @@
 import { db } from './db';
 import { books } from '@shared/schema';
+import { environmentLockdown } from './environment-lockdown';
 
 // Development seed data - comprehensive dummy dataset
 const developmentBooks = [
@@ -179,10 +180,10 @@ export async function seedDevelopmentData() {
   try {
     console.log('[SEED] Starting development data seeding...');
     
-    // Safety check: Only allow in development environment
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('[SEED] Cannot seed development data in production environment');
-    }
+    // CRITICAL: Validate environment safety
+    environmentLockdown.validateSeedOperation();
+    await environmentLockdown.validateDatabaseConnection();
+    environmentLockdown.requireExplicitConfirmation('SEED_DEVELOPMENT_DATA', developmentBooks.length);
     
     // Clear existing data in development
     await db.delete(books);
@@ -208,6 +209,12 @@ export async function seedDevelopmentData() {
 export async function clearDevelopmentData() {
   try {
     console.log('[SEED] Clearing development data...');
+    
+    // CRITICAL: Validate environment safety
+    environmentLockdown.validateClearOperation();
+    const validation = await environmentLockdown.validateDatabaseConnection();
+    environmentLockdown.requireExplicitConfirmation('CLEAR_ALL_DATA', validation.bookCount);
+    
     const result = await db.delete(books);
     console.log('[SEED] Development data cleared');
     return result;
