@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw, Edit, Trash2 } from "lucide-react";
+import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw, Edit, Trash2, TrendingUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
+import { usePricingData, getConfidenceDisplay } from "@/hooks/use-pricing";
+import LivePricingDisplay from "@/components/live-pricing-display";
 import EditBookDialog from "@/components/edit-book-dialog";
 import DeleteBookDialog from "@/components/delete-book-dialog";
 
@@ -429,22 +431,28 @@ export default function Inventory() {
                       
                       {copyCount === 1 ? (
                         <div className="border-t border-slate-200 pt-3 mt-4 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-green-600 font-bold text-sm">
-                                ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
-                              </span>
-                              {mainBook.estimatedPrice && (
-                                <span className="text-xs text-slate-500">
-                                  Est: ${parseFloat(mainBook.estimatedPrice).toFixed(2)}
-                                  {parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice || 0) && (
-                                    <span className="text-green-600 ml-1">
-                                      (+${(parseFloat(mainBook.estimatedPrice) - parseFloat(mainBook.purchasePrice || 0)).toFixed(2)})
-                                    </span>
-                                  )}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2">
+                                <span className="text-green-600 font-bold text-sm">
+                                  ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
                                 </span>
-                              )}
+                                {mainBook.estimatedPrice && (
+                                  <span className="text-xs text-slate-500">
+                                    Est: ${parseFloat(mainBook.estimatedPrice).toFixed(2)}
+                                  </span>
+                                )}
+                              </div>
                             </div>
+                            <LivePricingDisplay 
+                              isbn={mainBook.isbn}
+                              condition={mainBook.condition}
+                              purchasePrice={mainBook.purchasePrice || '0'}
+                              compact={true}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between mt-2">
+                            <div></div>
                             <div className="flex items-center space-x-2">
                               <Button
                                 variant="outline"
