@@ -430,29 +430,23 @@ export default function Inventory() {
                       </p>
                       
                       {copyCount === 1 ? (
-                        <div className="border-t border-slate-200 pt-3 mt-4 space-y-2">
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-2">
-                                <span className="text-green-600 font-bold text-sm">
-                                  ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
+                        <div className="border-t pt-3 mt-4" style={{ borderColor: 'var(--dark-border)' }}>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-green-600 font-bold text-sm">
+                                ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
+                              </span>
+                              {mainBook.estimatedPrice && (
+                                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                  Est: ${parseFloat(mainBook.estimatedPrice).toFixed(2)}
+                                  {parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice || 0) && (
+                                    <span className="text-green-600 ml-1">
+                                      (+${(parseFloat(mainBook.estimatedPrice) - parseFloat(mainBook.purchasePrice || 0)).toFixed(2)})
+                                    </span>
+                                  )}
                                 </span>
-                                {mainBook.estimatedPrice && (
-                                  <span className="text-xs text-slate-500">
-                                    Est: ${parseFloat(mainBook.estimatedPrice).toFixed(2)}
-                                  </span>
-                                )}
-                              </div>
+                              )}
                             </div>
-                            <LivePricingDisplay 
-                              isbn={mainBook.isbn}
-                              condition={mainBook.condition}
-                              purchasePrice={mainBook.purchasePrice || '0'}
-                              compact={true}
-                            />
-                          </div>
-                          <div className="flex items-center justify-between mt-2">
-                            <div></div>
                             <div className="flex items-center space-x-2">
                               <Button
                                 variant="outline"
@@ -480,7 +474,7 @@ export default function Inventory() {
                               </Button>
                             </div>
                           </div>
-                          <div className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>
+                          <div className="text-xs font-mono mt-2" style={{ color: 'var(--text-secondary)' }}>
                             SKU: {mainBook.sku}
                           </div>
                         </div>
@@ -498,7 +492,7 @@ export default function Inventory() {
                   <div className="border-t p-3 space-y-3" style={{ borderColor: 'var(--dark-border)', backgroundColor: 'var(--dark-surface)' }}>
                     {isbnBooks.map((book: any, index: number) => (
                       <div key={book.id} className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)' }}>
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
                             <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Copy {index + 1}</span>
                             <span className="font-bold text-sm" style={{ color: 'var(--gold-accent)' }}>
@@ -534,7 +528,7 @@ export default function Inventory() {
                             </Button>
                           </div>
                         </div>
-                        <div className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>
+                        <div className="text-xs font-mono mt-2" style={{ color: 'var(--text-secondary)' }}>
                           SKU: {book.sku}
                         </div>
                       </div>
