@@ -1,0 +1,129 @@
+# Fix eBay Webhook Verification
+
+The webhook verification is failing because our implementation doesn't match eBay's actual process. Here's what needs to be fixed:
+
+## Current Problem
+- Our code expects POST with challenge in body
+- eBay actually sends GET with challenge as query parameter
+- Hash calculation and response format need to match eBay spec
+
+## Required Fix
+
+Update the webhook handler in `server/routes.ts` to add proper GET request handling:
+
+```typescript
+// Add this import at the top for crypto
+import crypto from 'crypto';
+
+// Replace the existing webhook endpoints with this:
+
+// GET endpoint for eBay verification challenge
+app.get("/api/ebay/webhook", async (req, res) => {
+  try {
+    console.log('[eBay Webhook] === VERIFICATION GET REQUEST ===');
+    console.log('[eBay Webhook] Query params:', JSON.stringify(req.query, null, 2));
+    
+    const { challenge_code } = req.query;
+    
+    if (challenge_code) {
+      const challengeCode = challenge_code as string;
+      const verificationToken = process.env.EBAY_WEBHOOK_TOKEN || 'scryvaul_webhook_verification_2025';
+      const endpoint = 'https://scryvault.replit.app/api/ebay/webhook';
+      
+      console.log('[eBay Webhook] Challenge code:', challengeCode);
+      console.log('[eBay Webhook] Verification token:', verificationToken);
+      console.log('[eBay Webhook] Endpoint:', endpoint);
+      
+      // Hash in the order: challengeCode + verificationToken + endpoint
+      const hash = crypto.createHash('sha256');
+      hash.update(challengeCode);
+      hash.update(verificationToken);
+      hash.update(endpoint);
+      const challengeResponse = hash.digest('hex');
+      
+      console.log('[eBay Webhook] Computed challenge response:', challengeResponse);
+      
+      return res.status(200)
+        .set('Content-Type', 'application/json')
+        .json({ challengeResponse });
+    }
+    
+    // If no challenge_code, return status info
+    res.json({ 
+      status: "eBay webhook endpoint is active", 
+      timestamp: new Date().toISOString() 
+    });
+    
+  } catch (error) {
+    console.error('[eBay Webhook] GET error:', error);
+    res.status(500).json({ 
+      error: 'Webhook verification failed',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Keep the existing POST endpoint for actual notifications
+app.post("/api/ebay/webhook", async (req, res) => {
+  try {
+    console.log('[eBay Webhook] === INCOMING POST REQUEST ===');
+    console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('[eBay Webhook] Body:', JSON.stringify(req.body, null, 2));
+    
+    // Handle marketplace account deletion notifications
+    const { metadata, notification } = req.body;
+    
+    if (metadata?.topic === 'MARKETPLACE_ACCOUNT_DELETION') {
+      console.log('[eBay Webhook] Account deletion notification:', {
+        notificationId: notification?.notificationId,
+        eventDate: notification?.eventDate,
+        publishDate: notification?.publishDate,
+        username: notification?.data?.username,
+        userId: notification?.data?.userId
+      });
+      
+      // Process deletion request - log and acknowledge
+      // In production, this would trigger user data deletion
+      
+      return res.status(200).json({ 
+        message: 'Account deletion notification processed successfully', 
+        notificationId: notification?.notificationId,
+        processedAt: new Date().toISOString()
+      });
+    }
+    
+    // Handle other notification types
+    console.log('[eBay Webhook] Other notification received:', req.body);
+    res.status(200).json({ 
+      message: 'Notification received and processed', 
+      timestamp: new Date().toISOString() 
+    });
+    
+  } catch (error) {
+    console.error('[eBay Webhook] POST error:', error);
+    res.status(500).json({ 
+      error: 'Webhook processing failed',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+```
+
+## What This Fix Does
+
+1. **Adds proper GET handler** - Handles eBay's verification challenge
+2. **Correct hash calculation** - Uses SHA-256 of `challengeCode + verificationToken + endpoint`
+3. **Proper response format** - Returns `{"challengeResponse": "hex_hash"}`
+4. **Keeps POST handler** - For actual account deletion notifications
+5. **Better logging** - Clear debug info for troubleshooting
+
+## After This Fix
+
+1. Deploy the updated code
+2. Fill out the eBay form with:
+   - **Endpoint:** `https://scryvault.replit.app/api/ebay/webhook`
+   - **Verification token:** `scryvaul_webhook_verification_2025`
+3. Click "Save" to trigger verification
+4. Use "Send Test Notification" to verify it works
+
+The verification should now pass and webhook compliance will be complete.

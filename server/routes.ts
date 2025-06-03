@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertBookSchema } from "@shared/schema";
 import { z } from "zod";
 import { EbayPricingService, type PricingServiceConfig } from "./pricing-service";
+import crypto from 'crypto';
 
 // ISBN normalization functions
 function convertISBN10to13(isbn10: string): string {
@@ -260,54 +261,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // eBay webhook endpoint for marketplace compliance
+  // GET endpoint for eBay verification challenge
+  app.get("/api/ebay/webhook", async (req, res) => {
+    try {
+      console.log('[eBay Webhook] === VERIFICATION GET REQUEST ===');
+      console.log('[eBay Webhook] Query params:', JSON.stringify(req.query, null, 2));
+      
+      const { challenge_code } = req.query;
+      
+      if (challenge_code) {
+        const challengeCode = challenge_code as string;
+        const verificationToken = process.env.EBAY_WEBHOOK_TOKEN || 'scryvaul_webhook_verification_2025';
+        const endpoint = 'https://scryvault.replit.app/api/ebay/webhook';
+        
+        console.log('[eBay Webhook] Challenge code:', challengeCode);
+        console.log('[eBay Webhook] Verification token:', verificationToken);
+        console.log('[eBay Webhook] Endpoint:', endpoint);
+        
+        // Hash in the order: challengeCode + verificationToken + endpoint
+        const hash = crypto.createHash('sha256');
+        hash.update(challengeCode);
+        hash.update(verificationToken);
+        hash.update(endpoint);
+        const challengeResponse = hash.digest('hex');
+        
+        console.log('[eBay Webhook] Computed challenge response:', challengeResponse);
+        
+        return res.status(200)
+          .set('Content-Type', 'application/json')
+          .json({ challengeResponse });
+      }
+      
+      // If no challenge_code, return status info
+      res.json({ 
+        status: "eBay webhook endpoint is active", 
+        timestamp: new Date().toISOString() 
+      });
+      
+    } catch (error) {
+      console.error('[eBay Webhook] GET error:', error);
+      res.status(500).json({ 
+        error: 'Webhook verification failed',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // POST endpoint for actual notifications
   app.post("/api/ebay/webhook", async (req, res) => {
     try {
       console.log('[eBay Webhook] === INCOMING POST REQUEST ===');
       console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
       console.log('[eBay Webhook] Body:', JSON.stringify(req.body, null, 2));
-      console.log('[eBay Webhook] Query params:', JSON.stringify(req.query, null, 2));
-      
-      const { challengeCode, verificationToken } = req.body;
-      
-      // Handle verification challenge with proper eBay-compliant response
-      if (challengeCode && verificationToken) {
-        console.log('[eBay Webhook] Verification challenge received:', challengeCode);
-        console.log('[eBay Webhook] Verification token received:', verificationToken);
-        
-        // Use environment variable for token flexibility
-        const expectedToken = process.env.EBAY_WEBHOOK_TOKEN || 'scryvaul_webhook_verification_2025';
-        console.log('[eBay Webhook] Expected token:', expectedToken);
-        
-        if (verificationToken === expectedToken) {
-          console.log('[eBay Webhook] Token verified successfully - sending challengeResponse');
-          
-          // eBay requires specific response format for verification
-          const response = { challengeResponse: challengeCode };
-          console.log('[eBay Webhook] Sending response:', JSON.stringify(response));
-          
-          return res.status(200)
-            .set('Content-Type', 'application/json')
-            .json(response);
-        } else {
-          console.error('[eBay Webhook] Token mismatch. Expected:', expectedToken, 'Received:', verificationToken);
-          return res.status(401).json({ error: 'Invalid verification token' });
-        }
-      }
       
       // Handle marketplace account deletion notifications
-      const { notificationType, notificationId, eventDate, publishDate } = req.body;
-      if (notificationType === 'MARKETPLACE_ACCOUNT_DELETION') {
-        console.log('[eBay Webhook] Account deletion notification:', { notificationId, eventDate, publishDate });
+      const { metadata, notification } = req.body;
+      
+      if (metadata?.topic === 'MARKETPLACE_ACCOUNT_DELETION') {
+        console.log('[eBay Webhook] Account deletion notification:', {
+          notificationId: notification?.notificationId,
+          eventDate: notification?.eventDate,
+          publishDate: notification?.publishDate,
+          username: notification?.data?.username,
+          userId: notification?.data?.userId
+        });
         
-        // Process deletion request - this would typically involve:
-        // 1. Logging the deletion request
-        // 2. Removing user data per GDPR/privacy requirements  
-        // 3. Confirming deletion completion
+        // Process deletion request - log and acknowledge
+        // In production, this would trigger user data deletion
         
         return res.status(200).json({ 
           message: 'Account deletion notification processed successfully', 
-          notificationId,
+          notificationId: notification?.notificationId,
           processedAt: new Date().toISOString()
         });
       }
@@ -320,17 +344,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
     } catch (error) {
-      console.error('[eBay Webhook] Processing error:', error);
+      console.error('[eBay Webhook] POST error:', error);
       res.status(500).json({ 
         error: 'Webhook processing failed',
         timestamp: new Date().toISOString()
       });
     }
-  });
-
-  // GET endpoint for testing webhook accessibility
-  app.get("/api/ebay/webhook", (req, res) => {
-    res.json({ status: "eBay webhook endpoint is active", timestamp: new Date().toISOString() });
   });
 
   const httpServer = createServer(app);
