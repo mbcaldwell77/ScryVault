@@ -261,6 +261,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Catch-all logger for eBay webhook requests
+  app.use("/api/ebay/webhook", (req, res, next) => {
+    console.log(`[eBay Webhook] === ${req.method} REQUEST INTERCEPTED ===`);
+    console.log('[eBay Webhook] Method:', req.method);
+    console.log('[eBay Webhook] URL:', req.url);
+    console.log('[eBay Webhook] Query:', JSON.stringify(req.query, null, 2));
+    console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
+    if (req.method === 'POST' || req.method === 'PUT') {
+      console.log('[eBay Webhook] Body:', JSON.stringify(req.body, null, 2));
+    }
+    next();
+  });
+
   // GET endpoint for eBay verification challenge
   app.get("/api/ebay/webhook", async (req, res) => {
     try {
@@ -311,8 +324,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ebay/webhook", async (req, res) => {
     try {
       console.log('[eBay Webhook] === INCOMING POST REQUEST ===');
+      console.log('[eBay Webhook] Timestamp:', new Date().toISOString());
       console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
-      console.log('[eBay Webhook] Body:', JSON.stringify(req.body, null, 2));
+      console.log('[eBay Webhook] Raw Body:', JSON.stringify(req.body, null, 2));
+      console.log('[eBay Webhook] Body type:', typeof req.body);
+      console.log('[eBay Webhook] Body keys:', Object.keys(req.body || {}));
       
       // Handle marketplace account deletion notifications
       const { metadata, notification } = req.body;
