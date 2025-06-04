@@ -174,23 +174,8 @@ export default function Inventory() {
   if (isLoading) {
     return (
       <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
-        {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setLocation("/")}
-              className="text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </Button>
-            <h1 className="text-xl font-semibold">Inventory</h1>
-          </div>
-          <Skeleton className="h-6 w-8" style={{ backgroundColor: 'var(--dark-surface)' }} />
-        </div>
-
-        {/* Loading Skeletons */}
+        <GlobalHeader title="My Inventory" showBackButton={true} />
+        
         <div className="p-4 space-y-3">
           {[...Array(3)].map((_, i) => (
             <Skeleton key={i} className="h-24 w-full" style={{ backgroundColor: 'var(--dark-card)' }} />
