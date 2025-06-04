@@ -3,6 +3,7 @@ import { ArrowLeft, Plus, X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import GlobalHeader from "@/components/global-header";
 
 interface BookDetailsProps {
   isbn: string;
@@ -19,18 +20,7 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
   if (isLoading) {
     return (
       <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
-        {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setLocation("/scanner")}
-            className="text-white hover:bg-white/20"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Button>
-          <h1 className="text-xl font-semibold">Book Details</h1>
-        </div>
+        <GlobalHeader title="Book Details" showBackButton={true} onBack={() => setLocation("/scanner")} />
 
         {/* Loading State */}
         <div className="flex-1 flex items-center justify-center p-6">
@@ -46,18 +36,7 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
   if (error || !bookData) {
     return (
       <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
-        {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setLocation("/scanner")}
-            className="text-white hover:bg-blue-600"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Button>
-          <h1 className="text-xl font-semibold">Book Details</h1>
-        </div>
+        <GlobalHeader title="Book Details" showBackButton={true} onBack={() => setLocation("/scanner")} />
 
         {/* Error State */}
         <div className="flex-1 flex items-center justify-center p-6">

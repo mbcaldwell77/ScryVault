@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocationAutocomplete } from "@/hooks/use-location-autocomplete";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { insertBookSchema } from "@shared/schema";
+import GlobalHeader from "@/components/global-header";
 
 interface AddInventoryProps {
   isbn: string;
