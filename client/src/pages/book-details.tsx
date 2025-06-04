@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import GlobalHeader from "@/components/global-header";
+import LivePricingDisplay from "@/components/live-pricing-display";
 
 interface BookDetailsProps {
   isbn: string;

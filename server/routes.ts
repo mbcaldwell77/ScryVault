@@ -43,9 +43,11 @@ if (process.env.EBAY_APP_ID) {
   const config: PricingServiceConfig = {
     appId: process.env.EBAY_APP_ID,
     userToken: process.env.EBAY_USER_TOKEN,
-    cacheDurationMs: 60 * 60 * 1000, // 1 hour cache
+    cacheDurationMs: 60 * 60 * 1000, // 1 hour memory cache
     maxRetries: 3,
-    timeoutMs: 10000 // 10 second timeout
+    timeoutMs: 10000, // 10 second timeout
+    defaultCacheDays: 90, // 90 days database cache by default
+    enableDatabaseCache: true // Enable persistent database caching
   };
   pricingService = new EbayPricingService(config);
   
@@ -204,9 +206,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get market pricing data for a book
-  app.get("/api/book-pricing/:isbn", async (req, res) => {
+  app.get("/api/book-pricing/:isbn", optionalAuth, async (req: AuthenticatedRequest, res) => {
     try {
       const { isbn } = req.params;
+      const userId = req.user?.id;
       
       if (!pricingService) {
         return res.status(503).json({ 
@@ -215,31 +218,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const pricingData = await pricingService.getPricingData(isbn);
+      const pricingData = await pricingService.getPricingData(isbn, userId);
       
       if (!pricingData) {
         return res.status(404).json({ 
           error: "No pricing data found",
-          message: "No recent sales found for this ISBN" 
+          message: "No recent sales found for this ISBN",
+          source: "ebay_api",
+          rateLimited: false
         });
       }
       
       res.json(pricingData);
     } catch (error) {
       console.error("Pricing API error:", error);
-      res.status(500).json({ error: "Failed to fetch pricing data" });
+      
+      // Enhanced error response for rate limiting
+      if (error instanceof Error && error.message.includes('rate limit')) {
+        return res.status(429).json({ 
+          error: "Rate limited",
+          message: "eBay API rate limit exceeded. Using cached data when available.",
+          retryAfter: 300, // 5 minutes
+          source: "ebay_api",
+          rateLimited: true
+        });
+      }
+      
+      res.status(500).json({ 
+        error: "Failed to fetch pricing data",
+        message: "An error occurred while fetching market data",
+        source: "ebay_api",
+        rateLimited: false
+      });
+    }
+  });
+
+  // Get or create user settings
+  app.get("/api/user/settings", authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+      const userId = req.user!.id;
+      
+      let settings = await db.select()
+        .from(userSettings)
+        .where(eq(userSettings.userId, userId))
+        .limit(1);
+      
+      if (settings.length === 0) {
+        // Create default settings
+        const newSettings = await db.insert(userSettings)
+          .values({ userId })
+          .returning();
+        settings = newSettings;
+      }
+      
+      res.json(settings[0]);
+    } catch (error) {
+      console.error("User settings error:", error);
+      res.status(500).json({ error: "Failed to fetch user settings" });
+    }
+  });
+
+  // Update user settings
+  app.put("/api/user/settings", authenticateToken, async (req: AuthenticatedRequest, res) => {
+    try {
+      const userId = req.user!.id;
+      const { pricingCacheDays, enablePricingCache, autoRefreshPricing, pricingConfidenceThreshold } = req.body;
+      
+      const updatedSettings = await db.update(userSettings)
+        .set({
+          pricingCacheDays: pricingCacheDays || 90,
+          enablePricingCache: enablePricingCache !== undefined ? enablePricingCache : true,
+          autoRefreshPricing: autoRefreshPricing !== undefined ? autoRefreshPricing : true,
+          pricingConfidenceThreshold: pricingConfidenceThreshold || 'medium',
+          updatedAt: new Date()
+        })
+        .where(eq(userSettings.userId, userId))
+        .returning();
+      
+      if (updatedSettings.length === 0) {
+        // Create if doesn't exist
+        const newSettings = await db.insert(userSettings)
+          .values({
+            userId,
+            pricingCacheDays: pricingCacheDays || 90,
+            enablePricingCache: enablePricingCache !== undefined ? enablePricingCache : true,
+            autoRefreshPricing: autoRefreshPricing !== undefined ? autoRefreshPricing : true,
+            pricingConfidenceThreshold: pricingConfidenceThreshold || 'medium'
+          })
+          .returning();
+        return res.json(newSettings[0]);
+      }
+      
+      res.json(updatedSettings[0]);
+    } catch (error) {
+      console.error("Update user settings error:", error);
+      res.status(500).json({ error: "Failed to update user settings" });
     }
   });
 
   // Update pricing data for a specific book in inventory
-  app.put("/api/books/:id/pricing", async (req, res) => {
+  app.put("/api/books/:id/pricing", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
+      const userId = req.user!.id;
+      
       if (isNaN(id)) {
         return res.status(400).json({ error: "Invalid book ID" });
       }
 
-      const book = await storage.getBook(id);
+      const book = await storage.getBook(id, userId);
       if (!book) {
         return res.status(404).json({ error: "Book not found" });
       }

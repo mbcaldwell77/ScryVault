@@ -78,27 +78,52 @@ export class EbayPricingService {
   private requestCount = 0;
   private errorCount = 0;
   private accessStats = new Map<string, { count: number; lastAccessed: number }>();
+  private lastRateLimitError = 0;
+  private rateLimitBackoffMs = 0;
 
   constructor(config: PricingServiceConfig) {
     this.config = config;
   }
 
-  async getPricingData(isbn: string): Promise<PricingData | null> {
+  async getPricingData(isbn: string, userId?: number): Promise<PricingData | null> {
     const startTime = Date.now();
     
     try {
-      // Check cache first
+      // Check database cache first if enabled
+      if (this.config.enableDatabaseCache) {
+        const dbCached = await this.getDatabaseCachedData(isbn, userId);
+        if (dbCached) {
+          // Also update memory cache for faster subsequent access
+          this.cache.set(isbn, {
+            data: dbCached,
+            expires: Date.now() + (60 * 60 * 1000), // 1 hour memory cache
+            accessCount: 1,
+            lastAccessed: Date.now()
+          });
+          this.logRequest(isbn, 'db_cache_hit', Date.now() - startTime);
+          return dbCached;
+        }
+      }
+
+      // Check memory cache
       const cached = this.getCachedData(isbn);
       if (cached) {
-        this.logRequest(isbn, 'cache_hit', Date.now() - startTime);
+        this.logRequest(isbn, 'memory_cache_hit', Date.now() - startTime);
         return cached;
+      }
+
+      // Only fetch from eBay API if we haven't hit rate limits recently
+      if (this.shouldSkipAPICall()) {
+        this.logRequest(isbn, 'rate_limit_skip', Date.now() - startTime);
+        return null;
       }
 
       // Fetch from eBay API
       const pricingData = await this.fetchFromEbay(isbn);
       
       if (pricingData) {
-        this.setCachedData(isbn, pricingData);
+        // Store in both memory and database cache
+        await this.setCachedData(isbn, pricingData, userId);
         this.logRequest(isbn, 'api_success', Date.now() - startTime);
       } else {
         this.logRequest(isbn, 'no_data', Date.now() - startTime);
@@ -107,6 +132,18 @@ export class EbayPricingService {
       return pricingData;
     } catch (error) {
       this.errorCount++;
+      
+      // Check if this is a rate limit error
+      if (error instanceof Error && error.message.includes('rate limit')) {
+        this.logRequest(isbn, 'rate_limit_error', Date.now() - startTime, error);
+        // Try to return any cached data even if expired
+        const expiredCached = await this.getExpiredCachedData(isbn);
+        if (expiredCached) {
+          console.log(`[EbayPricing] Returning expired cache data for ${isbn} due to rate limit`);
+          return expiredCached;
+        }
+      }
+      
       this.logRequest(isbn, 'error', Date.now() - startTime, error);
       return null;
     }
@@ -173,6 +210,14 @@ export class EbayPricingService {
           headers: Object.fromEntries(response.headers.entries()),
           body: errorText
         });
+        
+        // Check for rate limit error
+        if (response.status === 500 && errorText.includes('rate limit')) {
+          this.lastRateLimitError = Date.now();
+          this.rateLimitBackoffMs = Math.min(this.rateLimitBackoffMs * 2 || 5 * 60 * 1000, 2 * 60 * 60 * 1000); // 5min to 2hr
+          throw new Error(`eBay API rate limit exceeded - backing off for ${this.rateLimitBackoffMs / (60 * 1000)} minutes`);
+        }
+        
         throw new Error(`eBay API error: ${response.status} - ${response.statusText}`);
       }
 
@@ -390,29 +435,27 @@ export class EbayPricingService {
     return null;
   }
 
-  private setCachedData(isbn: string, data: PricingData): void {
+  private async setCachedData(isbn: string, data: PricingData, userId?: number): Promise<void> {
     const now = Date.now();
     const accessStats = this.accessStats.get(isbn);
     
     // Intelligent cache duration based on access frequency
-    let cacheDuration = this.config.cacheDurationMs; // Default 1 hour
+    let cacheDuration = this.config.cacheDurationMs; // Default 1 hour for memory
     
     if (accessStats) {
       const accessCount = accessStats.count;
       const recentAccess = (now - accessStats.lastAccessed) < 24 * 60 * 60 * 1000; // Within 24 hours
       
       if (accessCount >= 10 && recentAccess) {
-        // Frequently accessed books: 1 hour cache
-        cacheDuration = 60 * 60 * 1000;
+        cacheDuration = 60 * 60 * 1000; // 1 hour
       } else if (accessCount >= 3 && recentAccess) {
-        // Moderately accessed books: 6 hour cache
-        cacheDuration = 6 * 60 * 60 * 1000;
+        cacheDuration = 6 * 60 * 60 * 1000; // 6 hours
       } else {
-        // Slow movers: 24 hour cache
-        cacheDuration = 24 * 60 * 60 * 1000;
+        cacheDuration = 24 * 60 * 60 * 1000; // 24 hours
       }
     }
     
+    // Set memory cache
     this.cache.set(isbn, {
       data,
       expires: now + cacheDuration,
@@ -420,7 +463,150 @@ export class EbayPricingService {
       lastAccessed: now
     });
     
-    console.log(`[EbayPricing] Cached data for ${isbn} with ${cacheDuration / (60 * 60 * 1000)}h expiration`);
+    // Set database cache with configurable duration
+    if (this.config.enableDatabaseCache) {
+      await this.setDatabaseCachedData(isbn, data, userId);
+    }
+    
+    console.log(`[EbayPricing] Cached data for ${isbn} with ${cacheDuration / (60 * 60 * 1000)}h memory expiration`);
+  }
+
+  private async getDatabaseCachedData(isbn: string, userId?: number): Promise<PricingData | null> {
+    try {
+      // Get user's cache settings
+      const cacheDays = await this.getUserCacheDays(userId);
+      const cutoffDate = new Date(Date.now() - (cacheDays * 24 * 60 * 60 * 1000));
+      
+      const cached = await db.select()
+        .from(pricingCache)
+        .where(and(
+          eq(pricingCache.isbn, isbn),
+          gt(pricingCache.expiresAt, new Date())
+        ))
+        .limit(1);
+      
+      if (cached.length > 0) {
+        const entry = cached[0];
+        
+        // Update access count
+        await db.update(pricingCache)
+          .set({ 
+            accessCount: entry.accessCount + 1,
+            lastAccessedAt: new Date()
+          })
+          .where(eq(pricingCache.isbn, isbn));
+        
+        console.log(`[EbayPricing] Database cache hit for ${isbn}, age: ${Math.round((Date.now() - entry.fetchedAt.getTime()) / (24 * 60 * 60 * 1000))} days`);
+        
+        return JSON.parse(entry.pricingData) as PricingData;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('[EbayPricing] Database cache error:', error);
+      return null;
+    }
+  }
+
+  private async setDatabaseCachedData(isbn: string, data: PricingData, userId?: number): Promise<void> {
+    try {
+      const cacheDays = await this.getUserCacheDays(userId);
+      const expiresAt = new Date(Date.now() + (cacheDays * 24 * 60 * 60 * 1000));
+      
+      await db.insert(pricingCache)
+        .values({
+          isbn,
+          pricingData: JSON.stringify(data),
+          confidence: data.confidence,
+          totalSales: data.totalSales,
+          averagePrice: data.averagePrice.toString(),
+          expiresAt,
+          accessCount: 1,
+          lastAccessedAt: new Date()
+        })
+        .onConflictDoUpdate({
+          target: pricingCache.isbn,
+          set: {
+            pricingData: JSON.stringify(data),
+            confidence: data.confidence,
+            totalSales: data.totalSales,
+            averagePrice: data.averagePrice.toString(),
+            fetchedAt: new Date(),
+            expiresAt,
+            accessCount: 1,
+            lastAccessedAt: new Date()
+          }
+        });
+      
+      console.log(`[EbayPricing] Stored in database cache for ${isbn}, expires in ${cacheDays} days`);
+    } catch (error) {
+      console.error('[EbayPricing] Database cache store error:', error);
+    }
+  }
+
+  private async getUserCacheDays(userId?: number): Promise<number> {
+    if (!userId) return this.config.defaultCacheDays;
+    
+    try {
+      const settings = await db.select()
+        .from(userSettings)
+        .where(eq(userSettings.userId, userId))
+        .limit(1);
+      
+      return settings.length > 0 ? settings[0].pricingCacheDays : this.config.defaultCacheDays;
+    } catch (error) {
+      console.error('[EbayPricing] Error getting user cache days:', error);
+      return this.config.defaultCacheDays;
+    }
+  }
+
+  private async getExpiredCachedData(isbn: string): Promise<PricingData | null> {
+    try {
+      // Get any cached data, even expired
+      const cached = await db.select()
+        .from(pricingCache)
+        .where(eq(pricingCache.isbn, isbn))
+        .limit(1);
+      
+      if (cached.length > 0) {
+        console.log(`[EbayPricing] Using expired cache data for ${isbn} due to rate limit`);
+        return JSON.parse(cached[0].pricingData) as PricingData;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('[EbayPricing] Error getting expired cache:', error);
+      return null;
+    }
+  }
+
+  private shouldSkipAPICall(): boolean {
+    const now = Date.now();
+    
+    // If we had a rate limit error recently, implement exponential backoff
+    if (this.lastRateLimitError > 0) {
+      const timeSinceError = now - this.lastRateLimitError;
+      
+      // Start with 5 minute backoff, double each time, max 2 hours
+      if (timeSinceError < this.rateLimitBackoffMs) {
+        return true;
+      }
+      
+      // Reset if enough time has passed
+      if (timeSinceError > 2 * 60 * 60 * 1000) { // 2 hours
+        this.lastRateLimitError = 0;
+        this.rateLimitBackoffMs = 0;
+      }
+    }
+    
+    // Skip if error rate is too high
+    const errorRate = this.requestCount > 0 ? this.errorCount / this.requestCount : 0;
+    if (errorRate > 0.8 && this.requestCount > 5) {
+      console.log('[EbayPricing] Skipping API call due to high error rate');
+      return true;
+    }
+    
+    return false;
   }
 
   private updateAccessStats(isbn: string): void {
