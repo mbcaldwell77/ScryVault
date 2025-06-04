@@ -18,9 +18,12 @@ export function useAuth() {
       // Continue with logout even if server request fails
       console.error('Server logout failed:', error);
     } finally {
-      // Always clear client-side data regardless of server response
+      // Always clear ALL client-side data regardless of server response
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
+      localStorage.removeItem('recentISBNs'); // Fix data leakage between accounts
+      localStorage.removeItem('scannedBooks'); // Clear any cached scan data
+      localStorage.removeItem('userPreferences'); // Clear user-specific preferences
       
       // Clear all React Query cache
       queryClient.clear();

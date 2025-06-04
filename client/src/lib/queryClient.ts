@@ -28,6 +28,23 @@ export async function apiRequest(
     credentials: "include",
   });
 
+  // Handle authentication errors by clearing invalid tokens
+  if (res.status === 401 || res.status === 403) {
+    const errorText = await res.text();
+    if (errorText.includes('Invalid token') || errorText.includes('expired')) {
+      // Clear invalid authentication data
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      localStorage.removeItem('recentISBNs');
+      localStorage.removeItem('scannedBooks');
+      localStorage.removeItem('userPreferences');
+      
+      // Redirect to login
+      window.location.href = '/login';
+      throw new Error('Authentication expired. Please log in again.');
+    }
+  }
+
   await throwIfResNotOk(res);
   return await res.json();
 }

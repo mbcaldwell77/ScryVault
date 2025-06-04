@@ -39,7 +39,7 @@ export const authenticateToken = async (
       .limit(1);
 
     if (session.length === 0) {
-      return res.status(401).json({ error: 'Invalid or expired token' });
+      return res.status(403).json({ error: 'Invalid token' });
     }
 
     // Get user details
