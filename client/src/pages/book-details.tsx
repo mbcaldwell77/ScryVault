@@ -62,19 +62,7 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
 
   return (
     <div className="flex-1 flex flex-col pb-20">
-      {/* Header */}
-      <div className="p-4 flex items-center space-x-4" style={{ backgroundColor: 'var(--dark-background)', color: 'var(--text-light)' }}>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => setLocation("/scanner")}
-          className="hover:bg-gray-700"
-          style={{ color: 'var(--text-light)' }}
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </Button>
-        <h1 className="text-xl font-semibold">Book Details</h1>
-      </div>
+      <GlobalHeader title="Book Details" showBackButton={true} onBack={() => setLocation("/scanner")} />
 
       {/* Book Info */}
       <div className="flex-1 overflow-auto">

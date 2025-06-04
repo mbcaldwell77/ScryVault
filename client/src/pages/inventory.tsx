@@ -188,21 +188,7 @@ export default function Inventory() {
   if (totalBooks === 0) {
     return (
       <div className="flex-1 flex flex-col pb-20" style={{ backgroundColor: 'var(--pure-white)' }}>
-        {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setLocation("/")}
-              className="text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </Button>
-            <h1 className="text-xl font-semibold">Inventory</h1>
-          </div>
-          <span style={{ backgroundColor: 'var(--gold-accent)' }} className="text-black px-3 py-1 rounded-full text-sm font-medium">0</span>
-        </div>
+        <GlobalHeader title="Inventory" showBackButton={true} />
 
         {/* Empty State */}
         <div className="flex-1 flex items-center justify-center p-6">
@@ -255,20 +241,13 @@ export default function Inventory() {
         </div>
       )}
 
-      {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4">
+      <GlobalHeader title="Inventory" showBackButton={true} />
+      
+      <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setLocation("/")}
-              className="text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </Button>
-            <h1 className="text-xl font-semibold">Inventory</h1>
-          </div>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--text-light)' }}>
+            {totalBooks} Books
+          </h2>
           <div className="flex items-center space-x-2">
             <input
               type="file"

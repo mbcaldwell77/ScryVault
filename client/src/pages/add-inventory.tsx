@@ -126,18 +126,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
 
   return (
     <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--pure-white)' }}>
-      {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center space-x-4">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={() => setLocation(`/book-details/${isbn}`)}
-          className="text-white hover:bg-white/20"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </Button>
-        <h1 className="text-xl font-semibold">Add to Inventory</h1>
-      </div>
+      <GlobalHeader title="Add to Inventory" showBackButton={true} onBack={() => setLocation(`/book-details/${isbn}`)} />
 
       {/* Form */}
       <div className="flex-1 overflow-auto p-6 space-y-6">
