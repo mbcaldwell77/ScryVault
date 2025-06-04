@@ -51,8 +51,8 @@ export default function RegisterPage() {
       return response;
     },
     onSuccess: (data) => {
-      // Store the JWT token
-      localStorage.setItem('authToken', data.token);
+      // Store the access token returned by the API
+      localStorage.setItem('authToken', data.accessToken);
       localStorage.setItem('user', JSON.stringify(data.user));
       
       // Redirect to home
