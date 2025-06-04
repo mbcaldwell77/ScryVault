@@ -295,4 +295,140 @@ router.get('/me', async (req: AuthenticatedRequest, res) => {
   }
 });
 
+// Change password
+router.post('/change-password', async (req: AuthenticatedRequest, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current password and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters long' });
+    }
+
+    // Get current user data
+    const userData = await db.select()
+      .from(users)
+      .where(eq(users.id, req.user.id))
+      .limit(1);
+
+    if (userData.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userData[0].passwordHash);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+    // Update password
+    await db.update(users)
+      .set({ passwordHash: newPasswordHash })
+      .where(eq(users.id, req.user.id));
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update profile
+router.put('/update-profile', async (req: AuthenticatedRequest, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { firstName, lastName, email } = req.body;
+
+    if (!firstName || !lastName || !email) {
+      return res.status(400).json({ error: 'First name, last name, and email are required' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Check if email is already taken by another user
+    if (email !== req.user.email) {
+      const existingUser = await db.select()
+        .from(users)
+        .where(and(eq(users.email, email), eq(users.id, req.user.id)))
+        .limit(1);
+
+      if (existingUser.length > 0) {
+        return res.status(400).json({ error: 'Email is already taken' });
+      }
+    }
+
+    // Update user profile
+    const updatedUser = await db.update(users)
+      .set({ 
+        firstName, 
+        lastName, 
+        email,
+        emailVerified: email !== req.user.email ? false : undefined // Reset verification if email changed
+      })
+      .where(eq(users.id, req.user.id))
+      .returning({
+        id: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        subscriptionTier: users.subscriptionTier,
+        emailVerified: users.emailVerified,
+        isActive: users.isActive
+      });
+
+    if (updatedUser.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user: updatedUser[0], message: 'Profile updated successfully' });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete account
+router.delete('/delete-account', async (req: AuthenticatedRequest, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    // Delete user sessions first
+    await db.delete(userSessions)
+      .where(eq(userSessions.userId, req.user.id));
+
+    // Delete user account
+    const deletedUser = await db.delete(users)
+      .where(eq(users.id, req.user.id))
+      .returning();
+
+    if (deletedUser.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export default router;
