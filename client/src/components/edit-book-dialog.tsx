@@ -64,9 +64,13 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
         type: 'COGS' // Fixed classification for V2
       };
 
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`/api/books/${book.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(updateData)
       });
       
