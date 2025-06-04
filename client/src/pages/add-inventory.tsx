@@ -186,16 +186,21 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
               Purchase Price <span style={{ color: 'var(--gold-accent)' }}>*</span>
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: 'var(--text-secondary)' }}>$</span>
+              {!purchasePrice && (
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" 
+                      style={{ color: 'var(--text-secondary)' }}>
+                  $
+                </span>
+              )}
               <Input
                 id="purchase-price"
                 type="number"
                 step="0.01"
                 min="0"
-                placeholder="0.00"
+                placeholder={purchasePrice ? "" : "0.00"}
                 value={purchasePrice}
                 onChange={(e) => setPurchasePrice(e.target.value)}
-                className="pl-8 text-lg"
+                className={`text-lg ${purchasePrice ? 'pl-3' : 'pl-8'}`}
                 style={{ backgroundColor: 'var(--dark-card)', border: '1px solid var(--dark-border)', color: 'var(--text-light)' }}
                 required
               />

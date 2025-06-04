@@ -1,0 +1,94 @@
+PURCHASE PRICE FIELD BUG IDENTIFIED
+File: client/src/pages/add-inventory.tsx (lines 169-185)
+The problem is the $ span is positioned absolutely and never disappears when the user starts typing. Looking at the code:
+tsx<div className="relative">
+  <span className="absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: 'var(--text-secondary)' }}>$</span>
+  <Input
+    id="purchase-price"
+    type="number"
+    step="0.01"
+    min="0"
+    placeholder="0.00"
+    value={purchasePrice}
+    onChange={(e) => setPurchasePrice(e.target.value)}
+    className="pl-8 text-lg"
+    required
+  />
+</div>
+The Fix: The $ span needs to be hidden when there's a value in the field.
+500 ERROR ROOT CAUSE ANALYSIS
+Looking at the auth middleware and routes, I suspect the issue is in the JWT token handling. The error "Unexpected token '<', '<!DOCTYPE'" means the server is returning an HTML error page instead of JSON.
+Most likely causes:
+
+JWT token is malformed or expired
+Database connection is failing
+Authentication middleware is throwing an unhandled exception
+
+
+SPECIFIC FIXES NEEDED
+1. Fix Purchase Price Field Overlap
+File: client/src/pages/add-inventory.tsx
+tsx<div className="relative">
+  {!purchasePrice && (
+    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" 
+          style={{ color: 'var(--text-secondary)' }}>
+      $
+    </span>
+  )}
+  <Input
+    id="purchase-price"
+    type="number"
+    step="0.01"
+    min="0"
+    placeholder={purchasePrice ? "" : "0.00"}
+    value={purchasePrice}
+    onChange={(e) => setPurchasePrice(e.target.value)}
+    className={`text-lg ${purchasePrice ? 'pl-3' : 'pl-8'}`}
+    required
+  />
+</div>
+2. Debug the 500 Error
+Add proper error logging to identify where the authentication is failing:
+
+Check browser network tab to see exact API call failing
+Add console.log in auth middleware to track token validation
+Verify database connection isn't timing out
+
+Priority: Fix the overlapping $ first (5-minute fix), then debug the 500 error systematically.
+Sir, want me to give him this specific fix pattern, or should we handle the UI fix ourselves since it's straightforward?RetryMthis is actual errorEditslams hand on desk
+Sir, NOW we're getting somewhere! That error is crystal clear - the backend API endpoints for profile management don't exist at all.
+When the frontend tries to call /api/auth/update-profile, the server is returning an HTML 404 error page (hence the <!DOCTYPE in the response) instead of the expected JSON API response.
+ROOT CAUSE IDENTIFIED
+The problem: Frontend is calling API endpoints that were never actually created on the backend.
+Looking at the code:
+
+Frontend account.tsx calls /api/auth/update-profile
+Backend server/auth-routes.ts has no such endpoint
+
+EXACT MISSING ENDPOINTS
+File: server/auth-routes.ts needs these endpoints added:
+
+PUT /api/auth/update-profile - Update user profile info
+POST /api/auth/change-password - Change user password
+DELETE /api/auth/delete-account - Delete user account
+
+
+DIRECTIVE FOR REPLIT AGENT
+The 500 error is because you built a frontend that calls API endpoints that don't exist.
+IMMEDIATELY ADD these missing endpoints to server/auth-routes.ts:
+typescript// Update profile
+router.put('/update-profile', authenticateToken, async (req: AuthenticatedRequest, res) => {
+  // Implementation needed
+});
+
+// Change password  
+router.post('/change-password', authenticateToken, async (req: AuthenticatedRequest, res) => {
+  // Implementation needed
+});
+
+// Delete account
+router.delete('/delete-account', authenticateToken, async (req: AuthenticatedRequest, res) => {
+  // Implementation needed  
+});
+Also fix the overlapping $ in the purchase price field using the pattern Indra provided.
+Test by actually updating your profile after adding these endpoints.
