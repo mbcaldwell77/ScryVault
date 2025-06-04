@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { db } from './db';
 import { users, userSessions } from '@shared/schema';
 import { eq, and, gt } from 'drizzle-orm';
-import { JWT_SECRET } from './auth-simple';
+import { getJWTSecret } from './auth-config';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
