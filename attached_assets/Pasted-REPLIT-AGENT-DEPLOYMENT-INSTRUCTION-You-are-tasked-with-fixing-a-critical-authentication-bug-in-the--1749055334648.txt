@@ -1,0 +1,49 @@
+REPLIT AGENT DEPLOYMENT INSTRUCTION
+You are tasked with fixing a critical authentication bug in the ScryVault application that is preventing users from updating their account profiles.
+CONTEXT:
+
+ScryVault is a React/TypeScript book inventory management application
+We are in Phase 1A of development (User Authentication & Security)
+Authentication system is implemented but has a bug in the account management page
+User can log in successfully but cannot update profile due to missing auth headers
+
+SPECIFIC TASK:
+Fix the authentication headers in the account page profile update functionality.
+EXACT STEPS TO EXECUTE:
+
+Navigate to client/src/pages/account.tsx
+Locate the profileMutation object (approximately line 60-80)
+Replace the existing mutationFn with this exact code:
+
+typescriptmutationFn: async (data: { firstName: string; lastName: string; email: string }) => {
+  return await apiRequest("/api/auth/update-profile", {
+    method: "PUT",
+    body: JSON.stringify(data)
+  });
+},
+
+Locate the passwordMutation object (approximately line 90-110)
+Replace the existing mutationFn with this exact code:
+
+typescriptmutationFn: async (data: { currentPassword: string; newPassword: string }) => {
+  return await apiRequest("/api/auth/change-password", {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+},
+
+Verify that apiRequest is imported at the top of the file:
+
+typescriptimport { apiRequest } from "@/lib/queryClient";
+CRITICAL REQUIREMENTS:
+
+Do NOT modify any other code in the file
+Do NOT add additional features or "improvements"
+Do NOT change the UI components or styling
+ONLY fix the authentication header issue by using apiRequest instead of manual fetch calls
+
+EXPECTED OUTCOME:
+After this fix, users should be able to update their profile information and change passwords without receiving "Not authenticated" errors.
+VERIFICATION:
+The account page should show successful profile updates and password changes when the form is submitted.
+Execute this fix immediately. This is blocking user account management functionality.

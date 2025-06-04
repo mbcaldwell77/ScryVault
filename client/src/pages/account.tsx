@@ -40,22 +40,10 @@ export default function Account() {
   // Password change mutation
   const passwordMutation = useMutation({
     mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch("/api/auth/change-password", {
+      return await apiRequest("/api/auth/change-password", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
         body: JSON.stringify(data)
       });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to change password');
-      }
-      
-      return await response.json();
     },
     onSuccess: () => {
       toast({
@@ -76,22 +64,10 @@ export default function Account() {
   // Profile update mutation
   const profileMutation = useMutation({
     mutationFn: async (data: { firstName: string; lastName: string; email: string }) => {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch("/api/auth/update-profile", {
+      return await apiRequest("/api/auth/update-profile", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
         body: JSON.stringify(data)
       });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to update profile');
-      }
-      
-      return await response.json();
     },
     onSuccess: (updatedUser) => {
       // Update localStorage with new user data
@@ -113,20 +89,9 @@ export default function Account() {
   // Account deletion mutation
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch("/api/auth/delete-account", {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+      return await apiRequest("/api/auth/delete-account", {
+        method: "DELETE"
       });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to delete account');
-      }
-      
-      return response.status === 204 ? {} : await response.json();
     },
     onSuccess: () => {
       toast({
