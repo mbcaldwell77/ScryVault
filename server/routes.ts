@@ -1,12 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertBookSchema } from "@shared/schema";
+import { insertBookSchema, userSettings } from "@shared/schema";
 import { z } from "zod";
 import { EbayPricingService, type PricingServiceConfig } from "./pricing-service";
 import crypto from 'crypto';
 import { authenticateToken, optionalAuth, AuthenticatedRequest } from './auth-middleware';
 import authRoutes from './auth-routes';
+import { db } from './db';
+import { eq } from 'drizzle-orm';
 
 // ISBN normalization functions
 function convertISBN10to13(isbn10: string): string {

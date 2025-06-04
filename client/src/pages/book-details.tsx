@@ -90,19 +90,15 @@ export default function BookDetails({ isbn }: BookDetailsProps) {
           </div>
         </div>
 
-        {/* Market Information */}
+        {/* Market Information with Live Pricing */}
         <div className="p-6 border-t" style={{ backgroundColor: 'var(--dark-surface)', borderColor: 'var(--dark-border)' }}>
           <h3 className="font-semibold mb-3" style={{ color: 'var(--text-light)' }}>Market Insights</h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--dark-card)' }}>
-              <div className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>Avg. Used Price</div>
-              <div className="text-lg font-bold" style={{ color: 'var(--gold-accent)' }}>Est. $8-15</div>
-            </div>
-            <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--dark-card)' }}>
-              <div className="text-xs uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>Market Demand</div>
-              <div className="text-lg font-bold" style={{ color: 'var(--emerald-accent)' }}>Medium</div>
-            </div>
-          </div>
+          <LivePricingDisplay 
+            isbn={isbn}
+            condition="Good"
+            purchasePrice="0"
+            compact={false}
+          />
         </div>
 
         {/* Actions */}
