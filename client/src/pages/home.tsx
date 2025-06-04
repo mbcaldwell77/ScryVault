@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Camera, Package, TrendingUp, LogOut, User } from "lucide-react";
+import { Camera, Package, TrendingUp, LogOut, User, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -7,6 +7,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -66,6 +67,13 @@ export default function Home() {
                   <p className="font-medium">{user?.firstName} {user?.lastName}</p>
                   <p className="text-muted-foreground">{user?.email}</p>
                 </div>
+                <DropdownMenuItem 
+                  onClick={() => setLocation('/account')}
+                  className="cursor-pointer"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Account Settings
+                </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={logout}
                   disabled={isLoggingOut}

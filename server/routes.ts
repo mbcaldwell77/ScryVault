@@ -82,8 +82,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get book by ID (requires authentication)
   app.get("/api/books/:id", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
       const id = parseInt(req.params.id);
-      const book = await storage.getBook(id, req.user!.id);
+      const book = await storage.getBook(id, req.user.id);
       
       if (!book) {
         return res.status(404).json({ error: "Book not found" });
@@ -99,8 +103,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Add book to inventory (requires authentication)
   app.post("/api/books", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
       const validatedData = insertBookSchema.parse(req.body);
-      const book = await storage.createBookForUser(req.user!.id, validatedData);
+      const book = await storage.createBookForUser(req.user.id, validatedData);
       res.status(201).json(book);
     } catch (error) {
       console.error('[API] Create book error:', error);
@@ -117,13 +125,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update book in inventory (requires authentication)
   app.put("/api/books/:id", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         return res.status(400).json({ error: "Invalid book ID" });
       }
 
       const validatedData = insertBookSchema.parse(req.body);
-      const updatedBook = await storage.updateBook(id, validatedData, req.user!.id);
+      const updatedBook = await storage.updateBook(id, validatedData, req.user.id);
       
       if (!updatedBook) {
         return res.status(404).json({ error: "Book not found" });
@@ -145,8 +157,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Delete book from inventory (requires authentication)
   app.delete("/api/books/:id", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
       const id = parseInt(req.params.id);
-      const deleted = await storage.deleteBook(id, req.user!.id);
+      const deleted = await storage.deleteBook(id, req.user.id);
       
       if (!deleted) {
         return res.status(404).json({ error: "Book not found" });
