@@ -46,7 +46,21 @@ export async function apiRequest(
   }
 
   await throwIfResNotOk(res);
-  return await res.json();
+  
+  // Handle empty responses
+  const text = await res.text();
+  if (!text) return null;
+  
+  // Check if response is HTML (error page) instead of JSON
+  if (text.startsWith('<!DOCTYPE') || text.startsWith('<html')) {
+    throw new Error('Server returned HTML error page instead of JSON');
+  }
+  
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('Invalid JSON response from server');
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { db } from './db';
 import { users, userSessions } from '@shared/schema';
-import { eq, and, lt } from 'drizzle-orm';
+import { eq, and, lt, not } from 'drizzle-orm';
 import { registerSchema, loginSchema } from '@shared/schema';
 import { AuthenticatedRequest } from './auth-middleware';
 import { getJWTSecret, getJWTRefreshSecret, AUTH_CONFIG } from './auth-config';
@@ -366,7 +366,7 @@ router.put('/update-profile', async (req: AuthenticatedRequest, res) => {
     if (email !== req.user.email) {
       const existingUser = await db.select()
         .from(users)
-        .where(and(eq(users.email, email), eq(users.id, req.user.id)))
+        .where(and(eq(users.email, email), not(eq(users.id, req.user.id))))
         .limit(1);
 
       if (existingUser.length > 0) {

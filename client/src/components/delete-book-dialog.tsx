@@ -16,12 +16,18 @@ export default function DeleteBookDialog({ book, isOpen, onClose }: DeleteBookDi
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
+      const token = localStorage.getItem('authToken');
       const response = await fetch(`/api/books/${book.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
-        throw new Error('Failed to delete book');
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to delete book');
       }
     },
     onSuccess: () => {
