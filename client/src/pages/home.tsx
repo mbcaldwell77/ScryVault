@@ -1,14 +1,24 @@
 import { Button } from "@/components/ui/button";
-import { Camera, Package, TrendingUp } from "lucide-react";
+import { Camera, Package, TrendingUp, LogOut, User } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Home() {
   const [, setLocation] = useLocation();
+  const { logout, getUser, isLoggingOut } = useAuth();
   
   const { data: books = [] } = useQuery({
     queryKey: ["/api/books"],
   });
+
+  const user = getUser();
 
   const totalBooks = (books as any[]).length;
   const totalInvestment = (books as any[]).reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
@@ -33,8 +43,41 @@ export default function Home() {
           }}
         />
         <div className="relative z-10">
-          <h1 className="text-3xl font-bold text-white mb-2">ScryVault</h1>
-          <p className="text-white/90 text-lg">Professional Book Inventory Management</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">ScryVault</h1>
+              <p className="text-white/90 text-lg">Professional Book Inventory Management</p>
+            </div>
+            
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-white hover:bg-white/10 p-2 rounded-full"
+                  disabled={isLoggingOut}
+                >
+                  <User className="w-6 h-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-3 py-2 text-sm border-b">
+                  <p className="font-medium">{user?.firstName} {user?.lastName}</p>
+                  <p className="text-muted-foreground">{user?.email}</p>
+                </div>
+                <DropdownMenuItem 
+                  onClick={logout}
+                  disabled={isLoggingOut}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  {isLoggingOut ? 'Logging out...' : 'Logout'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          
           <div className="mt-4 flex items-center space-x-2">
             <div className="w-12 h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full" />
             <div className="w-8 h-1 bg-gradient-to-r from-yellow-600 to-yellow-800 rounded-full" />

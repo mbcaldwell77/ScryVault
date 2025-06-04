@@ -11,19 +11,20 @@ import Inventory from "@/pages/inventory";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import PWAInstallBanner from "@/components/pwa-install-banner";
+import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [, setLocation] = useLocation();
-  const isAuthenticated = localStorage.getItem('authToken');
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated()) {
       setLocation('/login');
     }
   }, [isAuthenticated, setLocation]);
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated()) {
     return null;
   }
 
@@ -31,16 +32,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function Router() {
-  const [location] = useLocation();
-  const isAuthenticated = localStorage.getItem('authToken');
+  const [location, setLocation] = useLocation();
+  const { isAuthenticated } = useAuth();
 
   // Redirect authenticated users away from auth pages
   useEffect(() => {
-    if (isAuthenticated && (location === '/login' || location === '/register')) {
-      const [, setLocation] = useLocation();
+    if (isAuthenticated() && (location === '/login' || location === '/register')) {
       setLocation('/');
     }
-  }, [isAuthenticated, location]);
+  }, [isAuthenticated, location, setLocation]);
 
   return (
     <div className="min-h-screen max-w-md mx-auto" style={{ backgroundColor: 'var(--pure-white)' }}>

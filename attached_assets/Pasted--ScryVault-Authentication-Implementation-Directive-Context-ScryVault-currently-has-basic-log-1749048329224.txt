@@ -1,0 +1,85 @@
+# ScryVault Authentication Implementation Directive
+
+## Context
+ScryVault currently has basic login functionality but lacks a complete authentication cycle. We need to implement a proper logout mechanism and complete the user authentication foundation before proceeding with advanced features.
+
+## Phase 1A: Complete Authentication Cycle
+
+### Immediate Task: Implement Logout Functionality
+
+**Objective:** Add proper logout mechanism to complete the authentication cycle
+
+**Requirements:**
+
+1. **Frontend Logout Implementation**
+   - Add logout function to App.tsx or create a dedicated auth hook
+   - Function should:
+     - Call `/api/auth/logout` endpoint with Bearer token
+     - Clear `authToken` and `user` from localStorage
+     - Invalidate React Query cache
+     - Redirect user to `/login` page
+
+2. **UI Integration**
+   - Add logout button/option in the main navigation or user menu
+   - Should be accessible from protected routes
+   - Consider adding to home page header or as a profile menu
+
+3. **Session Management**
+   - Ensure logout clears server-side session
+   - Handle logout errors gracefully
+   - Add loading state during logout process
+
+**Technical Implementation:**
+
+```typescript
+// Example logout function structure needed:
+const useAuth = () => {
+  const logout = async () => {
+    try {
+      await apiRequest('/api/auth/logout', { method: 'POST' });
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      queryClient.clear();
+      setLocation('/login');
+    } catch (error) {
+      // Handle error but still clear local storage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      setLocation('/login');
+    }
+  };
+  return { logout };
+};
+```
+
+### Testing Requirements
+
+- Verify logout clears all user data
+- Confirm redirect to login page works
+- Test that accessing protected routes after logout redirects to login
+- Verify server session is properly destroyed
+
+### Success Criteria
+
+✅ User can successfully log out from any protected page
+✅ All authentication data is cleared from client and server
+✅ User is redirected to login page after logout
+✅ Attempting to access protected routes after logout requires re-authentication
+
+## Next Phase Preview
+
+After logout is complete, we'll implement:
+1. User registration flow
+2. Password change functionality  
+3. Session expiration handling
+4. Enhanced security measures
+
+## Implementation Priority
+
+**CRITICAL:** This logout functionality must be completed before any other feature development. A working auth cycle is the foundation for all future development.
+
+---
+
+*Directive issued by: Indra, CTO - ScryVault*
+*Execution: Immediate*
+*Status: Pending Implementation*
