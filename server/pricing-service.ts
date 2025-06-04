@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { db } from "./db";
+import { pricingCache, userSettings } from "@shared/schema";
+import { eq, and, gt } from "drizzle-orm";
 
 // eBay API response types
 interface EbayItem {
@@ -65,6 +68,8 @@ export interface PricingServiceConfig {
   cacheDurationMs: number;
   maxRetries: number;
   timeoutMs: number;
+  defaultCacheDays: number;
+  enableDatabaseCache: boolean;
 }
 
 export class EbayPricingService {
