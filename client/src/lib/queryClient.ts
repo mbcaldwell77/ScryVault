@@ -43,23 +43,26 @@ export async function apiRequest(
       window.location.href = '/login';
       throw new Error('Authentication expired. Please log in again.');
     }
+    throw new Error(errorText);
   }
 
   await throwIfResNotOk(res);
   
-  // Handle empty responses
+  // Get response text only once
   const text = await res.text();
   if (!text) return null;
   
   // Check if response is HTML (error page) instead of JSON
-  if (text.startsWith('<!DOCTYPE') || text.startsWith('<html')) {
+  if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
     throw new Error('Server returned HTML error page instead of JSON');
   }
   
   try {
     return JSON.parse(text);
-  } catch {
-    throw new Error('Invalid JSON response from server');
+  } catch (parseError) {
+    console.error('JSON parse error:', parseError);
+    console.error('Response text:', text);
+    throw new Error(`Invalid JSON response from server: ${text.substring(0, 100)}`);
   }
 }
 
