@@ -36,7 +36,7 @@ export interface PricingData {
 
 export function usePricingData(isbn: string, enabled = true) {
   return useQuery<PricingData>({
-    queryKey: ['/api/book-pricing', isbn],
+    queryKey: [`/api/book-pricing/${isbn}`],
     enabled: enabled && !!isbn,
     staleTime: 60 * 60 * 1000, // 1 hour
     retry: 2,
