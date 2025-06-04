@@ -1,5 +1,5 @@
 import { TrendingUp, Clock, AlertCircle, TrendingDown, Minus, Activity, DollarSign } from "lucide-react";
-import { usePricingData, getConfidenceDisplay, getBestConditionMatch } from "@/hooks/use-pricing";
+import { usePricingData, getConfidenceDisplay, getBestConditionMatch, PricingData } from "@/hooks/use-pricing";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface LivePricingDisplayProps {
@@ -38,7 +38,7 @@ export default function LivePricingDisplay({
   }
 
   // Type guard to ensure pricingData has required properties
-  if (!pricingData || typeof pricingData !== 'object' || !('averagePrice' in pricingData)) {
+  if (!pricingData || typeof pricingData !== 'object' || !('averagePrice' in pricingData) || !('confidence' in pricingData)) {
     if (compact) return null;
     return (
       <div className="flex items-center space-x-1 text-xs" style={{ color: 'var(--text-secondary)' }}>
@@ -48,11 +48,37 @@ export default function LivePricingDisplay({
     );
   }
 
-  const bestMatch = getBestConditionMatch(pricingData, condition);
-  const marketPrice = bestMatch?.price || pricingData.averagePrice;
+  // Cast to PricingData type after validation
+  const typedPricingData = pricingData as PricingData;
+
+  const bestMatch = getBestConditionMatch(typedPricingData, condition);
+  const marketPrice = bestMatch?.price || typedPricingData.averagePrice;
   const purchasePriceNum = parseFloat(purchasePrice || '0');
   const potentialProfit = marketPrice - purchasePriceNum;
-  const confidenceInfo = getConfidenceDisplay(pricingData.confidence);
+  const confidenceInfo = getConfidenceDisplay(typedPricingData.confidence);
+
+  // Enhanced profit analysis with purchase price
+  const roi = purchasePriceNum > 0 ? ((potentialProfit / purchasePriceNum) * 100) : 0;
+  const profitMargin = marketPrice > 0 ? ((potentialProfit / marketPrice) * 100) : 0;
+
+  // Trend icon and color
+  const getTrendIcon = () => {
+    if (!typedPricingData.trends) return <Minus className="w-3 h-3" />;
+    switch (typedPricingData.trends.priceDirection) {
+      case 'rising': return <TrendingUp className="w-3 h-3 text-green-600" />;
+      case 'falling': return <TrendingDown className="w-3 h-3 text-red-600" />;
+      default: return <Minus className="w-3 h-3 text-gray-500" />;
+    }
+  };
+
+  const getDemandColor = () => {
+    if (!typedPricingData.marketVelocity) return 'text-gray-500';
+    switch (typedPricingData.marketVelocity.demandLevel) {
+      case 'high': return 'text-green-600';
+      case 'medium': return 'text-yellow-600';
+      default: return 'text-red-600';
+    }
+  };
 
   if (compact) {
     return (
@@ -94,11 +120,11 @@ export default function LivePricingDisplay({
       
       <div className="flex items-center justify-between text-xs">
         <span style={{ color: 'var(--text-secondary)' }}>
-          {pricingData.totalSales} sales found
+          {typedPricingData.totalSales} sales found
         </span>
         <div className="flex items-center space-x-1" style={{ color: 'var(--text-secondary)' }}>
           <Clock className="w-3 h-3" />
-          <span>Updated {new Date(pricingData.lastUpdated).toLocaleDateString()}</span>
+          <span>Updated {new Date(typedPricingData.lastUpdated).toLocaleDateString()}</span>
         </div>
       </div>
       

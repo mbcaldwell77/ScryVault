@@ -15,10 +15,27 @@ export interface PricingData {
   totalSales: number;
   dateRange: { from: string; to: string };
   lastUpdated: string;
+  // Enhanced market intelligence
+  marketVelocity: {
+    salesPerWeek: number;
+    timeToSell: number;
+    demandLevel: 'high' | 'medium' | 'low';
+  };
+  profitAnalysis: {
+    recommendedListingPrice: number;
+    expectedProfit: number;
+    profitMargin: number;
+    roi: number;
+  };
+  trends: {
+    priceDirection: 'rising' | 'falling' | 'stable';
+    weeklyChange: number;
+    seasonality: string;
+  };
 }
 
 export function usePricingData(isbn: string, enabled = true) {
-  return useQuery({
+  return useQuery<PricingData>({
     queryKey: ['/api/book-pricing', isbn],
     enabled: enabled && !!isbn,
     staleTime: 60 * 60 * 1000, // 1 hour
