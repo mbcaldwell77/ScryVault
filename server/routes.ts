@@ -5,6 +5,8 @@ import { insertBookSchema } from "@shared/schema";
 import { z } from "zod";
 import { EbayPricingService, type PricingServiceConfig } from "./pricing-service";
 import crypto from 'crypto';
+import { authenticateToken, optionalAuth, AuthenticatedRequest } from './auth-middleware';
+import authRoutes from './auth-routes';
 
 // ISBN normalization functions
 function convertISBN10to13(isbn10: string): string {
@@ -58,26 +60,30 @@ if (process.env.EBAY_APP_ID) {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Test route to verify deployment
+  // Add authentication routes
+  app.use('/api/auth', authRoutes);
+
+  // Test route to verify deployment (no auth required)
   app.get("/api/test", (req, res) => {
     res.json({ message: "API is working", timestamp: new Date().toISOString() });
   });
 
-  // Get all books in inventory
-  app.get("/api/books", async (req, res) => {
+  // Get all books in inventory (requires authentication)
+  app.get("/api/books", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
-      const books = await storage.getAllBooks();
+      const books = await storage.getAllBooksForUser(req.user!.id);
       res.json(books);
     } catch (error) {
+      console.error('[API] Get books error:', error);
       res.status(500).json({ error: "Failed to fetch books" });
     }
   });
 
-  // Get book by ID
-  app.get("/api/books/:id", async (req, res) => {
+  // Get book by ID (requires authentication)
+  app.get("/api/books/:id", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
-      const book = await storage.getBook(id);
+      const book = await storage.getBook(id, req.user!.id);
       
       if (!book) {
         return res.status(404).json({ error: "Book not found" });
@@ -85,18 +91,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(book);
     } catch (error) {
+      console.error('[API] Get book error:', error);
       res.status(500).json({ error: "Failed to fetch book" });
     }
   });
 
-  // Add book to inventory
-  app.post("/api/books", async (req, res) => {
+  // Add book to inventory (requires authentication)
+  app.post("/api/books", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const validatedData = insertBookSchema.parse(req.body);
-      const book = await storage.createBook(validatedData);
+      const book = await storage.createBookForUser(req.user!.id, validatedData);
       res.status(201).json(book);
     } catch (error) {
-      console.error("Database error creating book:", error);
+      console.error('[API] Create book error:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
           error: "Validation failed", 
@@ -107,8 +114,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update book in inventory
-  app.put("/api/books/:id", async (req, res) => {
+  // Update book in inventory (requires authentication)
+  app.put("/api/books/:id", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -116,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const validatedData = insertBookSchema.parse(req.body);
-      const updatedBook = await storage.updateBook(id, validatedData);
+      const updatedBook = await storage.updateBook(id, validatedData, req.user!.id);
       
       if (!updatedBook) {
         return res.status(404).json({ error: "Book not found" });
@@ -135,11 +142,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Delete book from inventory
-  app.delete("/api/books/:id", async (req, res) => {
+  // Delete book from inventory (requires authentication)
+  app.delete("/api/books/:id", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const id = parseInt(req.params.id);
-      const deleted = await storage.deleteBook(id);
+      const deleted = await storage.deleteBook(id, req.user!.id);
       
       if (!deleted) {
         return res.status(404).json({ error: "Book not found" });
@@ -147,6 +154,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(204).send();
     } catch (error) {
+      console.error('[API] Delete book error:', error);
       res.status(500).json({ error: "Failed to delete book" });
     }
   });

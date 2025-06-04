@@ -65,17 +65,25 @@ export class DatabaseStorage implements IStorage {
     return book;
   }
 
-  async updateBook(id: number, book: InsertBook): Promise<Book | undefined> {
+  async updateBook(id: number, book: InsertBook, userId?: number): Promise<Book | undefined> {
+    const conditions = userId 
+      ? and(eq(books.id, id), eq(books.userId, userId))
+      : eq(books.id, id);
+    
     const [updatedBook] = await db
       .update(books)
       .set(book)
-      .where(eq(books.id, id))
+      .where(conditions)
       .returning();
     return updatedBook || undefined;
   }
 
-  async deleteBook(id: number): Promise<boolean> {
-    const result = await db.delete(books).where(eq(books.id, id));
+  async deleteBook(id: number, userId?: number): Promise<boolean> {
+    const conditions = userId 
+      ? and(eq(books.id, id), eq(books.userId, userId))
+      : eq(books.id, id);
+    
+    const result = await db.delete(books).where(conditions);
     return (result.rowCount || 0) > 0;
   }
 }
