@@ -271,7 +271,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (challenge_code) {
         const challengeCode = challenge_code as string;
-        const verificationToken = process.env.EBAY_WEBHOOK_TOKEN || 'scryvaul_webhook_verification_2025';
+        const verificationToken = process.env.EBAY_WEBHOOK_TOKEN || 'ldernTom-ScryVaul-PRD-0f0240608-25d29f7a';
         const endpoint = 'https://scryvault.replit.app/api/ebay/webhook';
         
         console.log('[eBay Webhook] Challenge code:', challengeCode);
