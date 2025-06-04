@@ -40,7 +40,10 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
 
   const addToInventoryMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("POST", "/api/books", data);
+      return await apiRequest("/api/books", {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/books"] });

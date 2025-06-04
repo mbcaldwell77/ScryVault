@@ -26,7 +26,8 @@ export const authenticateToken = async (
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const jwtSecret = getJWTSecret();
+    const decoded = jwt.verify(token, jwtSecret) as any;
     
     // Verify session is still valid
     const session = await db.select()
@@ -78,7 +79,8 @@ export const optionalAuth = async (
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const jwtSecret = getJWTSecret();
+    const decoded = jwt.verify(token, jwtSecret) as any;
     
     const session = await db.select()
       .from(userSessions)
