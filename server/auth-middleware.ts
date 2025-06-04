@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { db } from './db';
 import { users, userSessions } from '@shared/schema';
 import { eq, and, gt } from 'drizzle-orm';
-import { getJWTSecret } from './auth-config';
+import { JWT_SECRET } from './auth-simple';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -26,9 +26,7 @@ export const authenticateToken = async (
   }
 
   try {
-    // Get JWT secret with fallback
-    const jwtSecret = getJWTSecret();
-    const decoded = jwt.verify(token, jwtSecret) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
     
     // Verify session is still valid
     const session = await db.select()
@@ -80,8 +78,7 @@ export const optionalAuth = async (
   }
 
   try {
-    const jwtSecret = getJWTSecret();
-    const decoded = jwt.verify(token, jwtSecret) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
     
     const session = await db.select()
       .from(userSessions)

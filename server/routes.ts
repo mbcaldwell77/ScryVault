@@ -6,7 +6,7 @@ import { z } from "zod";
 import { EbayPricingService, type PricingServiceConfig } from "./pricing-service";
 import crypto from 'crypto';
 import { authenticateToken, optionalAuth, AuthenticatedRequest } from './auth-middleware';
-import authRoutes from './auth-routes';
+import { authRoutes } from './auth-simple';
 
 // ISBN normalization functions
 function convertISBN10to13(isbn10: string): string {
