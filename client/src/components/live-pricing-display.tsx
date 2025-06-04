@@ -37,25 +37,11 @@ export default function LivePricingDisplay({
     );
   }
 
-  // Type guard to ensure pricingData has required properties
-  if (!pricingData || typeof pricingData !== 'object' || !('averagePrice' in pricingData) || !('confidence' in pricingData)) {
-    if (compact) return null;
-    return (
-      <div className="flex items-center space-x-1 text-xs" style={{ color: 'var(--text-secondary)' }}>
-        <AlertCircle className="w-3 h-3" />
-        <span>Invalid pricing data</span>
-      </div>
-    );
-  }
-
-  // Cast to PricingData type after validation
-  const typedPricingData = pricingData as PricingData;
-
-  const bestMatch = getBestConditionMatch(typedPricingData, condition);
-  const marketPrice = bestMatch?.price || typedPricingData.averagePrice;
+  const bestMatch = getBestConditionMatch(pricingData, condition);
+  const marketPrice = bestMatch?.price || pricingData.averagePrice;
   const purchasePriceNum = parseFloat(purchasePrice || '0');
   const potentialProfit = marketPrice - purchasePriceNum;
-  const confidenceInfo = getConfidenceDisplay(typedPricingData.confidence);
+  const confidenceInfo = getConfidenceDisplay(pricingData.confidence);
 
   // Enhanced profit analysis with purchase price
   const roi = purchasePriceNum > 0 ? ((potentialProfit / purchasePriceNum) * 100) : 0;
@@ -63,8 +49,8 @@ export default function LivePricingDisplay({
 
   // Trend icon and color
   const getTrendIcon = () => {
-    if (!typedPricingData.trends) return <Minus className="w-3 h-3" />;
-    switch (typedPricingData.trends.priceDirection) {
+    if (!pricingData.trends) return <Minus className="w-3 h-3" />;
+    switch (pricingData.trends.priceDirection) {
       case 'rising': return <TrendingUp className="w-3 h-3 text-green-600" />;
       case 'falling': return <TrendingDown className="w-3 h-3 text-red-600" />;
       default: return <Minus className="w-3 h-3 text-gray-500" />;
@@ -72,8 +58,8 @@ export default function LivePricingDisplay({
   };
 
   const getDemandColor = () => {
-    if (!typedPricingData.marketVelocity) return 'text-gray-500';
-    switch (typedPricingData.marketVelocity.demandLevel) {
+    if (!pricingData.marketVelocity) return 'text-gray-500';
+    switch (pricingData.marketVelocity.demandLevel) {
       case 'high': return 'text-green-600';
       case 'medium': return 'text-yellow-600';
       default: return 'text-red-600';
@@ -118,22 +104,87 @@ export default function LivePricingDisplay({
         </div>
       )}
       
-      <div className="flex items-center justify-between text-xs">
+      {/* Enhanced Market Intelligence Display */}
+      <div className="space-y-3 border-t pt-3">
+        {/* Market Velocity & Demand */}
+        {pricingData.marketVelocity && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Activity className="w-3 h-3" />
+              <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                Market Velocity
+              </span>
+            </div>
+            <div className="text-right">
+              <div className={`text-xs font-medium ${getDemandColor()}`}>
+                {pricingData.marketVelocity.demandLevel.toUpperCase()} DEMAND
+              </div>
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                {pricingData.marketVelocity.salesPerWeek.toFixed(1)} sales/week
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Price Trends */}
+        {pricingData.trends && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              {getTrendIcon()}
+              <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                Price Trend
+              </span>
+            </div>
+            <div className="text-right">
+              <div className="text-xs font-medium">
+                {pricingData.trends.priceDirection.toUpperCase()}
+              </div>
+              {pricingData.trends.weeklyChange !== 0 && (
+                <div className={`text-xs ${pricingData.trends.weeklyChange > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {pricingData.trends.weeklyChange > 0 ? '+' : ''}{pricingData.trends.weeklyChange.toFixed(1)}%
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Profit Analysis */}
+        {purchasePriceNum > 0 && (
+          <div className="space-y-2 border-t pt-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <DollarSign className="w-3 h-3" />
+                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  Profit Analysis
+                </span>
+              </div>
+              <div className="text-right">
+                <div className={`text-sm font-medium ${potentialProfit > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  ${potentialProfit.toFixed(2)}
+                </div>
+                <div className={`text-xs ${roi > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {roi.toFixed(1)}% ROI
+                </div>
+              </div>
+            </div>
+            {pricingData.profitAnalysis && (
+              <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                Recommended: ${pricingData.profitAnalysis.recommendedListingPrice.toFixed(2)}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between text-xs border-t pt-2">
         <span style={{ color: 'var(--text-secondary)' }}>
-          {typedPricingData.totalSales} sales found
+          {pricingData.totalSales} sales found
         </span>
         <div className="flex items-center space-x-1" style={{ color: 'var(--text-secondary)' }}>
           <Clock className="w-3 h-3" />
-          <span>Updated {new Date(typedPricingData.lastUpdated).toLocaleDateString()}</span>
+          <span>Updated {new Date(pricingData.lastUpdated).toLocaleDateString()}</span>
         </div>
       </div>
-      
-      {potentialProfit !== 0 && (
-        <div className={`text-sm font-medium ${potentialProfit > 0 ? 'text-green-600' : 'text-red-600'}`}>
-          {potentialProfit > 0 ? 'Potential Profit' : 'Potential Loss'}: 
-          ${Math.abs(potentialProfit).toFixed(2)}
-        </div>
-      )}
     </div>
   );
 }
