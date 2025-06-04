@@ -11,6 +11,7 @@ import { usePricingData, getConfidenceDisplay } from "@/hooks/use-pricing";
 import LivePricingDisplay from "@/components/live-pricing-display";
 import EditBookDialog from "@/components/edit-book-dialog";
 import DeleteBookDialog from "@/components/delete-book-dialog";
+import GlobalHeader from "@/components/global-header";
 
 export default function Inventory() {
   const [, setLocation] = useLocation();

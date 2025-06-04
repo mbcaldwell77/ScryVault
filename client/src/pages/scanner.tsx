@@ -5,6 +5,7 @@ import { useLocation } from "wouter";
 import CameraScanner from "@/components/camera-scanner";
 import ManualInputModal from "@/components/manual-input-modal";
 import { useRecentISBNs } from "@/lib/storage";
+import GlobalHeader from "@/components/global-header";
 
 export default function Scanner() {
   const [, setLocation] = useLocation();
@@ -41,21 +42,7 @@ export default function Scanner() {
   if (isDesktop) {
     return (
       <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--dark-background)' }}>
-        {/* Header */}
-        <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setLocation("/")}
-              className="text-white hover:bg-white/20"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </Button>
-            <h1 className="text-xl font-semibold">ISBN Entry</h1>
-          </div>
-          <Monitor className="w-6 h-6 text-white/80" />
-        </div>
+        <GlobalHeader title="ISBN Entry" showBackButton={true} />
 
         {/* Desktop Content */}
         <div className="flex-1 flex items-center justify-center p-8">
@@ -130,23 +117,7 @@ export default function Scanner() {
   // Mobile-friendly camera interface
   return (
     <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--dark-background)' }}>
-      {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)' }} className="text-white p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setLocation("/")}
-            className="text-white hover:bg-white/20"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Button>
-          <h1 className="text-xl font-semibold">Scan ISBN Barcode</h1>
-        </div>
-        
-        {/* Empty space to balance header */}
-        <div className="w-10"></div>
-      </div>
+      <GlobalHeader title="Scan ISBN Barcode" showBackButton={true} />
 
       {/* Camera View */}
       <div className="flex-1 relative bg-black">
