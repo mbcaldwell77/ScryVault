@@ -39,7 +39,7 @@ export default function LoginPage() {
     },
     onSuccess: (data) => {
       // Store the JWT token
-      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('authToken', data.accessToken);
       localStorage.setItem('user', JSON.stringify(data.user));
       
       // Redirect to home
