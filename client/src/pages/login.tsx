@@ -89,7 +89,6 @@ export default function LoginPage() {
                   type="email"
                   placeholder="Enter your email"
                   {...form.register("email")}
-                  className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-slate-300 dark:border-slate-600"
                 />
                 {form.formState.errors.email && (
                   <p className="text-sm text-red-600 dark:text-red-400">
@@ -106,7 +105,7 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     {...form.register("password")}
-                    className="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border-slate-300 dark:border-slate-600 pr-10"
+                    className="pr-10"
                   />
                   <Button
                     type="button"

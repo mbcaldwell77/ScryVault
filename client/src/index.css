@@ -23,8 +23,10 @@ body {
   --medium-gray: #9aa0a6;
   --muted-coral: #FF6B6B;
   --dark-surface: #1e2124;
-  --dark-card: #2a2d30;
-  --dark-border: #3c4043;
+  --dark-card: #1F2937;
+  --dark-border: #374151;
+  --text-light: #F3F4F6;
+  --text-secondary: #9CA3AF;
 }
 
 /* Premium Dark Card Design */
@@ -284,12 +286,24 @@ body {
   border: 1px solid var(--dark-border) !important;
 }
 
-/* Input and textarea dark styling */
-input, textarea, select,
-[data-radix-select-trigger] {
-  background-color: var(--dark-card) !important;
-  border-color: var(--dark-border) !important;
-  color: var(--text-light) !important;
+/* Form inputs - ensure readability */
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="number"],
+input[type="date"],
+textarea {
+  background-color: #FFFFFF !important;
+  border: 1px solid #D1D5DB !important;
+  color: #111827 !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6B7280 !important;
+  opacity: 1 !important;
 }
 
 /* Comprehensive placeholder styling for all form fields */
