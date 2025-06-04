@@ -5,7 +5,7 @@ import { db } from './db';
 import { users, userSessions } from '@shared/schema';
 import { eq, and, lt, not } from 'drizzle-orm';
 import { registerSchema, loginSchema } from '@shared/schema';
-import { AuthenticatedRequest } from './auth-middleware';
+import { authenticateToken, AuthenticatedRequest } from './auth-middleware';
 import { getJWTSecret, getJWTRefreshSecret, AUTH_CONFIG } from './auth-config';
 
 const router = Router();
@@ -254,23 +254,16 @@ router.post('/refresh', async (req, res) => {
   }
 });
 
+// All routes below this line require a valid access token
+router.use(authenticateToken);
+
 // Get current user profile
 router.get('/me', async (req: AuthenticatedRequest, res) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ error: 'Access token required' });
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      return res.status(500).json({ error: 'Authentication service not configured' });
-    }
-
-    const decoded = jwt.verify(token, jwtSecret) as any;
-    
     const user = await db.select({
       id: users.id,
       email: users.email,
@@ -281,7 +274,7 @@ router.get('/me', async (req: AuthenticatedRequest, res) => {
       createdAt: users.createdAt
     })
     .from(users)
-    .where(eq(users.id, decoded.userId))
+    .where(eq(users.id, req.user.id))
     .limit(1);
 
     if (user.length === 0) {
