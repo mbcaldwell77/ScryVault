@@ -40,12 +40,19 @@ let pricingService: EbayPricingService | null = null;
 if (process.env.EBAY_APP_ID) {
   const config: PricingServiceConfig = {
     appId: process.env.EBAY_APP_ID,
+    userToken: process.env.EBAY_USER_TOKEN,
     cacheDurationMs: 60 * 60 * 1000, // 1 hour cache
     maxRetries: 3,
     timeoutMs: 10000 // 10 second timeout
   };
   pricingService = new EbayPricingService(config);
-  console.log('[PricingService] eBay integration initialized');
+  
+  if (process.env.EBAY_USER_TOKEN) {
+    console.log('[PricingService] eBay integration initialized with user token authentication');
+  } else {
+    console.log('[PricingService] eBay integration initialized with App ID only');
+    console.warn('[PricingService] Consider adding EBAY_USER_TOKEN for enhanced data access');
+  }
 } else {
   console.warn('[PricingService] EBAY_APP_ID not found - pricing features disabled');
 }

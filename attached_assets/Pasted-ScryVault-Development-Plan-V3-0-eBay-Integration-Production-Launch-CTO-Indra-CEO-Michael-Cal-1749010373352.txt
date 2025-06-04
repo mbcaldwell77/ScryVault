@@ -1,0 +1,266 @@
+ScryVault Development Plan V3.0
+eBay Integration & Production Launch
+CTO: Indra | CEO: Michael Caldwell | Updated: June 4, 2025
+
+
+CRITICAL PRIORITY: eBay API Integration (IMMEDIATE)
+Phase 3A-1: eBay User Token Integration (Next 2 hours)
+Status: Ready for implementation - User token acquired and stored
+
+Immediate Tasks:
+
+Update pricing service to use user token
+
+Modify server/pricing-service.ts to include X-EBAY-SOA-SECURITY-TOKEN header
+Add user token to API requests alongside existing App ID
+Test with known ISBNs that have recent eBay sales
+
+Enhanced error handling & logging
+
+Add detailed eBay API response logging
+Implement proper error codes for different failure types
+Add request/response debugging for troubleshooting
+
+Validation & testing
+
+Test pricing endpoint with multiple ISBNs
+Verify completed listings data is properly parsed
+Confirm confidence scoring algorithm works with real data
+
+Expected Outcome: Live market pricing data flowing into ScryVault
+
+
+Phase 3A-2: Pricing Intelligence Enhancement (1 week)
+Advanced Market Analysis
+Condition-based pricing refinement
+
+Map eBay condition names to ScryVault condition standards
+Implement condition hierarchy fallback logic
+Add price variance analysis by condition
+
+Confidence scoring optimization
+
+Refine confidence algorithm based on real data patterns
+Add recency weighting (prefer recent sales)
+Implement outlier detection and filtering
+
+Data caching & performance
+
+Implement intelligent cache expiration (1 hour for active books, 24 hours for slow movers)
+Add cache warming for frequently accessed ISBNs
+Optimize API call batching
+Frontend Integration
+Live pricing display components
+
+Real-time pricing widgets in inventory view
+Profit/loss indicators with color coding
+Market confidence badges
+
+Pricing analytics dashboard
+
+Portfolio performance metrics
+Market trend indicators
+Profit opportunity identification
+
+
+Phase 3B: Production Deployment & Infrastructure (1 week)
+Environment Management
+Production database setup
+
+Separate production PostgreSQL instance
+Database migration and backup procedures
+Environment-specific configuration management
+
+Security & compliance
+
+API rate limiting implementation
+User data protection compliance
+eBay marketplace deletion webhook (already implemented)
+
+Monitoring & observability
+
+API performance monitoring
+Error tracking and alerting
+Usage analytics and metrics
+
+
+Phase 4: User Authentication & Subscription Platform (3 weeks)
+Authentication System
+User registration & login
+
+Email/password authentication
+JWT token management
+Password reset functionality
+
+Subscription management
+
+Stripe integration for payments
+Tier-based feature access control
+Subscription lifecycle management
+
+Data isolation & multi-tenancy
+
+User-specific inventory separation
+Permission-based API access
+Account management dashboard
+Tier Implementation
+Free Tier (no account)
+
+ISBN scanning for book information
+No data persistence
+Rate limiting on API calls
+
+Basic Tier (free account)
+
+Personal collection storage (100 books)
+Basic organization and search
+Limited export capabilities
+
+Pro Tier ($9/month)
+
+Unlimited storage
+Live market pricing
+Business analytics
+CSV export for accounting
+
+Enterprise Tier ($29/month)
+
+All Pro features
+Multi-marketplace integration
+Team management
+Priority support & API access
+
+
+Phase 5: Advanced Features & Market Expansion (4 weeks)
+Marketplace Integration Expansion
+Amazon Books API
+
+Product data integration
+Pricing intelligence from Amazon marketplace
+Cross-platform price comparison
+
+AbeBooks integration
+
+Rare book market data
+Antiquarian book pricing
+Specialty market intelligence
+Advanced Inventory Management
+Title variation grouping
+
+ISBN cluster analysis
+Edition/format relationship mapping
+Hierarchical book organization
+
+Pre-ISBN book support
+
+Manual entry system for antique books (pre-1970)
+Custom metadata fields
+Image-based cataloging
+
+Bulk operations
+
+Batch import/export
+Mass price updates
+Inventory reconciliation tools
+
+
+Phase 6: Business Intelligence & Automation (3 weeks)
+Marketplace Listing Automation
+eBay listing templates
+
+Auto-generate listings from inventory data
+Template customization by condition/category
+Bulk listing creation
+
+Dynamic pricing strategies
+
+Automated repricing based on market data
+Competition analysis
+Profit margin optimization
+Advanced Analytics
+Portfolio analysis
+
+ROI tracking and projection
+Market trend analysis
+Inventory turnover optimization
+
+Business intelligence dashboard
+
+Revenue forecasting
+Acquisition opportunity identification
+Performance benchmarking
+
+
+Technical Architecture Priorities
+API Design Standards
+RESTful API consistency
+GraphQL consideration for complex queries
+Rate limiting and authentication middleware
+Comprehensive error handling and logging
+Database Optimization
+Query optimization for large inventories
+Indexing strategy for search performance
+Data archival and cleanup procedures
+Backup and disaster recovery
+Frontend Architecture
+Component library standardization
+State management optimization
+Progressive Web App enhancement
+Mobile-first responsive design
+Security & Compliance
+Data encryption at rest and in transit
+GDPR compliance for EU users
+Regular security audits
+Penetration testing schedule
+
+
+Success Metrics & KPIs
+Technical Metrics
+API response time < 200ms (95th percentile)
+System uptime > 99.9%
+Error rate < 0.1%
+Cache hit ratio > 85%
+Business Metrics
+User conversion rate (Free → Paid): Target 5%
+Monthly churn rate < 5%
+Customer acquisition cost < $25
+Lifetime value > $300
+Product Metrics
+Daily active users growth: 20% month-over-month
+Books scanned per user per month: Target 50+
+Pricing accuracy confidence > 80%
+User satisfaction score > 4.5/5
+
+
+Risk Management
+Technical Risks
+eBay API changes: Maintain fallback data sources
+Database scaling: Implement sharding strategy
+Third-party dependencies: Vendor diversification
+Business Risks
+Market competition: Focus on unique value proposition
+Economic downturns: Flexible pricing models
+Regulatory changes: Proactive compliance monitoring
+
+
+Resource Allocation
+Development Team Structure
+Indra (CTO): Architecture, technical strategy, code review
+Replit Agent: Implementation, testing, deployment
+Michael (CEO): Product vision, user feedback, business strategy
+Technology Stack Optimization
+Frontend: React, TypeScript, Tailwind CSS
+Backend: Node.js, Express, PostgreSQL
+Infrastructure: Replit production, CDN optimization
+APIs: eBay Finding Service, Amazon PA-API, OpenLibrary
+
+
+Next Actions (Immediate)
+Deploy eBay user token integration (Agent implementation)
+Test live pricing data with real ISBNs (Validation)
+Optimize pricing service performance (Enhancement)
+Prepare production deployment checklist (Infrastructure)
+
+
+
+This plan positions ScryVault as the definitive book intelligence platform, combining technical excellence with strategic business positioning for market dominance.

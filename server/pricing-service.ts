@@ -44,6 +44,7 @@ export interface PricingData {
 
 export interface PricingServiceConfig {
   appId: string;
+  userToken?: string;
   cacheDurationMs: number;
   maxRetries: number;
   timeoutMs: number;
@@ -51,9 +52,10 @@ export interface PricingServiceConfig {
 
 export class EbayPricingService {
   private config: PricingServiceConfig;
-  private cache = new Map<string, { data: PricingData; expires: number }>();
+  private cache = new Map<string, { data: PricingData; expires: number; accessCount: number; lastAccessed: number }>();
   private requestCount = 0;
   private errorCount = 0;
+  private accessStats = new Map<string, { count: number; lastAccessed: number }>();
 
   constructor(config: PricingServiceConfig) {
     this.config = config;
@@ -122,17 +124,55 @@ export class EbayPricingService {
     try {
       this.requestCount++;
       
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add user token authentication if available
+      if (this.config.userToken) {
+        headers['X-EBAY-SOA-SECURITY-TOKEN'] = this.config.userToken;
+        console.log('[EbayPricing] Using authenticated user token for enhanced data access');
+      } else {
+        console.log('[EbayPricing] Using App ID only - consider adding user token for better data access');
+      }
+      
       const response = await fetch(url, {
+        headers,
         signal: controller.signal
       });
 
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`eBay API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('[EbayPricing] API Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorText
+        });
+        throw new Error(`eBay API error: ${response.status} - ${response.statusText}`);
       }
 
       const data: EbayResponse = await response.json();
+      
+      // Enhanced API response logging
+      console.log('[EbayPricing] API Response Status:', response.status);
+      console.log('[EbayPricing] Raw API Response:', JSON.stringify(data, null, 2));
+      
+      const searchResult = data.findCompletedItemsResponse?.[0]?.searchResult?.[0];
+      const itemCount = searchResult?.['@count'] || '0';
+      console.log('[EbayPricing] Items found:', itemCount);
+      
+      if (searchResult?.item) {
+        console.log('[EbayPricing] Sample items:', searchResult.item.slice(0, 3).map(item => ({
+          title: item.title?.[0],
+          price: item.sellingStatus?.[0]?.convertedCurrentPrice?.[0]?.__value__,
+          condition: item.condition?.[0]?.conditionDisplayName?.[0],
+          endTime: item.listingInfo?.[0]?.endTime?.[0]
+        })));
+      }
+      
       return this.analyzePricingData(data, isbn);
     } finally {
       clearTimeout(timeoutId);
@@ -269,6 +309,10 @@ export class EbayPricingService {
   private getCachedData(isbn: string): PricingData | null {
     const cached = this.cache.get(isbn);
     if (cached && cached.expires > Date.now()) {
+      // Update access statistics
+      cached.accessCount++;
+      cached.lastAccessed = Date.now();
+      this.updateAccessStats(isbn);
       return cached.data;
     }
     if (cached) {
@@ -278,10 +322,46 @@ export class EbayPricingService {
   }
 
   private setCachedData(isbn: string, data: PricingData): void {
+    const now = Date.now();
+    const accessStats = this.accessStats.get(isbn);
+    
+    // Intelligent cache duration based on access frequency
+    let cacheDuration = this.config.cacheDurationMs; // Default 1 hour
+    
+    if (accessStats) {
+      const accessCount = accessStats.count;
+      const recentAccess = (now - accessStats.lastAccessed) < 24 * 60 * 60 * 1000; // Within 24 hours
+      
+      if (accessCount >= 10 && recentAccess) {
+        // Frequently accessed books: 1 hour cache
+        cacheDuration = 60 * 60 * 1000;
+      } else if (accessCount >= 3 && recentAccess) {
+        // Moderately accessed books: 6 hour cache
+        cacheDuration = 6 * 60 * 60 * 1000;
+      } else {
+        // Slow movers: 24 hour cache
+        cacheDuration = 24 * 60 * 60 * 1000;
+      }
+    }
+    
     this.cache.set(isbn, {
       data,
-      expires: Date.now() + this.config.cacheDurationMs
+      expires: now + cacheDuration,
+      accessCount: 1,
+      lastAccessed: now
     });
+    
+    console.log(`[EbayPricing] Cached data for ${isbn} with ${cacheDuration / (60 * 60 * 1000)}h expiration`);
+  }
+
+  private updateAccessStats(isbn: string): void {
+    const existing = this.accessStats.get(isbn);
+    if (existing) {
+      existing.count++;
+      existing.lastAccessed = Date.now();
+    } else {
+      this.accessStats.set(isbn, { count: 1, lastAccessed: Date.now() });
+    }
   }
 
   private logRequest(isbn: string, status: string, duration: number, error?: any): void {
