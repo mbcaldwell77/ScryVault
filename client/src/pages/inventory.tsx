@@ -396,21 +396,14 @@ export default function Inventory() {
                       
                       {copyCount === 1 ? (
                         <div className="border-t pt-3 mt-4" style={{ borderColor: 'var(--dark-border)' }}>
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center space-x-2">
                               <span className="text-green-600 font-bold text-sm">
                                 ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
                               </span>
-                              {mainBook.estimatedPrice && (
-                                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                                  Est: ${parseFloat(mainBook.estimatedPrice).toFixed(2)}
-                                  {parseFloat(mainBook.estimatedPrice) !== parseFloat(mainBook.purchasePrice || 0) && (
-                                    <span className={`ml-1 ${parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice || 0) ? 'text-green-600' : 'text-red-600'}`}>
-                                      ({parseFloat(mainBook.estimatedPrice) > parseFloat(mainBook.purchasePrice || 0) ? '+' : ''}${(parseFloat(mainBook.estimatedPrice) - parseFloat(mainBook.purchasePrice || 0)).toFixed(2)})
-                                    </span>
-                                  )}
-                                </span>
-                              )}
+                              <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                                Purchase Price
+                              </span>
                             </div>
                             <div className="flex items-center space-x-2">
                               <Button
@@ -439,7 +432,18 @@ export default function Inventory() {
                               </Button>
                             </div>
                           </div>
-                          <div className="text-xs font-mono mt-2" style={{ color: 'var(--text-secondary)' }}>
+                          
+                          {/* Live Market Pricing */}
+                          <div className="mb-3">
+                            <LivePricingDisplay 
+                              isbn={mainBook.isbn}
+                              condition={mainBook.condition}
+                              purchasePrice={mainBook.purchasePrice}
+                              compact={true}
+                            />
+                          </div>
+                          
+                          <div className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>
                             SKU: {mainBook.sku}
                           </div>
                         </div>
