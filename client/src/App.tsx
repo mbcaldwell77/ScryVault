@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -8,22 +8,78 @@ import Scanner from "@/pages/scanner";
 import BookDetails from "@/pages/book-details";
 import AddInventory from "@/pages/add-inventory";
 import Inventory from "@/pages/inventory";
+import LoginPage from "@/pages/login";
+import RegisterPage from "@/pages/register";
 import PWAInstallBanner from "@/components/pwa-install-banner";
+import { useEffect } from "react";
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const [, setLocation] = useLocation();
+  const isAuthenticated = localStorage.getItem('authToken');
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setLocation('/login');
+    }
+  }, [isAuthenticated, setLocation]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
 
 function Router() {
+  const [location] = useLocation();
+  const isAuthenticated = localStorage.getItem('authToken');
+
+  // Redirect authenticated users away from auth pages
+  useEffect(() => {
+    if (isAuthenticated && (location === '/login' || location === '/register')) {
+      const [, setLocation] = useLocation();
+      setLocation('/');
+    }
+  }, [isAuthenticated, location]);
+
   return (
     <div className="min-h-screen max-w-md mx-auto" style={{ backgroundColor: 'var(--pure-white)' }}>
       <PWAInstallBanner />
       <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/scanner" component={Scanner} />
+        {/* Public routes */}
+        <Route path="/login" component={LoginPage} />
+        <Route path="/register" component={RegisterPage} />
+        
+        {/* Protected routes */}
+        <Route path="/">
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/scanner">
+          <ProtectedRoute>
+            <Scanner />
+          </ProtectedRoute>
+        </Route>
         <Route path="/book-details/:isbn">
-          {(params) => <BookDetails isbn={params.isbn} />}
+          {(params) => (
+            <ProtectedRoute>
+              <BookDetails isbn={params.isbn} />
+            </ProtectedRoute>
+          )}
         </Route>
         <Route path="/add-inventory/:isbn">
-          {(params) => <AddInventory isbn={params.isbn} />}
+          {(params) => (
+            <ProtectedRoute>
+              <AddInventory isbn={params.isbn} />
+            </ProtectedRoute>
+          )}
         </Route>
-        <Route path="/inventory" component={Inventory} />
+        <Route path="/inventory">
+          <ProtectedRoute>
+            <Inventory />
+          </ProtectedRoute>
+        </Route>
       </Switch>
     </div>
   );
