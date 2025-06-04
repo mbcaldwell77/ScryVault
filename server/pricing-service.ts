@@ -40,6 +40,23 @@ export interface PricingData {
   totalSales: number;
   dateRange: { from: string; to: string };
   lastUpdated: string;
+  // Enhanced market intelligence
+  marketVelocity: {
+    salesPerWeek: number;
+    timeToSell: number; // average days
+    demandLevel: 'high' | 'medium' | 'low';
+  };
+  profitAnalysis: {
+    recommendedListingPrice: number;
+    expectedProfit: number;
+    profitMargin: number;
+    roi: number; // return on investment percentage
+  };
+  trends: {
+    priceDirection: 'rising' | 'falling' | 'stable';
+    weeklyChange: number; // percentage change
+    seasonality: string;
+  };
 }
 
 export interface PricingServiceConfig {
@@ -247,6 +264,50 @@ export class EbayPricingService {
       to: new Date(dates[dates.length - 1]).toISOString()
     };
 
+    // Calculate market velocity
+    const daySpan = (dates[dates.length - 1] - dates[0]) / (1000 * 60 * 60 * 24);
+    const salesPerWeek = daySpan > 0 ? (sales.length / daySpan) * 7 : 0;
+    const timeToSell = daySpan > 0 ? daySpan / sales.length : 0;
+    
+    const marketVelocity = {
+      salesPerWeek: Math.round(salesPerWeek * 100) / 100,
+      timeToSell: Math.round(timeToSell * 100) / 100,
+      demandLevel: salesPerWeek > 2 ? 'high' : salesPerWeek > 0.5 ? 'medium' : 'low' as 'high' | 'medium' | 'low'
+    };
+
+    // Calculate profit analysis
+    const recommendedListingPrice = Math.round(averagePrice * 1.15 * 100) / 100;
+    const profitAnalysis = {
+      recommendedListingPrice,
+      expectedProfit: 0, // Will be calculated when purchase price is provided
+      profitMargin: 0,
+      roi: 0
+    };
+
+    // Calculate trends
+    const now = Date.now();
+    const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
+    const recentSales = sales.filter(s => new Date(s.date).getTime() > oneWeekAgo);
+    const olderSales = sales.filter(s => new Date(s.date).getTime() <= oneWeekAgo);
+    
+    let priceDirection: 'rising' | 'falling' | 'stable' = 'stable';
+    let weeklyChange = 0;
+    
+    if (recentSales.length > 0 && olderSales.length > 0) {
+      const recentAvg = recentSales.reduce((sum, s) => sum + s.price, 0) / recentSales.length;
+      const olderAvg = olderSales.reduce((sum, s) => sum + s.price, 0) / olderSales.length;
+      weeklyChange = Math.round(((recentAvg - olderAvg) / olderAvg) * 100 * 100) / 100;
+      
+      if (weeklyChange > 5) priceDirection = 'rising';
+      else if (weeklyChange < -5) priceDirection = 'falling';
+    }
+
+    const trends = {
+      priceDirection,
+      weeklyChange,
+      seasonality: 'stable'
+    };
+
     return {
       averagePrice: Math.round(averagePrice * 100) / 100,
       conditionPricing,
@@ -254,7 +315,10 @@ export class EbayPricingService {
       confidenceScore,
       totalSales: sales.length,
       dateRange,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
+      marketVelocity,
+      profitAnalysis,
+      trends
     };
   }
 

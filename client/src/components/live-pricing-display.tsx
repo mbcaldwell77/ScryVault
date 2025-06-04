@@ -1,4 +1,4 @@
-import { TrendingUp, Clock, AlertCircle } from "lucide-react";
+import { TrendingUp, Clock, AlertCircle, TrendingDown, Minus, Activity, DollarSign } from "lucide-react";
 import { usePricingData, getConfidenceDisplay, getBestConditionMatch } from "@/hooks/use-pricing";
 import { Skeleton } from "@/components/ui/skeleton";
 
