@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { db } from './db';
 import { users, userSessions } from '@shared/schema';
 import { eq, and, gt } from 'drizzle-orm';
+import { getJWTSecret } from './auth-config';
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -25,13 +26,8 @@ export const authenticateToken = async (
   }
 
   try {
-    // Check if JWT_SECRET is available
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.error('[Auth] JWT_SECRET not configured');
-      return res.status(500).json({ error: 'Authentication service misconfigured' });
-    }
-
+    // Get JWT secret with fallback
+    const jwtSecret = getJWTSecret();
     const decoded = jwt.verify(token, jwtSecret) as any;
     
     // Verify session is still valid
@@ -84,11 +80,7 @@ export const optionalAuth = async (
   }
 
   try {
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      return next(); // Continue without user if JWT not configured
-    }
-
+    const jwtSecret = getJWTSecret();
     const decoded = jwt.verify(token, jwtSecret) as any;
     
     const session = await db.select()

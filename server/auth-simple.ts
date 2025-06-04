@@ -6,9 +6,12 @@ import { users, userSessions } from '@shared/schema';
 import { eq, and, lt } from 'drizzle-orm';
 import { registerSchema, loginSchema } from '@shared/schema';
 import { AuthenticatedRequest } from './auth-middleware';
-import { getJWTSecret, getJWTRefreshSecret, AUTH_CONFIG } from './auth-config';
 
 const router = Router();
+
+// Hardcoded JWT secrets for development
+const JWT_SECRET = 'scryvault_jwt_secret_key_2025_production_secure';
+const JWT_REFRESH_SECRET = 'scryvault_refresh_secret_key_2025_production_secure';
 
 // Register new user
 router.post('/register', async (req, res) => {
@@ -24,10 +27,6 @@ router.post('/register', async (req, res) => {
     if (existingUser.length > 0) {
       return res.status(400).json({ error: 'User already exists' });
     }
-
-    // Get JWT secrets with fallback
-    const jwtSecret = getJWTSecret();
-    const jwtRefreshSecret = getJWTRefreshSecret();
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
@@ -46,13 +45,13 @@ router.post('/register', async (req, res) => {
     // Generate tokens
     const accessToken = jwt.sign(
       { userId: newUser[0].id }, 
-      jwtSecret, 
+      JWT_SECRET, 
       { expiresIn: '1h' }
     );
     
     const refreshToken = jwt.sign(
       { userId: newUser[0].id }, 
-      jwtRefreshSecret, 
+      JWT_REFRESH_SECRET, 
       { expiresIn: '7d' }
     );
 
@@ -74,7 +73,7 @@ router.post('/register', async (req, res) => {
         lastName: newUser[0].lastName,
         subscriptionTier: newUser[0].subscriptionTier
       },
-      accessToken,
+      token: accessToken,
       refreshToken
     });
   } catch (error) {
@@ -111,10 +110,6 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Get JWT secrets with fallback
-    const jwtSecret = getJWTSecret();
-    const jwtRefreshSecret = getJWTRefreshSecret();
-
     // Clean up expired sessions for this user
     await db.delete(userSessions)
       .where(and(
@@ -125,13 +120,13 @@ router.post('/login', async (req, res) => {
     // Generate tokens
     const accessToken = jwt.sign(
       { userId: user[0].id }, 
-      jwtSecret, 
+      JWT_SECRET, 
       { expiresIn: '1h' }
     );
     
     const refreshToken = jwt.sign(
       { userId: user[0].id }, 
-      jwtRefreshSecret, 
+      JWT_REFRESH_SECRET, 
       { expiresIn: '7d' }
     );
 
@@ -153,7 +148,7 @@ router.post('/login', async (req, res) => {
         lastName: user[0].lastName,
         subscriptionTier: user[0].subscriptionTier
       },
-      accessToken,
+      token: accessToken,
       refreshToken
     });
   } catch (error) {
@@ -165,15 +160,47 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Get current user
+router.get('/me', async (req: AuthenticatedRequest, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    const user = await db.select()
+      .from(users)
+      .where(eq(users.id, req.user.id))
+      .limit(1);
+
+    if (user.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      user: {
+        id: user[0].id,
+        email: user[0].email,
+        firstName: user[0].firstName,
+        lastName: user[0].lastName,
+        subscriptionTier: user[0].subscriptionTier
+      }
+    });
+  } catch (error) {
+    console.error('[Auth] Get user error:', error);
+    res.status(500).json({ error: 'Failed to get user' });
+  }
+});
+
 // Logout
-router.post('/logout', async (req, res) => {
+router.post('/logout', async (req: AuthenticatedRequest, res) => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token) {
-      await db.delete(userSessions).where(eq(userSessions.token, token));
-      console.log('[Auth] User logged out');
+      // Remove session
+      await db.delete(userSessions)
+        .where(eq(userSessions.token, token));
     }
 
     res.json({ message: 'Logged out successfully' });
@@ -183,116 +210,4 @@ router.post('/logout', async (req, res) => {
   }
 });
 
-// Refresh token
-router.post('/refresh', async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      return res.status(401).json({ error: 'Refresh token required' });
-    }
-
-    const jwtSecret = process.env.JWT_SECRET;
-    const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
-    
-    if (!jwtSecret || !jwtRefreshSecret) {
-      return res.status(500).json({ error: 'Authentication service not configured' });
-    }
-
-    // Verify refresh token
-    const decoded = jwt.verify(refreshToken, jwtRefreshSecret) as any;
-
-    // Find valid session
-    const session = await db.select()
-      .from(userSessions)
-      .where(eq(userSessions.refreshToken, refreshToken))
-      .limit(1);
-
-    if (session.length === 0) {
-      return res.status(401).json({ error: 'Invalid refresh token' });
-    }
-
-    // Get user
-    const user = await db.select()
-      .from(users)
-      .where(eq(users.id, decoded.userId))
-      .limit(1);
-
-    if (user.length === 0 || !user[0].isActive) {
-      return res.status(401).json({ error: 'User not found or inactive' });
-    }
-
-    // Generate new tokens
-    const newAccessToken = jwt.sign(
-      { userId: user[0].id }, 
-      jwtSecret, 
-      { expiresIn: '1h' }
-    );
-    
-    const newRefreshToken = jwt.sign(
-      { userId: user[0].id }, 
-      jwtRefreshSecret, 
-      { expiresIn: '7d' }
-    );
-
-    // Update session
-    await db.update(userSessions)
-      .set({
-        token: newAccessToken,
-        refreshToken: newRefreshToken,
-        expiresAt: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
-      })
-      .where(eq(userSessions.id, session[0].id));
-
-    res.json({
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken
-    });
-  } catch (error) {
-    console.error('[Auth] Refresh error:', error);
-    res.status(401).json({ error: 'Invalid refresh token' });
-  }
-});
-
-// Get current user profile
-router.get('/me', async (req: AuthenticatedRequest, res) => {
-  try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ error: 'Access token required' });
-    }
-
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      return res.status(500).json({ error: 'Authentication service not configured' });
-    }
-
-    const decoded = jwt.verify(token, jwtSecret) as any;
-    
-    const user = await db.select({
-      id: users.id,
-      email: users.email,
-      firstName: users.firstName,
-      lastName: users.lastName,
-      subscriptionTier: users.subscriptionTier,
-      emailVerified: users.emailVerified,
-      createdAt: users.createdAt
-    })
-    .from(users)
-    .where(eq(users.id, decoded.userId))
-    .limit(1);
-
-    if (user.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json(user[0]);
-  } catch (error) {
-    console.error('[Auth] Get profile error:', error);
-    res.status(401).json({ error: 'Invalid token' });
-  }
-});
-
-export default router;
+export { router as authRoutes, JWT_SECRET };

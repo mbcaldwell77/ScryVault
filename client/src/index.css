@@ -286,24 +286,45 @@ body {
   border: 1px solid var(--dark-border) !important;
 }
 
-/* Form inputs - ensure readability */
+/* FOUNDATION FIX: Complete form styling override */
+input,
 input[type="email"],
 input[type="password"],
 input[type="text"],
 input[type="number"],
 input[type="date"],
-textarea {
+textarea,
+.input,
+[class*="input"] {
   background-color: #FFFFFF !important;
   border: 1px solid #D1D5DB !important;
   color: #111827 !important;
   border-radius: 6px !important;
   padding: 8px 12px !important;
+  font-size: 14px !important;
 }
 
+/* Placeholder styling for all input variants */
 input::placeholder,
-textarea::placeholder {
+textarea::placeholder,
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder,
+input::-moz-placeholder,
+textarea::-moz-placeholder,
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
   color: #6B7280 !important;
   opacity: 1 !important;
+}
+
+/* Override any existing dark styling */
+input:focus,
+textarea:focus {
+  background-color: #FFFFFF !important;
+  border-color: #10B981 !important;
+  color: #111827 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
 }
 
 /* Comprehensive placeholder styling for all form fields */
