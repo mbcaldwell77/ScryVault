@@ -147,19 +147,7 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            {/* Default Admin Credentials */}
-            <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-              <h4 className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-2">
-                Default Admin Access
-              </h4>
-              <div className="text-xs text-amber-700 dark:text-amber-300 space-y-1">
-                <p><strong>Email:</strong> admin@scryvault.local</p>
-                <p><strong>Password:</strong> admin123456</p>
-                <p className="text-amber-600 dark:text-amber-400 font-medium mt-2">
-                  ⚠️ Change password immediately after login
-                </p>
-              </div>
-            </div>
+
 
             <div className="mt-4 text-center">
               <Button

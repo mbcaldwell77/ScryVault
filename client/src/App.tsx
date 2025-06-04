@@ -10,6 +10,7 @@ import AddInventory from "@/pages/add-inventory";
 import Inventory from "@/pages/inventory";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
+import Account from "@/pages/account";
 import PWAInstallBanner from "@/components/pwa-install-banner";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
@@ -78,6 +79,11 @@ function Router() {
         <Route path="/inventory">
           <ProtectedRoute>
             <Inventory />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/account">
+          <ProtectedRoute>
+            <Account />
           </ProtectedRoute>
         </Route>
       </Switch>

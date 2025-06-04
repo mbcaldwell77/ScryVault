@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { LogOut, User, ArrowLeft } from "lucide-react";
+import { LogOut, User, ArrowLeft, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -69,6 +70,13 @@ export default function GlobalHeader({ title, showBackButton = false, onBack }: 
             <p className="font-medium">{user?.firstName} {user?.lastName}</p>
             <p className="text-muted-foreground">{user?.email}</p>
           </div>
+          <DropdownMenuItem 
+            onClick={() => setLocation('/account')}
+            className="cursor-pointer"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Account Settings
+          </DropdownMenuItem>
           <DropdownMenuItem 
             onClick={logout}
             disabled={isLoggingOut}
