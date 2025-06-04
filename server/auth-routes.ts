@@ -6,6 +6,7 @@ import { users, userSessions } from '@shared/schema';
 import { eq, and, lt } from 'drizzle-orm';
 import { registerSchema, loginSchema } from '@shared/schema';
 import { AuthenticatedRequest } from './auth-middleware';
+import { getJWTSecret, getJWTRefreshSecret, AUTH_CONFIG } from './auth-config';
 
 const router = Router();
 
@@ -24,14 +25,9 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    // Verify JWT secrets are configured
-    const jwtSecret = process.env.JWT_SECRET;
-    const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
-    
-    if (!jwtSecret || !jwtRefreshSecret) {
-      console.error('[Auth] JWT secrets not configured');
-      return res.status(500).json({ error: 'Authentication service not configured' });
-    }
+    // Get JWT secrets with fallback
+    const jwtSecret = getJWTSecret();
+    const jwtRefreshSecret = getJWTRefreshSecret();
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 12);
