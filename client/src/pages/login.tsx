@@ -38,8 +38,9 @@ export default function LoginPage() {
       return response;
     },
     onSuccess: (data) => {
-      // Store the JWT token
+      // Store both access and refresh tokens
       localStorage.setItem('authToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
       
       // Redirect to home

@@ -7,43 +7,100 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+// Token refresh mechanism
+async function refreshAuthToken(): Promise<string | null> {
+  const refreshToken = localStorage.getItem('refreshToken');
+  
+  if (!refreshToken) {
+    return null;
+  }
+
+  try {
+    const response = await fetch('/api/auth/refresh', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refreshToken }),
+      credentials: 'include',
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('authToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      return data.accessToken;
+    } else {
+      // Refresh failed, clear all tokens
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      return null;
+    }
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    return null;
+  }
+}
+
 export async function apiRequest(
   url: string,
   options: RequestInit = {}
 ): Promise<any> {
-  const token = localStorage.getItem('authToken');
+  let token = localStorage.getItem('authToken');
   
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...options.headers as Record<string, string>,
+  const makeRequest = async (authToken?: string) => {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...options.headers as Record<string, string>,
+    };
+
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+
+    return fetch(url, {
+      ...options,
+      headers,
+      credentials: "include",
+    });
   };
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+  let res = await makeRequest(token || undefined);
+
+  // If we get 401/403, try to refresh the token once
+  if ((res.status === 401 || res.status === 403) && token) {
+    console.log('Token expired, attempting refresh...');
+    const newToken = await refreshAuthToken();
+    
+    if (newToken) {
+      // Retry the request with the new token
+      res = await makeRequest(newToken);
+    }
   }
 
-  const res = await fetch(url, {
-    ...options,
-    headers,
-    credentials: "include",
-  });
-
-  // Handle authentication errors by clearing invalid tokens
+  // Handle authentication errors after refresh attempt
   if (res.status === 401 || res.status === 403) {
     const errorText = await res.text();
-    if (errorText.includes('Invalid token') || errorText.includes('expired')) {
-      // Clear invalid authentication data
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      localStorage.removeItem('recentISBNs');
-      localStorage.removeItem('scannedBooks');
-      localStorage.removeItem('userPreferences');
-      
-      // Redirect to login
+    console.error(`Authentication error ${res.status}:`, errorText);
+    
+    // Clear all authentication data
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('recentISBNs');
+    localStorage.removeItem('scannedBooks');
+    localStorage.removeItem('userPreferences');
+    
+    // Redirect to login only if not already on auth pages
+    const currentPath = window.location.pathname;
+    if (currentPath !== '/login' && currentPath !== '/register') {
       window.location.href = '/login';
-      throw new Error('Authentication expired. Please log in again.');
     }
-    throw new Error(errorText);
+    throw new Error('Authentication expired. Please log in again.');
   }
 
   await throwIfResNotOk(res);

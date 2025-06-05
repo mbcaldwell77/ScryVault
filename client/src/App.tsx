@@ -17,13 +17,24 @@ import { useEffect } from "react";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [, setLocation] = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isValidating } = useAuth();
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!isValidating && !isAuthenticated()) {
       setLocation('/login');
     }
-  }, [isAuthenticated, setLocation]);
+  }, [isAuthenticated, isValidating, setLocation]);
+
+  // Show loading state while validating token
+  if (isValidating) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin" 
+             style={{ borderColor: 'var(--emerald-primary)', borderTopColor: 'transparent' }}>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated()) {
     return null;
