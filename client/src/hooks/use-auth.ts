@@ -20,6 +20,7 @@ export function useAuth() {
 
   const clearAuthData = useCallback(() => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     localStorage.removeItem('recentISBNs');
     localStorage.removeItem('scannedBooks');

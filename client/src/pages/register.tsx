@@ -51,8 +51,9 @@ export default function RegisterPage() {
       return response;
     },
     onSuccess: (data) => {
-      // Store the access token returned by the API
+      // Store both access and refresh tokens
       localStorage.setItem('authToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
       
       // Redirect to home
