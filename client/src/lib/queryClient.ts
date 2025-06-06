@@ -56,17 +56,14 @@ export async function apiRequest<T>(
   url: string,
   options: RequestInit = {}
 ): Promise<T | null> {
-  let token = localStorage.getItem('authToken');
-  
-  const makeRequest = async (authToken?: string) => {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      ...options.headers as Record<string, string>,
-    };
+  let token = localStorage.getItem("authToken");
 
-    if (authToken) {
-      headers['Authorization'] = `Bearer ${authToken}`;
-    }
+  const makeRequest = async (authToken?: string) => {
+    const headers: HeadersInit = {
+      ...(authToken && { Authorization: `Bearer ${authToken}` }),
+      "Content-Type": "application/json",
+      ...options.headers,
+    };
 
     return fetch(url, {
       ...options,

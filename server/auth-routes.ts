@@ -183,8 +183,7 @@ router.post("/logout", async (req, res) => {
   }
 });
 
-// Refresh token
-router.post("/refresh", async (req, res) => {
+async function handleRefresh(req: any, res: any) {
   try {
     const { refreshToken } = req.body;
 
@@ -257,7 +256,12 @@ router.post("/refresh", async (req, res) => {
     console.error("[Auth] Refresh error:", error);
     res.status(401).json({ error: "Invalid refresh token" });
   }
-});
+}
+
+// Refresh token
+router.post("/refresh", handleRefresh);
+// Legacy or alternate endpoint
+router.post("/refresh-token", handleRefresh);
 
 // All routes below this line require a valid access token
 router.use(authenticateToken);
