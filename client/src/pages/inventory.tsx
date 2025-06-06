@@ -2,20 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw, Edit, Trash2, TrendingUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Book } from "@shared/schema";
-
-interface InventoryBook extends Book {
-  sku?: string | null;
-  imageUrl?: string | null;
-  format?: string | null;
-  location?: string | null;
-  storageLocation?: string | null;
-  notes?: string | null;
-  type?: string | null;
-  status?: string | null;
-  purchaseDate?: string | null;
-  dateAdded?: string | null;
-}
+import type { InventoryBook } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -31,8 +18,8 @@ export default function Inventory() {
   const [, setLocation] = useLocation();
   const [expandedISBNs, setExpandedISBNs] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingBook, setEditingBook] = useState<any>(null);
-  const [deletingBook, setDeletingBook] = useState<any>(null);
+  const [editingBook, setEditingBook] = useState<InventoryBook | null>(null);
+  const [deletingBook, setDeletingBook] = useState<InventoryBook | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -346,7 +333,7 @@ export default function Inventory() {
       {/* Grouped Inventory List */}
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-3">
-          {Object.entries(groupedBooks).map(([isbn, isbnBooks]: [string, any]) => {
+          {Object.entries(groupedBooks).map(([isbn, isbnBooks]: [string, InventoryBook[]]) => {
             const mainBook = isbnBooks[0]; // Use first book for main display
             const copyCount = isbnBooks.length;
             const isExpanded = expandedISBNs.has(isbn);
@@ -417,7 +404,7 @@ export default function Inventory() {
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center space-x-2">
                               <span className="text-green-600 font-bold text-sm">
-                                ${parseFloat(mainBook.purchasePrice || 0).toFixed(2)}
+                                ${Number(mainBook.purchasePrice ?? 0).toFixed(2)}
                               </span>
                               <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                                 Purchase Price
@@ -455,8 +442,8 @@ export default function Inventory() {
                           <div className="mb-3">
                             <LivePricingDisplay 
                               isbn={mainBook.isbn}
-                              condition={mainBook.condition}
-                              purchasePrice={mainBook.purchasePrice}
+                              condition={mainBook.condition ?? ""}
+                              purchasePrice={String(mainBook.purchasePrice ?? "")}
                               compact={true}
                             />
                           </div>
@@ -477,20 +464,20 @@ export default function Inventory() {
                 {/* Expanded Copies */}
                 {isExpanded && copyCount > 1 && (
                   <div className="border-t p-3 space-y-3" style={{ borderColor: 'var(--dark-border)', backgroundColor: 'var(--dark-surface)' }}>
-                    {isbnBooks.map((book: any, index: number) => (
+                    {isbnBooks.map((book: InventoryBook, index: number) => (
                       <div key={book.id} className="rounded-lg p-3 border" style={{ backgroundColor: 'var(--dark-card)', borderColor: 'var(--dark-border)' }}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
                             <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Copy {index + 1}</span>
                             <span className="font-bold text-sm text-green-600">
-                              ${parseFloat(book.purchasePrice || 0).toFixed(2)}
+                              ${Number(book.purchasePrice ?? 0).toFixed(2)}
                             </span>
                             {book.estimatedPrice && (
                               <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                                Est: ${parseFloat(book.estimatedPrice).toFixed(2)}
-                                {parseFloat(book.estimatedPrice) !== parseFloat(book.purchasePrice || 0) && (
-                                  <span className={`ml-1 ${parseFloat(book.estimatedPrice) > parseFloat(book.purchasePrice || 0) ? 'text-green-600' : 'text-red-600'}`}>
-                                    ({parseFloat(book.estimatedPrice) > parseFloat(book.purchasePrice || 0) ? '+' : ''}${(parseFloat(book.estimatedPrice) - parseFloat(book.purchasePrice || 0)).toFixed(2)})
+                                Est: ${Number(book.estimatedPrice).toFixed(2)}
+                                {Number(book.estimatedPrice) !== Number(book.purchasePrice ?? 0) && (
+                                  <span className={`ml-1 ${Number(book.estimatedPrice) > Number(book.purchasePrice ?? 0) ? 'text-green-600' : 'text-red-600'}`}>
+                                    ({Number(book.estimatedPrice) > Number(book.purchasePrice ?? 0) ? '+' : ''}${(Number(book.estimatedPrice) - Number(book.purchasePrice ?? 0)).toFixed(2)})
                                   </span>
                                 )}
                               </span>

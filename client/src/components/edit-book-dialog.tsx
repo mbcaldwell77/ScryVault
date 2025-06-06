@@ -8,9 +8,10 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import type { InventoryBook } from "@/types";
 
 interface EditBookDialogProps {
-  book: any;
+  book: InventoryBook | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -34,7 +35,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
     if (book && isOpen) {
       setFormData({
         format: book.format || 'Other',
-        purchasePrice: book.purchasePrice ?? '',
+        purchasePrice: book.purchasePrice != null ? String(book.purchasePrice) : '',
         purchaseDate: book.purchaseDate ? new Date(book.purchaseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         location: book.location || '',
         condition: book.condition || 'Good',
@@ -51,8 +52,8 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
     }));
   };
 
-  const updateMutation = useMutation({
-    mutationFn: async (data: any) => {
+  const updateMutation = useMutation<InventoryBook | null, Error, typeof formData>({
+    mutationFn: async (data: typeof formData) => {
       const updateData = {
         ...book,
         format: data.format,
@@ -65,7 +66,7 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
         type: 'COGS' // Fixed classification for V2
       };
 
-      const response = await apiRequest(`/api/books/${book.id}`, {
+      const response = await apiRequest<InventoryBook>(`/api/books/${book!.id}`, {
         method: 'PUT',
         body: JSON.stringify(updateData)
       });

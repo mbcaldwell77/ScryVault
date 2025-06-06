@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, BookOpen, UserPlus } from "lucide-react";
 import { registerSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import type { AuthResponse } from "@/types";
 
 interface RegisterForm {
   email: string;
@@ -41,14 +42,14 @@ export default function RegisterPage() {
     },
   });
 
-  const registerMutation = useMutation({
+  const registerMutation = useMutation<AuthResponse, Error, RegisterForm>({
     mutationFn: async (data: RegisterForm) => {
       const { confirmPassword, ...registerData } = data;
-      const response = await apiRequest('/api/auth/register', {
+      const response = await apiRequest<AuthResponse>('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(registerData),
       });
-      return response;
+      return response!;
     },
     onSuccess: (data) => {
       // Store both access and refresh tokens
@@ -59,7 +60,7 @@ export default function RegisterPage() {
       // Redirect to home
       setLocation('/');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error('Registration error:', error);
     },
   });

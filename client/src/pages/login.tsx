@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, BookOpen, Shield } from "lucide-react";
 import { loginSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import type { AuthResponse } from "@/types";
 
 interface LoginForm {
   email: string;
@@ -29,13 +30,13 @@ export default function LoginPage() {
     },
   });
 
-  const loginMutation = useMutation({
+  const loginMutation = useMutation<AuthResponse, Error, LoginForm>({
     mutationFn: async (data: LoginForm) => {
-      const response = await apiRequest('/api/auth/login', {
+      const response = await apiRequest<AuthResponse>('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify(data),
       });
-      return response;
+      return response!;
     },
     onSuccess: (data) => {
       // Store both access and refresh tokens
@@ -46,7 +47,7 @@ export default function LoginPage() {
       // Redirect to home
       setLocation('/');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error('Login error:', error);
     },
   });

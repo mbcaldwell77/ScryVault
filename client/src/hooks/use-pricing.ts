@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import type { InventoryBook } from "@/types";
 
 export interface PricingData {
   averagePrice: number;
@@ -44,16 +45,22 @@ export function usePricingData(isbn: string, enabled = true) {
   });
 }
 
+export interface UpdatePricingResponse {
+  book: InventoryBook;
+  pricingData: PricingData;
+}
+
 export function useUpdateBookPricing() {
   const queryClient = useQueryClient();
-  
-  return useMutation({
+
+  return useMutation<UpdatePricingResponse | null, Error, number>({
     mutationFn: async (bookId: number) => {
-      return await apiRequest(`/api/books/${bookId}/pricing`, {
+      return await apiRequest<UpdatePricingResponse>(`/api/books/${bookId}/pricing`, {
         method: "PUT",
       });
     },
-    onSuccess: (data: any, bookId) => {
+    onSuccess: (data, bookId) => {
+      if (!data) return;
       // Invalidate and refetch book data
       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
       queryClient.invalidateQueries({ queryKey: ['/api/books', bookId] });
