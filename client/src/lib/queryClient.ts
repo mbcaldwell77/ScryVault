@@ -35,6 +35,9 @@ async function refreshAuthToken(): Promise<string | null> {
       localStorage.removeItem('authToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
+      localStorage.removeItem('recentISBNs');
+      localStorage.removeItem('scannedBooks');
+      localStorage.removeItem('userPreferences');
       return null;
     }
   } catch (error) {
@@ -42,6 +45,9 @@ async function refreshAuthToken(): Promise<string | null> {
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    localStorage.removeItem('recentISBNs');
+    localStorage.removeItem('scannedBooks');
+    localStorage.removeItem('userPreferences');
     return null;
   }
 }
