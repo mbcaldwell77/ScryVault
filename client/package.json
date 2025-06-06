@@ -1,0 +1,7 @@
+{
+  "name": "scryvault-client",
+  "private": true,
+  "scripts": {
+    "dev": "vite"
+  }
+}

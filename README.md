@@ -381,3 +381,5 @@ marketplace_accounts (id, user_id, platform, credentials, status)
 ## Known Security Issues
 
 - Moderate vulnerability in `esbuild` (GHSA-67mh-4wv8-2f99) via dependencies `drizzle-kit` and `vite`. Fix requires breaking update.
+
+**Development Note:** Never call backend scripts from within `client`. Use `npm run dev:server` separately when needed.
