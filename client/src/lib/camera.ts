@@ -46,15 +46,19 @@ export function stopCameraStream(stream: MediaStream): void {
   stream.getTracks().forEach(track => track.stop());
 }
 
+interface TorchTrackCapabilities extends MediaTrackCapabilities {
+  torch?: boolean;
+}
+
 export async function toggleFlashlight(stream: MediaStream, enabled: boolean): Promise<void> {
   const videoTrack = stream.getVideoTracks()[0];
-  
+
   if (!videoTrack) {
     throw new Error("No video track found");
   }
 
-  const capabilities = videoTrack.getCapabilities();
-  
+  const capabilities = videoTrack.getCapabilities() as TorchTrackCapabilities;
+
   if (!capabilities.torch) {
     throw new Error("Flashlight not supported on this device");
   }

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import type { BookData } from "@/lib/book-api";
 import { Skeleton } from "@/components/ui/skeleton";
 import GlobalHeader from "@/components/global-header";
 import LivePricingDisplay from "@/components/live-pricing-display";
@@ -13,7 +14,11 @@ interface BookDetailsProps {
 export default function BookDetails({ isbn }: BookDetailsProps) {
   const [, setLocation] = useLocation();
   
-  const { data: bookData, isLoading, error } = useQuery({
+  const {
+    data: bookData,
+    isLoading,
+    error,
+  } = useQuery<BookData | null>({
     queryKey: [`/api/book-lookup/${isbn}`],
     retry: false,
   });

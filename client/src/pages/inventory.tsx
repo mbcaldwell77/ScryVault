@@ -2,6 +2,20 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw, Edit, Trash2, TrendingUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Book } from "@shared/schema";
+
+interface InventoryBook extends Book {
+  sku?: string | null;
+  imageUrl?: string | null;
+  format?: string | null;
+  location?: string | null;
+  storageLocation?: string | null;
+  notes?: string | null;
+  type?: string | null;
+  status?: string | null;
+  purchaseDate?: string | null;
+  dateAdded?: string | null;
+}
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -22,7 +36,11 @@ export default function Inventory() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const { data: books = [], isLoading, refetch } = useQuery({
+  const {
+    data: books = [],
+    isLoading,
+    refetch,
+  } = useQuery<InventoryBook[]>({
     queryKey: ["/api/books"],
   });
 
@@ -39,7 +57,7 @@ export default function Inventory() {
   });
 
   // Filter books based on search term
-  const filteredBooks = books.filter((book: any) => {
+  const filteredBooks = books.filter((book: InventoryBook) => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (
@@ -53,7 +71,7 @@ export default function Inventory() {
   });
 
   // Group filtered books by ISBN
-  const groupedBooks = filteredBooks.reduce((acc: any, book: any) => {
+  const groupedBooks = filteredBooks.reduce<Record<string, InventoryBook[]>>((acc, book) => {
     if (!acc[book.isbn]) {
       acc[book.isbn] = [];
     }
@@ -63,9 +81,9 @@ export default function Inventory() {
 
   const totalBooks = books.length;
   const totalInvestment = books
-    .reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
+    .reduce((sum: number, book: InventoryBook) => sum + (book.purchasePrice ?? 0), 0);
   const totalEstimatedValue = books
-    .reduce((sum: number, book: any) => sum + parseFloat(book.estimatedPrice || book.purchasePrice || 0), 0);
+    .reduce((sum: number, book: InventoryBook) => sum + (book.estimatedPrice ?? book.purchasePrice ?? 0), 0);
   const potentialProfit = totalEstimatedValue - totalInvestment;
   const profitMargin = totalInvestment > 0 ? (potentialProfit / totalInvestment) * 100 : 0;
 
@@ -98,7 +116,7 @@ export default function Inventory() {
       'Date Added'
     ];
 
-    const csvData = books.map((book: any) => [
+    const csvData = books.map((book: InventoryBook) => [
       book.sku || '',
       book.isbn || '',
       book.title || '',
@@ -109,11 +127,11 @@ export default function Inventory() {
       book.purchasePrice || '',
       book.location || '',
       book.type || '',
-      formatDate(book.dateAdded)
+      formatDate(book.dateAdded ?? '')
     ]);
 
     const csvContent = [headers, ...csvData]
-      .map(row => row.map(field => `"${field}"`).join(','))
+      .map(row => row.map(field => `"${String(field)}"`).join(','))
       .join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
