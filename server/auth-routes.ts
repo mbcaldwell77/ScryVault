@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { db } from "./db";
 import { users, userSessions, registerSchema, loginSchema } from "@shared/schema";
-import { eq, and, lt, not } from "drizzle-orm";
+import { eq, and, lt, not, gt } from "drizzle-orm";
 import { authenticateToken, AuthenticatedRequest } from "./auth-middleware";
 import { getJWTSecret, getJWTRefreshSecret, AUTH_CONFIG } from "./auth-config";
 
@@ -192,24 +192,20 @@ router.post("/refresh", async (req, res) => {
       return res.status(401).json({ error: "Refresh token required" });
     }
 
-    const jwtSecret = process.env.JWT_SECRET;
-    const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
-    
-    if (!jwtSecret || !jwtRefreshSecret) {
-      return res.status(500).json({ error: "Authentication service not configured" });
-    }
+    const jwtSecret = getJWTSecret();
+    const jwtRefreshSecret = getJWTRefreshSecret();
 
     // Verify refresh token
     const decoded = jwt.verify(refreshToken, jwtRefreshSecret) as any;
 
-    // Find valid session
+    // Find valid, non-expired session
     const session = await db.select()
       .from(userSessions)
-      .where(eq(userSessions.token, refreshToken))
+      .where(and(eq(userSessions.token, refreshToken), gt(userSessions.expiresAt, new Date())))
       .limit(1);
 
     if (session.length === 0) {
-      return res.status(401).json({ error: "Invalid refresh token" });
+      return res.status(401).json({ error: "Invalid or expired refresh token" });
     }
 
     // Get user
