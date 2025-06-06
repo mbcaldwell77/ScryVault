@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { books } from "@shared/schema";
+import { books, type InsertBook } from "@shared/schema";
 import { environmentLockdown } from "./environment-lockdown";
 
 // Development seed data - comprehensive dummy dataset
@@ -192,10 +192,16 @@ export async function seedDevelopmentData() {
     // Insert development seed data with proper SKU generation
     const booksWithSkus = developmentBooks.map((book, index) => ({
       ...book,
-      sku: `DEV-${Date.now()}-${index.toString().padStart(3, "0")}`
+      sku: `DEV-${Date.now()}-${index.toString().padStart(3, "0")}`,
+      userId: 1,
+      purchasePrice: Number(book.purchasePrice),
+      estimatedPrice: Number(book.estimatedPrice)
     }));
     
-    const insertedBooks = await db.insert(books).values(booksWithSkus as any[]).returning();
+    const insertedBooks = await db
+      .insert(books)
+      .values(booksWithSkus as InsertBook[])
+      .returning();
     console.log(`[SEED] Inserted ${insertedBooks.length} development books`);
     
     console.log("[SEED] Development data seeding completed successfully");

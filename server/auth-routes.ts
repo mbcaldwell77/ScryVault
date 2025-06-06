@@ -196,7 +196,10 @@ router.post("/refresh", async (req, res) => {
     const jwtRefreshSecret = getJWTRefreshSecret();
 
     // Verify refresh token
-    const decoded = jwt.verify(refreshToken, jwtRefreshSecret) as any;
+    interface RefreshPayload extends jwt.JwtPayload {
+      userId: number;
+    }
+    const decoded = jwt.verify(refreshToken, jwtRefreshSecret) as RefreshPayload;
 
     // Find valid, non-expired session
     const session = await db.select()

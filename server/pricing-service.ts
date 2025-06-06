@@ -177,7 +177,8 @@ export class EbayPricingService {
         }
       }
 
-      this.logRequest(isbn, "error", Date.now() - startTime, error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      this.logRequest(isbn, "error", Date.now() - startTime, err);
       return null;
     }
   }
@@ -730,7 +731,7 @@ export class EbayPricingService {
     isbn: string,
     status: string,
     duration: number,
-    error?: any,
+    error?: Error,
   ): void {
     const logData = {
       timestamp: new Date().toISOString(),
