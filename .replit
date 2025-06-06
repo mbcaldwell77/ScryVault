@@ -34,3 +34,56 @@ author = "agent"
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Start Dev Server"
+mode = "sequential"
+author = 11962605
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev:full"
+
+[[workflows.workflow]]
+name = "Sync Database Schema"
+mode = "sequential"
+author = 11962605
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run db:push"
+
+[[workflows.workflow]]
+name = "Rebuild Production Bundle"
+mode = "sequential"
+author = 11962605
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run start"
+
+[[workflows.workflow]]
+name = "Environment Check"
+mode = "sequential"
+author = 11962605
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run check-env"
+
+[[workflows.workflow]]
+name = "Reset and Reinstall Node Modules"
+mode = "sequential"
+author = 11962605
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "rm -rf node_modules"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install"
