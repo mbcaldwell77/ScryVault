@@ -64,21 +64,12 @@ export default function EditBookDialog({ book, isOpen, onClose }: EditBookDialog
         type: 'COGS' // Fixed classification for V2
       };
 
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`/api/books/${book.id}`, {
+      const response = await apiRequest(`/api/books/${book.id}`, {
         method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify(updateData)
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update book');
-      }
-      
-      return response.json();
+
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/books'] });
