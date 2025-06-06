@@ -377,3 +377,7 @@ marketplace_accounts (id, user_id, platform, credentials, status)
 ---
 
 **This comprehensive plan transforms ScryVault from a book scanner into a complete reseller business management platform, providing everything needed to run a profitable reselling operation.**
+
+## Known Security Issues
+
+- Moderate vulnerability in `esbuild` (GHSA-67mh-4wv8-2f99) via dependencies `drizzle-kit` and `vite`. Fix requires breaking update.

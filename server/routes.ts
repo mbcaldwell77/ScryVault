@@ -72,6 +72,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "API is working", timestamp: new Date().toISOString() });
   });
 
+  app.get("/api/status", (_req, res) => {
+    res.status(200).json({
+      ok: true,
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
   // Get all books in inventory (requires authentication)
   app.get("/api/books", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
