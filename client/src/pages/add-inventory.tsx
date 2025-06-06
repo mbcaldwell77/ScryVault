@@ -8,10 +8,13 @@ import { ArrowLeft, Save, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { InventoryBook } from "@/types";
+import type { BookData } from "@/lib/book-api";
 import { useToast } from "@/hooks/use-toast";
 import { useLocationAutocomplete } from "@/hooks/use-location-autocomplete";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { insertBookSchema } from "@shared/schema";
+import { z } from "zod";
 import GlobalHeader from "@/components/global-header";
 
 interface AddInventoryProps {
@@ -32,18 +35,18 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
   const [storageLocation, setStorageLocation] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
   
-  const { data: bookData } = useQuery({
+  const { data: bookData } = useQuery<BookData | null>({
     queryKey: [`/api/book-lookup/${isbn}`],
   });
 
 
 
-  const addToInventoryMutation = useMutation({
-    mutationFn: async (data: any) => {
-      return await apiRequest("/api/books", {
+  const addToInventoryMutation = useMutation<InventoryBook, Error, z.infer<typeof insertBookSchema>>({
+    mutationFn: async (data: z.infer<typeof insertBookSchema>) => {
+      return await apiRequest<InventoryBook>("/api/books", {
         method: "POST",
         body: JSON.stringify(data)
-      });
+      }) as InventoryBook;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/books"] });
@@ -53,7 +56,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
       });
       setLocationPath("/inventory");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Add to inventory error:", error);
       let errorMessage = "Failed to add book to inventory";
       
@@ -90,15 +93,15 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
 
     const inventoryData = {
       isbn,
-      title: (bookData as any)?.title || "Unknown Title",
-      author: (bookData as any)?.author || "Unknown Author",
-      publisher: (bookData as any)?.publisher || null,
-      year: (bookData as any)?.year || null,
-      imageUrl: (bookData as any)?.imageUrl || null,
+      title: bookData?.title || "Unknown Title",
+      author: bookData?.author || "Unknown Author",
+      publisher: bookData?.publisher || null,
+      year: bookData?.year || null,
+      imageUrl: bookData?.imageUrl || null,
       purchasePrice: purchasePrice.toString(),
       estimatedPrice: null, // Will be populated by eBay API
       condition,
-      format: (bookData as any)?.format || format, // Use API format if available, otherwise user selection
+      format: (bookData as unknown as { format?: string })?.format || format,
       location: location || null,
       storageLocation: storageLocation || null,
       notes: notes || null,
@@ -137,10 +140,10 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
         <div className="rounded-xl p-4 premium-card">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-16 rounded flex items-center justify-center" style={{ backgroundColor: 'var(--dark-surface)' }}>
-              {(bookData as any)?.imageUrl ? (
-                <img 
-                  src={(bookData as any).imageUrl} 
-                  alt="Book cover" 
+              {bookData?.imageUrl ? (
+                <img
+                  src={bookData.imageUrl}
+                  alt="Book cover"
                   className="w-12 h-16 object-cover rounded"
                 />
               ) : (
@@ -149,10 +152,10 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-medium truncate" style={{ color: 'var(--text-light)' }}>
-                {(bookData as any)?.title || "Loading..."}
+                {bookData?.title || "Loading..."}
               </h3>
               <p className="text-sm truncate" style={{ color: 'var(--text-secondary)' }}>
-                {(bookData as any)?.author || "Loading..."}
+                {bookData?.author || "Loading..."}
               </p>
             </div>
           </div>
@@ -160,7 +163,7 @@ export default function AddInventory({ isbn }: AddInventoryProps) {
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Book Format - Only show if ISBN API didn't provide format */}
-          {!(bookData as any)?.format && (
+          {!((bookData as unknown as { format?: string })?.format) && (
             <div className="space-y-2">
               <Label className="text-sm font-medium" style={{ color: 'var(--text-light)' }}>
                 Book Format <span style={{ color: 'var(--gold-accent)' }}>*</span>

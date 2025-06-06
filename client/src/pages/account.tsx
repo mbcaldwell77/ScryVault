@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import type { User } from "@shared/schema";
 import GlobalHeader from "@/components/global-header";
 import { useLocation } from "wouter";
 
@@ -38,9 +39,9 @@ export default function Account() {
   });
 
   // Password change mutation
-  const passwordMutation = useMutation({
+  const passwordMutation = useMutation<void, Error, { currentPassword: string; newPassword: string }>({
     mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
-      return await apiRequest("/api/auth/change-password", {
+      await apiRequest<void>("/api/auth/change-password", {
         method: "POST",
         body: JSON.stringify(data)
       });
@@ -52,7 +53,7 @@ export default function Account() {
       });
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Password Change Failed",
         description: error.message || "Failed to update password.",
@@ -62,12 +63,13 @@ export default function Account() {
   });
 
   // Profile update mutation
-  const profileMutation = useMutation({
+  const profileMutation = useMutation<{ user: User }, Error, { firstName: string; lastName: string; email: string }>({
     mutationFn: async (data: { firstName: string; lastName: string; email: string }) => {
-      return await apiRequest("/api/auth/update-profile", {
+      const res = await apiRequest<{ user: User }>("/api/auth/update-profile", {
         method: "PUT",
         body: JSON.stringify(data)
       });
+      return res!;
     },
     onSuccess: (updatedUser) => {
       // Update localStorage with new user data
@@ -77,7 +79,7 @@ export default function Account() {
         description: "Your profile information has been saved."
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Profile Update Failed",
         description: error.message || "Failed to update profile.",
@@ -87,9 +89,9 @@ export default function Account() {
   });
 
   // Account deletion mutation
-  const deleteMutation = useMutation({
+  const deleteMutation = useMutation<void, Error>({
     mutationFn: async () => {
-      return await apiRequest("/api/auth/delete-account", {
+      await apiRequest<void>("/api/auth/delete-account", {
         method: "DELETE"
       });
     },
@@ -100,7 +102,7 @@ export default function Account() {
       });
       logout();
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Account Deletion Failed",
         description: error.message || "Failed to delete account.",

@@ -2,20 +2,23 @@ import { useLocation } from 'wouter';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback } from 'react';
+import type { User } from '@shared/schema';
+
+interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+  tokenValid: boolean;
+}
 
 export function useAuth() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
-  const [authState, setAuthState] = useState<{
-    isAuthenticated: boolean;
-    user: any;
-    tokenValid: boolean;
-  }>({
+  const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     user: null,
-    tokenValid: false
+    tokenValid: false,
   });
 
   const clearAuthData = useCallback(() => {
@@ -50,18 +53,18 @@ export function useAuth() {
 
     try {
       // Validate token with the /me endpoint
-      const response = await apiRequest('/api/auth/me', {
+      const response = await apiRequest<User>('/api/auth/me', {
         method: 'GET'
       });
-      
-      if (response && response.user) {
+
+      if (response) {
         // Update user data in localStorage if it changed
-        localStorage.setItem('user', JSON.stringify(response.user));
-        
+        localStorage.setItem('user', JSON.stringify(response));
+
         setAuthState({
           isAuthenticated: true,
-          user: response.user,
-          tokenValid: true
+          user: response,
+          tokenValid: true,
         });
         setIsValidating(false);
         return true;

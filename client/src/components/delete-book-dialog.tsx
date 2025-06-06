@@ -3,9 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import type { InventoryBook } from "@/types";
 
 interface DeleteBookDialogProps {
-  book: any;
+  book: InventoryBook | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -14,8 +15,9 @@ export default function DeleteBookDialog({ book, isOpen, onClose }: DeleteBookDi
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const deleteMutation = useMutation({
+  const deleteMutation = useMutation<void, Error>({
     mutationFn: async () => {
+      if (!book) return;
       await apiRequest(`/api/books/${book.id}`, {
         method: 'DELETE',
       });
@@ -28,7 +30,7 @@ export default function DeleteBookDialog({ book, isOpen, onClose }: DeleteBookDi
       });
       onClose();
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Delete Failed",
         description: error.message || "Failed to delete the book.",

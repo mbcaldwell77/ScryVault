@@ -52,10 +52,10 @@ async function refreshAuthToken(): Promise<string | null> {
   }
 }
 
-export async function apiRequest(
+export async function apiRequest<T>(
   url: string,
   options: RequestInit = {}
-): Promise<any> {
+): Promise<T | null> {
   let token = localStorage.getItem('authToken');
   
   const makeRequest = async (authToken?: string) => {
@@ -121,7 +121,7 @@ export async function apiRequest(
   }
   
   try {
-    return JSON.parse(text);
+    return JSON.parse(text) as T;
   } catch (parseError) {
     console.error('JSON parse error:', parseError);
     console.error('Response text:', text);

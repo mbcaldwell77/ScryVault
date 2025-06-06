@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Camera, Package, TrendingUp, LogOut, User, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import type { InventoryBook } from "@/types";
 import { useAuth } from "@/hooks/use-auth";
 import {
   DropdownMenu,
@@ -15,15 +16,15 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const { logout, getUser, isLoggingOut } = useAuth();
   
-  const { data: books = [] } = useQuery({
+  const { data: books = [] } = useQuery<InventoryBook[]>({
     queryKey: ["/api/books"],
   });
 
   const user = getUser();
 
-  const totalBooks = (books as any[]).length;
-  const totalInvestment = (books as any[]).reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
-  const totalEstimatedValue = (books as any[]).reduce((sum: number, book: any) => sum + parseFloat(book.estimatedPrice || book.purchasePrice || 0), 0);
+  const totalBooks = books.length;
+  const totalInvestment = books.reduce((sum: number, book: InventoryBook) => sum + Number(book.purchasePrice ?? 0), 0);
+  const totalEstimatedValue = books.reduce((sum: number, book: InventoryBook) => sum + Number(book.estimatedPrice ?? book.purchasePrice ?? 0), 0);
   const potentialProfit = totalEstimatedValue - totalInvestment;
   const profitMargin = totalInvestment > 0 ? (potentialProfit / totalInvestment) * 100 : 0;
 

@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import type { InventoryBook } from "@/types";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
@@ -17,12 +18,16 @@ export default function Inventory() {
   const [, setLocation] = useLocation();
   const [expandedISBNs, setExpandedISBNs] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingBook, setEditingBook] = useState<any>(null);
-  const [deletingBook, setDeletingBook] = useState<any>(null);
+  const [editingBook, setEditingBook] = useState<InventoryBook | null>(null);
+  const [deletingBook, setDeletingBook] = useState<InventoryBook | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const { data: books = [], isLoading, refetch } = useQuery({
+  const {
+    data: books = [],
+    isLoading,
+    refetch,
+  } = useQuery<InventoryBook[]>({
     queryKey: ["/api/books"],
   });
 
@@ -39,7 +44,7 @@ export default function Inventory() {
   });
 
   // Filter books based on search term
-  const filteredBooks = (books as any[]).filter((book: any) => {
+  const filteredBooks = books.filter((book: InventoryBook) => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (
@@ -52,9 +57,9 @@ export default function Inventory() {
     );
   });
 
-  const totalBooks = (books as any[]).length;
-  const totalInvestment = (books as any[]).reduce((sum: number, book: any) => sum + parseFloat(book.purchasePrice || 0), 0);
-  const totalEstimatedValue = (books as any[]).reduce((sum: number, book: any) => sum + parseFloat(book.estimatedPrice || book.purchasePrice || 0), 0);
+  const totalBooks = books.length;
+  const totalInvestment = books.reduce((sum: number, book: InventoryBook) => sum + Number(book.purchasePrice ?? 0), 0);
+  const totalEstimatedValue = books.reduce((sum: number, book: InventoryBook) => sum + Number(book.estimatedPrice ?? book.purchasePrice ?? 0), 0);
   const potentialProfit = totalEstimatedValue - totalInvestment;
   const profitMargin = totalInvestment > 0 ? (potentialProfit / totalInvestment) * 100 : 0;
 
@@ -124,7 +129,7 @@ export default function Inventory() {
         />
         
         <div className="space-y-3">
-          {filteredBooks.map((book: any) => (
+          {filteredBooks.map((book: InventoryBook) => (
             <div key={book.id} className="p-4 border rounded-lg">
               <div className="flex justify-between items-start">
                 <div>
