@@ -19,6 +19,12 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const userSessions = pgTable("user_sessions", {
+  token: text("token").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  expiresAt: timestamp("expires_at").notNull(),
+});
+
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")
