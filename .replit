@@ -42,7 +42,7 @@ author = 11962605
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev:full"
+args = "clear && npm run dev:full"
 
 [[workflows.workflow]]
 name = "Sync Database Schema"
