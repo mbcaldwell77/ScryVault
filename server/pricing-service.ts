@@ -574,6 +574,7 @@ export class EbayPricingService {
     try {
       // Get user's cache settings
       const cacheDays = await this.getUserCacheDays(userId);
+
       const cutoffDate = new Date(Date.now() - cacheDays * 24 * 60 * 60 * 1000);
 
       const cached = await db
@@ -585,10 +586,12 @@ export class EbayPricingService {
             gt(pricingCache.expiresAt, new Date()),
           ),
         )
+
         .limit(1);
 
       if (cached.length > 0) {
         const entry = cached[0];
+
 
         // Update access count
         await db
@@ -604,6 +607,7 @@ export class EbayPricingService {
         );
 
         return JSON.parse(entry.pricingData) as PricingData;
+
       }
 
       return null;
@@ -619,6 +623,7 @@ export class EbayPricingService {
     userId?: number,
   ): Promise<void> {
     try {
+
       const cacheDays = await this.getUserCacheDays(userId);
       const expiresAt = new Date(Date.now() + cacheDays * 24 * 60 * 60 * 1000);
 
@@ -633,10 +638,12 @@ export class EbayPricingService {
           expiresAt,
           accessCount: 1,
           lastAccessedAt: new Date(),
+
         })
         .onConflictDoUpdate({
           target: pricingCache.isbn,
           set: {
+
             pricingData: JSON.stringify(data),
             confidence: data.confidence,
             totalSales: data.totalSales,
@@ -651,6 +658,7 @@ export class EbayPricingService {
       console.log(
         `[EbayPricing] Stored in database cache for ${isbn}, expires in ${cacheDays} days`,
       );
+
     } catch (error) {
       console.error("[EbayPricing] Database cache store error:", error);
     }
@@ -666,8 +674,10 @@ export class EbayPricingService {
         .where(eq(userSettings.userId, userId))
         .limit(1);
 
+
       return settings.length > 0
         ? settings[0].pricingCacheDays
+
         : this.config.defaultCacheDays;
     } catch (error) {
       console.error("[EbayPricing] Error getting user cache days:", error);
@@ -687,10 +697,12 @@ export class EbayPricingService {
         .limit(1);
 
       if (cached.length > 0) {
+
         console.log(
           `[EbayPricing] Using expired cache data for ${isbn} due to rate limit`,
         );
         return JSON.parse(cached[0].pricingData) as PricingData;
+
       }
 
       return null;

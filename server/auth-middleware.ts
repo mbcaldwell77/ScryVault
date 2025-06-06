@@ -48,14 +48,14 @@ export const authenticateToken = async (
       .where(eq(users.id, decoded.userId))
       .limit(1);
 
-    if (user.length === 0 || !user[0].isActive) {
-      return res.status(401).json({ error: 'User not found or inactive' });
+    if (user.length === 0) {
+      return res.status(401).json({ error: 'User not found' });
     }
 
     req.user = {
       id: user[0].id,
       email: user[0].email,
-      subscriptionTier: user[0].subscriptionTier
+      subscriptionTier: user[0].subscriptionTier || 'free'
     };
 
     next();
@@ -96,11 +96,11 @@ export const optionalAuth = async (
         .where(eq(users.id, decoded.userId))
         .limit(1);
 
-      if (user.length > 0 && user[0].isActive) {
+      if (user.length > 0) {
         req.user = {
           id: user[0].id,
           email: user[0].email,
-          subscriptionTier: user[0].subscriptionTier
+          subscriptionTier: user[0].subscriptionTier || 'free'
         };
       }
     }

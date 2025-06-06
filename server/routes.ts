@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertBookSchema, userSettings } from "@shared/schema";
+import { insertBookSchema, userSettings, type InsertBook } from "@shared/schema";
 import { z } from "zod";
 import { EbayPricingService, type PricingServiceConfig } from "./pricing-service";
 import crypto from 'crypto';
@@ -111,7 +111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Authentication required" });
       }
       
-      const validatedData = insertBookSchema.parse(req.body);
+      const validatedData = insertBookSchema.parse(req.body) as Omit<InsertBook, 'userId'>;
       const book = await storage.createBookForUser(req.user.id, validatedData);
       res.status(201).json(book);
     } catch (error) {
@@ -138,7 +138,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid book ID" });
       }
 
-      const validatedData = insertBookSchema.parse(req.body);
+      const validatedData = insertBookSchema.parse(req.body) as Omit<InsertBook, 'userId'>;
       const updatedBook = await storage.updateBook(id, validatedData, req.user.id);
       
       if (!updatedBook) {
@@ -284,15 +284,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/user/settings", authenticateToken, async (req: AuthenticatedRequest, res) => {
     try {
       const userId = req.user!.id;
-      const { pricingCacheDays, enablePricingCache, autoRefreshPricing, pricingConfidenceThreshold } = req.body;
-      
+      const { cacheDurationDays } = req.body;
+
       const updatedSettings = await db.update(userSettings)
         .set({
-          pricingCacheDays: pricingCacheDays || 90,
-          enablePricingCache: enablePricingCache !== undefined ? enablePricingCache : true,
-          autoRefreshPricing: autoRefreshPricing !== undefined ? autoRefreshPricing : true,
-          pricingConfidenceThreshold: pricingConfidenceThreshold || 'medium',
-          updatedAt: new Date()
+          cacheDurationDays: cacheDurationDays || 90
         })
         .where(eq(userSettings.userId, userId))
         .returning();
@@ -302,10 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const newSettings = await db.insert(userSettings)
           .values({
             userId,
-            pricingCacheDays: pricingCacheDays || 90,
-            enablePricingCache: enablePricingCache !== undefined ? enablePricingCache : true,
-            autoRefreshPricing: autoRefreshPricing !== undefined ? autoRefreshPricing : true,
-            pricingConfidenceThreshold: pricingConfidenceThreshold || 'medium'
+            cacheDurationDays: cacheDurationDays || 90
           })
           .returning();
         return res.json(newSettings[0]);
@@ -346,7 +339,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Update the book's estimated price with market data
         const updatedBook = await storage.updateBook(id, {
           ...book,
-          estimatedPrice: pricingData.averagePrice.toString()
+          estimatedPrice: Math.round(pricingData.averagePrice)
         });
         
         res.json({
