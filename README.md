@@ -4,7 +4,7 @@ The Official Repository of ScryVault
 # ScryVault Master Development Plan V4.0
 ## Complete Reseller Business Management Platform
 
-*CTO: Indra | CEO: Michael Caldwell | Updated: June 2025
+*CTO: Corbin | CEO: Michael Caldwell | Updated: June 2025
 
 ---
 
