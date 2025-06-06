@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "./db";
-import { pricingCache } from "@shared/schema";
+import { pricingCache, userSettings, type PricingCacheEntry } from "@shared/schema";
 import { eq, and, gt } from "drizzle-orm";
 
 // eBay API response types
@@ -577,36 +577,25 @@ export class EbayPricingService {
 
       const cutoffDate = new Date(Date.now() - cacheDays * 24 * 60 * 60 * 1000);
 
-      const cached = await db
+      const cached: PricingCacheEntry[] = await db
         .select()
         .from(pricingCache)
         .where(
           and(
             eq(pricingCache.isbn, isbn),
-            gt(pricingCache.expiresAt, new Date()),
+            gt(pricingCache.updatedAt, cutoffDate),
           ),
         )
-
         .limit(1);
 
       if (cached.length > 0) {
         const entry = cached[0];
 
-
-        // Update access count
-        await db
-          .update(pricingCache)
-          .set({
-            accessCount: entry.accessCount + 1,
-            lastAccessedAt: new Date(),
-          })
-          .where(eq(pricingCache.isbn, isbn));
-
         console.log(
-          `[EbayPricing] Database cache hit for ${isbn}, age: ${Math.round((Date.now() - entry.fetchedAt.getTime()) / (24 * 60 * 60 * 1000))} days`,
+          `[EbayPricing] Database cache hit for ${isbn}, age: ${Math.round((Date.now() - (entry.updatedAt?.getTime() ?? 0)) / (24 * 60 * 60 * 1000))} days`,
         );
 
-        return JSON.parse(entry.pricingData) as PricingData;
+        return JSON.parse(entry.data) as PricingData;
 
       }
 
@@ -623,35 +612,20 @@ export class EbayPricingService {
     userId?: number,
   ): Promise<void> {
     try {
-
       const cacheDays = await this.getUserCacheDays(userId);
-      const expiresAt = new Date(Date.now() + cacheDays * 24 * 60 * 60 * 1000);
 
       await db
         .insert(pricingCache)
         .values({
           isbn,
-          pricingData: JSON.stringify(data),
-          confidence: data.confidence,
-          totalSales: data.totalSales,
-          averagePrice: data.averagePrice.toString(),
-          expiresAt,
-          accessCount: 1,
-          lastAccessedAt: new Date(),
-
+          data: JSON.stringify(data),
+          updatedAt: new Date(),
         })
         .onConflictDoUpdate({
           target: pricingCache.isbn,
           set: {
-
-            pricingData: JSON.stringify(data),
-            confidence: data.confidence,
-            totalSales: data.totalSales,
-            averagePrice: data.averagePrice.toString(),
-            fetchedAt: new Date(),
-            expiresAt,
-            accessCount: 1,
-            lastAccessedAt: new Date(),
+            data: JSON.stringify(data),
+            updatedAt: new Date(),
           },
         });
 
@@ -676,8 +650,7 @@ export class EbayPricingService {
 
 
       return settings.length > 0
-        ? settings[0].pricingCacheDays
-
+        ? settings[0].cacheDurationDays ?? this.config.defaultCacheDays
         : this.config.defaultCacheDays;
     } catch (error) {
       console.error("[EbayPricing] Error getting user cache days:", error);
@@ -690,7 +663,7 @@ export class EbayPricingService {
   ): Promise<PricingData | null> {
     try {
       // Get any cached data, even expired
-      const cached = await db
+      const cached: PricingCacheEntry[] = await db
         .select()
         .from(pricingCache)
         .where(eq(pricingCache.isbn, isbn))
@@ -701,7 +674,7 @@ export class EbayPricingService {
         console.log(
           `[EbayPricing] Using expired cache data for ${isbn} due to rate limit`,
         );
-        return JSON.parse(cached[0].pricingData) as PricingData;
+        return JSON.parse(cached[0].data) as PricingData;
 
       }
 
@@ -780,7 +753,12 @@ export class EbayPricingService {
   }
 
   // Monitoring and health check methods
-  getMetrics() {
+  getMetrics(): {
+    totalRequests: number;
+    totalErrors: number;
+    errorRate: number;
+    cacheSize: number;
+  } {
     return {
       totalRequests: this.requestCount,
       totalErrors: this.errorCount,
