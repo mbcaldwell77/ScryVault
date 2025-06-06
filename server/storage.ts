@@ -7,9 +7,9 @@ export interface IStorage {
   getBookByIsbn(isbn: string, userId?: number): Promise<Book | undefined>;
   getAllBooks(): Promise<Book[]>;
   getAllBooksForUser(userId: number): Promise<Book[]>;
-  createBook(book: InsertBook): Promise<Book>;
-  createBookForUser(userId: number, book: InsertBook): Promise<Book>;
-  updateBook(id: number, book: InsertBook, userId?: number): Promise<Book | undefined>;
+  createBook(book: Omit<InsertBook, 'userId'>): Promise<Book>;
+  createBookForUser(userId: number, book: Omit<InsertBook, 'userId'>): Promise<Book>;
+  updateBook(id: number, book: Omit<InsertBook, 'userId'>, userId?: number): Promise<Book | undefined>;
   deleteBook(id: number, userId?: number): Promise<boolean>;
 }
 
@@ -33,20 +33,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllBooks(): Promise<Book[]> {
-    return await db.select().from(books).orderBy(books.dateAdded);
+    return await db.select().from(books).orderBy(books.createdAt);
   }
 
   async getAllBooksForUser(userId: number): Promise<Book[]> {
     return await db.select().from(books)
       .where(eq(books.userId, userId))
-      .orderBy(books.dateAdded);
+      .orderBy(books.createdAt);
   }
 
-  async createBook(insertBook: InsertBook): Promise<Book> {
+  async createBook(insertBook: Omit<InsertBook, 'userId'>): Promise<Book> {
     throw new Error("Use createBookForUser instead - user authentication required");
   }
 
-  async createBookForUser(userId: number, insertBook: InsertBook): Promise<Book> {
+  async createBookForUser(userId: number, insertBook: Omit<InsertBook, 'userId'>): Promise<Book> {
     // Generate unique SKU based on ISBN and timestamp
     const timestamp = Date.now().toString().slice(-6);
     const isbnSuffix = insertBook.isbn.slice(-4);
@@ -65,7 +65,7 @@ export class DatabaseStorage implements IStorage {
     return book;
   }
 
-  async updateBook(id: number, book: InsertBook, userId?: number): Promise<Book | undefined> {
+  async updateBook(id: number, book: Omit<InsertBook, 'userId'>, userId?: number): Promise<Book | undefined> {
     const conditions = userId 
       ? and(eq(books.id, id), eq(books.userId, userId))
       : eq(books.id, id);

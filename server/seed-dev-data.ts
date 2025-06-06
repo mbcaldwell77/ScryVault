@@ -195,7 +195,7 @@ export async function seedDevelopmentData() {
       sku: `DEV-${Date.now()}-${index.toString().padStart(3, '0')}`
     }));
     
-    const insertedBooks = await db.insert(books).values(booksWithSkus).returning();
+    const insertedBooks = await db.insert(books).values(booksWithSkus as any[]).returning();
     console.log(`[SEED] Inserted ${insertedBooks.length} development books`);
     
     console.log('[SEED] Development data seeding completed successfully');

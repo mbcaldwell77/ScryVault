@@ -2,85 +2,82 @@ import {
   pgTable,
   serial,
   text,
-  integer,
-  timestamp,
   varchar,
-  numeric,
-  boolean,
+  timestamp,
+  integer,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
+import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
 
+// Users
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
-  subscriptionTier: varchar("subscription_tier", { length: 20 }).default(
-    "free",
-  ),
+  subscriptionTier: varchar("subscription_tier", { length: 20 }).default("free"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Sessions
+export const userSessions = pgTable("user_sessions", {
+  token: text("token").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  expiresAt: timestamp("expires_at").notNull(),
+});
+
+// Books
 export const books = pgTable("books", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id")
-    .references(() => users.id)
-    .notNull(),
-  isbn: varchar("isbn", { length: 20 }).notNull(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  isbn: text("isbn").notNull(),
   title: text("title"),
   author: text("author"),
   publisher: text("publisher"),
-  year: varchar("year", { length: 8 }),
-  purchasePrice: numeric("purchase_price", { precision: 10, scale: 2 }),
+  year: varchar("year", { length: 4 }),
   condition: text("condition"),
-  conditionNotes: text("condition_notes"),
-  sku: varchar("sku", { length: 32 }),
-  tags: text("tags"),
-  listed: boolean("listed").default(false),
+  purchasePrice: integer("purchase_price"),
+  estimatedPrice: integer("estimated_price"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Pricing Cache
 export const pricingCache = pgTable("pricing_cache", {
   id: serial("id").primaryKey(),
-  isbn: varchar("isbn", { length: 20 }).notNull(),
-  source: varchar("source", { length: 32 }).notNull(),
-  low: numeric("low", { precision: 10, scale: 2 }),
-  high: numeric("high", { precision: 10, scale: 2 }),
-  average: numeric("average", { precision: 10, scale: 2 }),
+  isbn: text("isbn").notNull(),
+  data: text("data").notNull(),
+  condition: text("condition"),
   confidence: integer("confidence"),
-  lastChecked: timestamp("last_checked").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const sales = pgTable("sales", {
+export const userSettings = pgTable("user_settings", {
   id: serial("id").primaryKey(),
-  bookId: integer("book_id")
-    .references(() => books.id)
-    .notNull(),
-  platform: varchar("platform", { length: 32 }),
-  soldPrice: numeric("sold_price", { precision: 10, scale: 2 }),
-  fees: numeric("fees", { precision: 10, scale: 2 }),
-  soldDate: timestamp("sold_date"),
+  userId: integer("user_id").notNull().references(() => users.id),
+  cacheDurationDays: integer("cache_duration_days").default(90),
 });
 
-export const templates = pgTable("templates", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id")
-    .references(() => users.id)
-    .notNull(),
-  platform: varchar("platform", { length: 32 }),
-  titleTemplate: text("title_template"),
-  descriptionTemplate: text("description_template"),
-  category: varchar("category", { length: 64 }),
-  conditionMapping: text("condition_mapping"),
+// Zod Schemas
+export const insertBookSchema = createInsertSchema(books).omit({
+  id: true,
+  userId: true,
+  createdAt: true,
 });
 
-export const receipts = pgTable("receipts", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id")
-    .references(() => users.id)
-    .notNull(),
-  imageUrl: text("image_url"),
-  ocrText: text("ocr_text"),
-  vendor: text("vendor"),
-  amount: numeric("amount", { precision: 10, scale: 2 }),
-  category: varchar("category", { length: 32 }),
-  date: timestamp("date").defaultNow(),
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
 });
+
+export const registerSchema = loginSchema.extend({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+});
+
+// Type Exports
+export type Book = InferSelectModel<typeof books>;
+export type InsertBook = InferInsertModel<typeof books>;
+export type User = InferSelectModel<typeof users>;
+export type UserSession = InferSelectModel<typeof userSessions>;
+export type PricingCacheEntry = InferSelectModel<typeof pricingCache>;
+export type UserSettings = InferSelectModel<typeof userSettings>;

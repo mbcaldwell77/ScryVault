@@ -2,9 +2,8 @@ import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { db } from './db';
-import { users, userSessions } from '@shared/schema';
+import { users, userSessions, registerSchema, loginSchema } from '@shared/schema';
 import { eq, and, lt } from 'drizzle-orm';
-import { registerSchema, loginSchema } from '@shared/schema';
 import { AuthenticatedRequest } from './auth-middleware';
 
 const router = Router();
@@ -16,7 +15,7 @@ const JWT_REFRESH_SECRET = 'scryvault_refresh_secret_key_2025_production_secure'
 // Register new user
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, firstName, lastName } = registerSchema.parse(req.body);
+    const { email, password } = registerSchema.parse(req.body);
 
     // Check if user already exists
     const existingUser = await db.select()
@@ -35,11 +34,7 @@ router.post('/register', async (req, res) => {
     const newUser = await db.insert(users).values({
       email,
       passwordHash,
-      firstName,
-      lastName,
-      subscriptionTier: 'free',
-      isActive: true,
-      emailVerified: false
+      subscriptionTier: 'free'
     }).returning();
 
     // Generate tokens
@@ -56,12 +51,18 @@ router.post('/register', async (req, res) => {
     );
 
     // Store session
-    await db.insert(userSessions).values({
-      userId: newUser[0].id,
-      token: accessToken,
-      refreshToken,
-      expiresAt: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
-    });
+    await db.insert(userSessions).values([
+      {
+        userId: newUser[0].id,
+        token: accessToken,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000)
+      },
+      {
+        userId: newUser[0].id,
+        token: refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      }
+    ]);
 
     console.log(`[Auth] New user registered: ${email}`);
 
@@ -69,8 +70,6 @@ router.post('/register', async (req, res) => {
       user: {
         id: newUser[0].id,
         email: newUser[0].email,
-        firstName: newUser[0].firstName,
-        lastName: newUser[0].lastName,
         subscriptionTier: newUser[0].subscriptionTier
       },
       token: accessToken,
@@ -100,9 +99,6 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    if (!user[0].isActive) {
-      return res.status(401).json({ error: 'Account is inactive' });
-    }
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user[0].passwordHash);
@@ -131,12 +127,18 @@ router.post('/login', async (req, res) => {
     );
 
     // Store session
-    await db.insert(userSessions).values({
-      userId: user[0].id,
-      token: accessToken,
-      refreshToken,
-      expiresAt: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
-    });
+    await db.insert(userSessions).values([
+      {
+        userId: user[0].id,
+        token: accessToken,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000)
+      },
+      {
+        userId: user[0].id,
+        token: refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      }
+    ]);
 
     console.log(`[Auth] User logged in: ${email}`);
 
@@ -144,8 +146,6 @@ router.post('/login', async (req, res) => {
       user: {
         id: user[0].id,
         email: user[0].email,
-        firstName: user[0].firstName,
-        lastName: user[0].lastName,
         subscriptionTier: user[0].subscriptionTier
       },
       token: accessToken,
@@ -180,8 +180,6 @@ router.get('/me', async (req: AuthenticatedRequest, res) => {
       user: {
         id: user[0].id,
         email: user[0].email,
-        firstName: user[0].firstName,
-        lastName: user[0].lastName,
         subscriptionTier: user[0].subscriptionTier
       }
     });

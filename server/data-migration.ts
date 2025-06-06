@@ -28,11 +28,7 @@ export async function createDefaultAdminUser(): Promise<{ id: number; email: str
     const [adminUser] = await db.insert(users).values({
       email: adminEmail,
       passwordHash,
-      firstName: 'Admin',
-      lastName: 'User',
-      subscriptionTier: 'enterprise',
-      isActive: true,
-      emailVerified: true
+      subscriptionTier: 'enterprise'
     }).returning();
     
     console.log(`[Migration] Created admin user: ${adminEmail}`);

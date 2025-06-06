@@ -87,7 +87,7 @@ export async function validateEnvironmentSafety(): Promise<{
   
   // Check if we have production-like data (recent dates, realistic pricing)
   const recentBooks = bookCountResult.filter(book => {
-    const bookDate = new Date(book.dateAdded);
+    const bookDate = new Date(book.createdAt as any);
     const daysSinceAdded = (Date.now() - bookDate.getTime()) / (1000 * 60 * 60 * 24);
     return daysSinceAdded < 30; // Books added in last 30 days
   });

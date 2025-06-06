@@ -476,29 +476,21 @@ export class EbayPricingService {
       // Get user's cache settings
       const cacheDays = await this.getUserCacheDays(userId);
       const cutoffDate = new Date(Date.now() - (cacheDays * 24 * 60 * 60 * 1000));
-      
+
       const cached = await db.select()
         .from(pricingCache)
         .where(and(
           eq(pricingCache.isbn, isbn),
-          gt(pricingCache.expiresAt, new Date())
+          gt(pricingCache.updatedAt, cutoffDate)
         ))
         .limit(1);
       
       if (cached.length > 0) {
         const entry = cached[0];
         
-        // Update access count
-        await db.update(pricingCache)
-          .set({ 
-            accessCount: entry.accessCount + 1,
-            lastAccessedAt: new Date()
-          })
-          .where(eq(pricingCache.isbn, isbn));
-        
-        console.log(`[EbayPricing] Database cache hit for ${isbn}, age: ${Math.round((Date.now() - entry.fetchedAt.getTime()) / (24 * 60 * 60 * 1000))} days`);
-        
-        return JSON.parse(entry.pricingData) as PricingData;
+        console.log(`[EbayPricing] Database cache hit for ${isbn}`);
+
+        return JSON.parse(entry.data) as PricingData;
       }
       
       return null;
@@ -510,35 +502,23 @@ export class EbayPricingService {
 
   private async setDatabaseCachedData(isbn: string, data: PricingData, userId?: number): Promise<void> {
     try {
-      const cacheDays = await this.getUserCacheDays(userId);
-      const expiresAt = new Date(Date.now() + (cacheDays * 24 * 60 * 60 * 1000));
-      
       await db.insert(pricingCache)
         .values({
           isbn,
-          pricingData: JSON.stringify(data),
-          confidence: data.confidence,
-          totalSales: data.totalSales,
-          averagePrice: data.averagePrice.toString(),
-          expiresAt,
-          accessCount: 1,
-          lastAccessedAt: new Date()
+          data: JSON.stringify(data),
+          confidence: data.confidenceScore,
+          updatedAt: new Date()
         })
         .onConflictDoUpdate({
           target: pricingCache.isbn,
           set: {
-            pricingData: JSON.stringify(data),
-            confidence: data.confidence,
-            totalSales: data.totalSales,
-            averagePrice: data.averagePrice.toString(),
-            fetchedAt: new Date(),
-            expiresAt,
-            accessCount: 1,
-            lastAccessedAt: new Date()
+            data: JSON.stringify(data),
+            confidence: data.confidenceScore,
+            updatedAt: new Date()
           }
         });
-      
-      console.log(`[EbayPricing] Stored in database cache for ${isbn}, expires in ${cacheDays} days`);
+
+      console.log(`[EbayPricing] Stored in database cache for ${isbn}`);
     } catch (error) {
       console.error('[EbayPricing] Database cache store error:', error);
     }
@@ -552,8 +532,10 @@ export class EbayPricingService {
         .from(userSettings)
         .where(eq(userSettings.userId, userId))
         .limit(1);
-      
-      return settings.length > 0 ? settings[0].pricingCacheDays : this.config.defaultCacheDays;
+
+      return settings.length > 0 && settings[0].cacheDurationDays !== null
+        ? settings[0].cacheDurationDays
+        : this.config.defaultCacheDays;
     } catch (error) {
       console.error('[EbayPricing] Error getting user cache days:', error);
       return this.config.defaultCacheDays;
@@ -570,7 +552,7 @@ export class EbayPricingService {
       
       if (cached.length > 0) {
         console.log(`[EbayPricing] Using expired cache data for ${isbn} due to rate limit`);
-        return JSON.parse(cached[0].pricingData) as PricingData;
+        return JSON.parse(cached[0].data) as PricingData;
       }
       
       return null;
