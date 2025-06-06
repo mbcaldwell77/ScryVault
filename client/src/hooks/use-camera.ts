@@ -39,10 +39,15 @@ export function useCamera() {
     }
   }, []);
 
+  interface TorchTrackCapabilities extends MediaTrackCapabilities {
+    torch?: boolean;
+  }
+
   const toggleFlash = useCallback(async (enabled: boolean) => {
     if (streamRef.current) {
       const videoTrack = streamRef.current.getVideoTracks()[0];
-      if (videoTrack && videoTrack.getCapabilities().torch) {
+      const capabilities = videoTrack?.getCapabilities() as TorchTrackCapabilities | undefined;
+      if (videoTrack && capabilities?.torch) {
         try {
           await videoTrack.applyConstraints({
             advanced: [{ torch: enabled } as any]
