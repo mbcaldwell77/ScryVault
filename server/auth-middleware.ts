@@ -5,6 +5,10 @@ import { users, userSessions } from "@shared/schema";
 import { eq, and, gt } from "drizzle-orm";
 import { getJWTSecret } from "./auth-config";
 
+interface AccessPayload extends jwt.JwtPayload {
+  userId: number;
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: number;
@@ -27,7 +31,7 @@ export const authenticateToken = async (
 
   try {
     const jwtSecret = getJWTSecret();
-    const decoded = jwt.verify(token, jwtSecret) as any;
+    const decoded = jwt.verify(token, jwtSecret) as AccessPayload;
     
     // Verify session is still valid
     const session = await db.select()
@@ -80,7 +84,7 @@ export const optionalAuth = async (
 
   try {
     const jwtSecret = getJWTSecret();
-    const decoded = jwt.verify(token, jwtSecret) as any;
+    const decoded = jwt.verify(token, jwtSecret) as AccessPayload;
     
     const session = await db.select()
       .from(userSessions)

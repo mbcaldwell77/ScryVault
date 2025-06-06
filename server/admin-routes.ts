@@ -79,8 +79,9 @@ export function registerAdminRoutes(app: Express) {
       });
     } catch (error) {
       console.error("[ADMIN] Development seeding blocked/failed:", error);
-      res.status(403).json({ 
-        error: error.message,
+      const message = error instanceof Error ? error.message : String(error);
+      res.status(403).json({
+        error: message,
         environmentProtection: true,
         blocked: true
       });
@@ -108,8 +109,9 @@ export function registerAdminRoutes(app: Express) {
       });
     } catch (error) {
       console.error("[ADMIN] Development data clearing blocked/failed:", error);
-      res.status(403).json({ 
-        error: error.message,
+      const message = error instanceof Error ? error.message : String(error);
+      res.status(403).json({
+        error: message,
         environmentProtection: true,
         blocked: true
       });

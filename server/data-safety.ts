@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { books } from "@shared/schema";
+import { books, type Book } from "@shared/schema";
 import fs from "fs/promises";
 import path from "path";
 
@@ -7,7 +7,7 @@ export interface DataBackup {
   timestamp: string;
   environment: string;
   bookCount: number;
-  books: any[];
+  books: Book[];
 }
 
 export async function createDataBackup(filename?: string): Promise<string> {
@@ -86,9 +86,11 @@ export async function validateEnvironmentSafety(): Promise<{
   const bookCount = bookCountResult.length;
   
   // Check if we have production-like data (recent dates, realistic pricing)
-  const recentBooks = bookCountResult.filter(book => {
-    const bookDate = new Date(book.createdAt as any);
-    const daysSinceAdded = (Date.now() - bookDate.getTime()) / (1000 * 60 * 60 * 24);
+  const recentBooks = bookCountResult.filter((book) => {
+    if (!book.createdAt) return false;
+    const bookDate = new Date(book.createdAt);
+    const daysSinceAdded =
+      (Date.now() - bookDate.getTime()) / (1000 * 60 * 60 * 24);
     return daysSinceAdded < 30; // Books added in last 30 days
   });
   
