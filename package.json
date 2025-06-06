@@ -111,6 +111,7 @@
     "bufferutil": "^4.0.8"
   }, 
   "scripts": {
-  "check-env": "node scripts/checkEnv.js"
+  "check-env": "node scripts/checkEnv.js",
+    "db:push": "drizzle-kit push"
 }
 }
