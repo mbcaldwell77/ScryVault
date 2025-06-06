@@ -7,9 +7,9 @@ export interface IStorage {
   getBookByIsbn(isbn: string, userId?: number): Promise<Book | undefined>;
   getAllBooks(): Promise<Book[]>;
   getAllBooksForUser(userId: number): Promise<Book[]>;
-  createBook(book: Omit<InsertBook, 'userId'>): Promise<Book>;
-  createBookForUser(userId: number, book: Omit<InsertBook, 'userId'>): Promise<Book>;
-  updateBook(id: number, book: Omit<InsertBook, 'userId'>, userId?: number): Promise<Book | undefined>;
+  createBook(book: Omit<InsertBook, "userId">): Promise<Book>;
+  createBookForUser(userId: number, book: Omit<InsertBook, "userId">): Promise<Book>;
+  updateBook(id: number, book: Omit<InsertBook, "userId">, userId?: number): Promise<Book | undefined>;
   deleteBook(id: number, userId?: number): Promise<boolean>;
 }
 
@@ -42,11 +42,11 @@ export class DatabaseStorage implements IStorage {
       .orderBy(books.createdAt);
   }
 
-  async createBook(insertBook: Omit<InsertBook, 'userId'>): Promise<Book> {
+  async createBook(insertBook: Omit<InsertBook, "userId">): Promise<Book> {
     throw new Error("Use createBookForUser instead - user authentication required");
   }
 
-  async createBookForUser(userId: number, insertBook: Omit<InsertBook, 'userId'>): Promise<Book> {
+  async createBookForUser(userId: number, insertBook: Omit<InsertBook, "userId">): Promise<Book> {
     // Generate unique SKU based on ISBN and timestamp
     const timestamp = Date.now().toString().slice(-6);
     const isbnSuffix = insertBook.isbn.slice(-4);
@@ -65,7 +65,7 @@ export class DatabaseStorage implements IStorage {
     return book;
   }
 
-  async updateBook(id: number, book: Omit<InsertBook, 'userId'>, userId?: number): Promise<Book | undefined> {
+  async updateBook(id: number, book: Omit<InsertBook, "userId">, userId?: number): Promise<Book | undefined> {
     const conditions = userId 
       ? and(eq(books.id, id), eq(books.userId, userId))
       : eq(books.id, id);

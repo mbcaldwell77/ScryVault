@@ -1,5 +1,5 @@
-import { db } from './db';
-import { books } from '@shared/schema';
+import { db } from "./db";
+import { books } from "@shared/schema";
 
 export class EnvironmentLockdown {
   private static instance: EnvironmentLockdown;
@@ -8,9 +8,9 @@ export class EnvironmentLockdown {
   private readonly environment: string;
 
   private constructor() {
-    this.environment = process.env.NODE_ENV || 'unknown';
-    this.isProduction = this.environment === 'production';
-    this.isDevelopment = this.environment === 'development';
+    this.environment = process.env.NODE_ENV || "unknown";
+    this.isProduction = this.environment === "production";
+    this.isDevelopment = this.environment === "development";
     
     console.log(`[LOCKDOWN] Environment detected: ${this.environment}`);
     console.log(`[LOCKDOWN] Production mode: ${this.isProduction}`);
@@ -49,27 +49,27 @@ export class EnvironmentLockdown {
   }> {
     try {
       const bookCount = await db.select().from(books).then(results => results.length);
-      const databaseUrl = process.env.DATABASE_URL || 'NOT_SET';
+      const databaseUrl = process.env.DATABASE_URL || "NOT_SET";
       
       const validation = {
         environment: this.environment,
         isProduction: this.isProduction,
         bookCount,
-        databaseUrl: databaseUrl.substring(0, 50) + '...',
+        databaseUrl: databaseUrl.substring(0, 50) + "...",
         connectionValid: true
       };
 
-      console.log('[LOCKDOWN] Database validation:', validation);
+      console.log("[LOCKDOWN] Database validation:", validation);
       
       // CRITICAL WARNING for production
       if (this.isProduction && bookCount > 0) {
-        console.warn('[LOCKDOWN] WARNING: Connected to PRODUCTION database with real data!');
+        console.warn("[LOCKDOWN] WARNING: Connected to PRODUCTION database with real data!");
         console.warn(`[LOCKDOWN] Book count: ${bookCount}`);
       }
 
       return validation;
     } catch (error) {
-      console.error('[LOCKDOWN] Database validation failed:', error);
+      console.error("[LOCKDOWN] Database validation failed:", error);
       throw new Error(`Database connection validation failed: ${error}`);
     }
   }
@@ -90,10 +90,10 @@ export class EnvironmentLockdown {
    * CRITICAL: Prevents seed operations in production
    */
   validateSeedOperation(): void {
-    this.validateDestructiveOperation('DATABASE_SEEDING');
+    this.validateDestructiveOperation("DATABASE_SEEDING");
     
     if (this.isProduction) {
-      throw new Error('[LOCKDOWN] ABSOLUTE BLOCK: Database seeding is permanently disabled in production');
+      throw new Error("[LOCKDOWN] ABSOLUTE BLOCK: Database seeding is permanently disabled in production");
     }
   }
 
@@ -101,10 +101,10 @@ export class EnvironmentLockdown {
    * CRITICAL: Prevents clear operations in production
    */
   validateClearOperation(): void {
-    this.validateDestructiveOperation('DATABASE_CLEARING');
+    this.validateDestructiveOperation("DATABASE_CLEARING");
     
     if (this.isProduction) {
-      throw new Error('[LOCKDOWN] ABSOLUTE BLOCK: Database clearing is permanently disabled in production');
+      throw new Error("[LOCKDOWN] ABSOLUTE BLOCK: Database clearing is permanently disabled in production");
     }
   }
 

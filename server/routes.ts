@@ -4,18 +4,18 @@ import { storage } from "./storage";
 import { insertBookSchema, userSettings, type InsertBook } from "@shared/schema";
 import { z } from "zod";
 import { EbayPricingService, type PricingServiceConfig } from "./pricing-service";
-import crypto from 'crypto';
-import { authenticateToken, optionalAuth, AuthenticatedRequest } from './auth-middleware';
-import authRoutes from './auth-routes';
-import { db } from './db';
-import { eq } from 'drizzle-orm';
+import crypto from "crypto";
+import { authenticateToken, optionalAuth, AuthenticatedRequest } from "./auth-middleware";
+import authRoutes from "./auth-routes";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 // ISBN normalization functions
 function convertISBN10to13(isbn10: string): string {
-  const cleanISBN = isbn10.replace(/[-\s]/g, '');
+  const cleanISBN = isbn10.replace(/[-\s]/g, "");
   if (cleanISBN.length !== 10) return isbn10;
   
-  const prefix = '978' + cleanISBN.substr(0, 9);
+  const prefix = "978" + cleanISBN.substr(0, 9);
   let checksum = 0;
   
   for (let i = 0; i < 12; i++) {
@@ -27,7 +27,7 @@ function convertISBN10to13(isbn10: string): string {
 }
 
 function normalizeISBN(isbn: string): string {
-  const cleanISBN = isbn.replace(/[-\s]/g, '');
+  const cleanISBN = isbn.replace(/[-\s]/g, "");
   
   if (cleanISBN.length === 10) {
     return convertISBN10to13(cleanISBN);
@@ -54,18 +54,18 @@ if (process.env.EBAY_APP_ID) {
   pricingService = new EbayPricingService(config);
   
   if (process.env.EBAY_USER_TOKEN) {
-    console.log('[PricingService] eBay integration initialized with user token authentication');
+    console.log("[PricingService] eBay integration initialized with user token authentication");
   } else {
-    console.log('[PricingService] eBay integration initialized with App ID only');
-    console.warn('[PricingService] Consider adding EBAY_USER_TOKEN for enhanced data access');
+    console.log("[PricingService] eBay integration initialized with App ID only");
+    console.warn("[PricingService] Consider adding EBAY_USER_TOKEN for enhanced data access");
   }
 } else {
-  console.warn('[PricingService] EBAY_APP_ID not found - pricing features disabled');
+  console.warn("[PricingService] EBAY_APP_ID not found - pricing features disabled");
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add authentication routes
-  app.use('/api/auth', authRoutes);
+  app.use("/api/auth", authRoutes);
 
   // Test route to verify deployment (no auth required)
   app.get("/api/test", (req, res) => {
@@ -86,7 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const books = await storage.getAllBooksForUser(req.user!.id);
       res.json(books);
     } catch (error) {
-      console.error('[API] Get books error:', error);
+      console.error("[API] Get books error:", error);
       res.status(500).json({ error: "Failed to fetch books" });
     }
   });
@@ -107,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(book);
     } catch (error) {
-      console.error('[API] Get book error:', error);
+      console.error("[API] Get book error:", error);
       res.status(500).json({ error: "Failed to fetch book" });
     }
   });
@@ -119,11 +119,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ error: "Authentication required" });
       }
       
-      const validatedData = insertBookSchema.parse(req.body) as Omit<InsertBook, 'userId'>;
+      const validatedData = insertBookSchema.parse(req.body) as Omit<InsertBook, "userId">;
       const book = await storage.createBookForUser(req.user.id, validatedData);
       res.status(201).json(book);
     } catch (error) {
-      console.error('[API] Create book error:', error);
+      console.error("[API] Create book error:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
           error: "Validation failed", 
@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Invalid book ID" });
       }
 
-      const validatedData = insertBookSchema.parse(req.body) as Omit<InsertBook, 'userId'>;
+      const validatedData = insertBookSchema.parse(req.body) as Omit<InsertBook, "userId">;
       const updatedBook = await storage.updateBook(id, validatedData, req.user.id);
       
       if (!updatedBook) {
@@ -182,7 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(204).send();
     } catch (error) {
-      console.error('[API] Delete book error:', error);
+      console.error("[API] Delete book error:", error);
       res.status(500).json({ error: "Failed to delete book" });
     }
   });
@@ -244,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Pricing API error:", error);
       
       // Enhanced error response for rate limiting
-      if (error instanceof Error && error.message.includes('rate limit')) {
+      if (error instanceof Error && error.message.includes("rate limit")) {
         return res.status(429).json({ 
           error: "Rate limited",
           message: "eBay API rate limit exceeded. Using cached data when available.",
@@ -385,12 +385,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Catch-all logger for eBay webhook requests
   app.use("/api/ebay/webhook", (req, res, next) => {
     console.log(`[eBay Webhook] === ${req.method} REQUEST INTERCEPTED ===`);
-    console.log('[eBay Webhook] Method:', req.method);
-    console.log('[eBay Webhook] URL:', req.url);
-    console.log('[eBay Webhook] Query:', JSON.stringify(req.query, null, 2));
-    console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
-    if (req.method === 'POST' || req.method === 'PUT') {
-      console.log('[eBay Webhook] Body:', JSON.stringify(req.body, null, 2));
+    console.log("[eBay Webhook] Method:", req.method);
+    console.log("[eBay Webhook] URL:", req.url);
+    console.log("[eBay Webhook] Query:", JSON.stringify(req.query, null, 2));
+    console.log("[eBay Webhook] Headers:", JSON.stringify(req.headers, null, 2));
+    if (req.method === "POST" || req.method === "PUT") {
+      console.log("[eBay Webhook] Body:", JSON.stringify(req.body, null, 2));
     }
     next();
   });
@@ -398,31 +398,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GET endpoint for eBay verification challenge
   app.get("/api/ebay/webhook", async (req, res) => {
     try {
-      console.log('[eBay Webhook] === VERIFICATION GET REQUEST ===');
-      console.log('[eBay Webhook] Query params:', JSON.stringify(req.query, null, 2));
+      console.log("[eBay Webhook] === VERIFICATION GET REQUEST ===");
+      console.log("[eBay Webhook] Query params:", JSON.stringify(req.query, null, 2));
       
       const { challenge_code } = req.query;
       
       if (challenge_code) {
         const challengeCode = challenge_code as string;
-        const verificationToken = process.env.EBAY_WEBHOOK_TOKEN || 'ldernTom-ScryVaul-PRD-0f0240608-25d29f7a';
-        const endpoint = 'https://scryvault.replit.app/api/ebay/webhook';
+        const verificationToken = process.env.EBAY_WEBHOOK_TOKEN || "ldernTom-ScryVaul-PRD-0f0240608-25d29f7a";
+        const endpoint = "https://scryvault.replit.app/api/ebay/webhook";
         
-        console.log('[eBay Webhook] Challenge code:', challengeCode);
-        console.log('[eBay Webhook] Verification token:', verificationToken);
-        console.log('[eBay Webhook] Endpoint:', endpoint);
+        console.log("[eBay Webhook] Challenge code:", challengeCode);
+        console.log("[eBay Webhook] Verification token:", verificationToken);
+        console.log("[eBay Webhook] Endpoint:", endpoint);
         
         // Hash in the order: challengeCode + verificationToken + endpoint
-        const hash = crypto.createHash('sha256');
+        const hash = crypto.createHash("sha256");
         hash.update(challengeCode);
         hash.update(verificationToken);
         hash.update(endpoint);
-        const challengeResponse = hash.digest('hex');
+        const challengeResponse = hash.digest("hex");
         
-        console.log('[eBay Webhook] Computed challenge response:', challengeResponse);
+        console.log("[eBay Webhook] Computed challenge response:", challengeResponse);
         
         return res.status(200)
-          .set('Content-Type', 'application/json')
+          .set("Content-Type", "application/json")
           .json({ challengeResponse });
       }
       
@@ -433,9 +433,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
     } catch (error) {
-      console.error('[eBay Webhook] GET error:', error);
+      console.error("[eBay Webhook] GET error:", error);
       res.status(500).json({ 
-        error: 'Webhook verification failed',
+        error: "Webhook verification failed",
         timestamp: new Date().toISOString()
       });
     }
@@ -444,18 +444,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // POST endpoint for actual notifications
   app.post("/api/ebay/webhook", async (req, res) => {
     try {
-      console.log('[eBay Webhook] === INCOMING POST REQUEST ===');
-      console.log('[eBay Webhook] Timestamp:', new Date().toISOString());
-      console.log('[eBay Webhook] Headers:', JSON.stringify(req.headers, null, 2));
-      console.log('[eBay Webhook] Raw Body:', JSON.stringify(req.body, null, 2));
-      console.log('[eBay Webhook] Body type:', typeof req.body);
-      console.log('[eBay Webhook] Body keys:', Object.keys(req.body || {}));
+      console.log("[eBay Webhook] === INCOMING POST REQUEST ===");
+      console.log("[eBay Webhook] Timestamp:", new Date().toISOString());
+      console.log("[eBay Webhook] Headers:", JSON.stringify(req.headers, null, 2));
+      console.log("[eBay Webhook] Raw Body:", JSON.stringify(req.body, null, 2));
+      console.log("[eBay Webhook] Body type:", typeof req.body);
+      console.log("[eBay Webhook] Body keys:", Object.keys(req.body || {}));
       
       // Handle marketplace account deletion notifications
       const { metadata, notification } = req.body;
       
-      if (metadata?.topic === 'MARKETPLACE_ACCOUNT_DELETION') {
-        console.log('[eBay Webhook] Account deletion notification:', {
+      if (metadata?.topic === "MARKETPLACE_ACCOUNT_DELETION") {
+        console.log("[eBay Webhook] Account deletion notification:", {
           notificationId: notification?.notificationId,
           eventDate: notification?.eventDate,
           publishDate: notification?.publishDate,
@@ -467,23 +467,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // In production, this would trigger user data deletion
         
         return res.status(200).json({ 
-          message: 'Account deletion notification processed successfully', 
+          message: "Account deletion notification processed successfully", 
           notificationId: notification?.notificationId,
           processedAt: new Date().toISOString()
         });
       }
       
       // Handle other notification types
-      console.log('[eBay Webhook] Other notification received:', req.body);
+      console.log("[eBay Webhook] Other notification received:", req.body);
       res.status(200).json({ 
-        message: 'Notification received and processed', 
+        message: "Notification received and processed", 
         timestamp: new Date().toISOString() 
       });
       
     } catch (error) {
-      console.error('[eBay Webhook] POST error:', error);
+      console.error("[eBay Webhook] POST error:", error);
       res.status(500).json({ 
-        error: 'Webhook processing failed',
+        error: "Webhook processing failed",
         timestamp: new Date().toISOString()
       });
     }
@@ -503,7 +503,7 @@ async function fetchFromISBNdb(isbn: string) {
 
     const response = await fetch(`https://api2.isbndb.com/book/${isbn}`, {
       headers: {
-        'Authorization': apiKey
+        "Authorization": apiKey
       }
     });
 
@@ -520,14 +520,14 @@ async function fetchFromISBNdb(isbn: string) {
     let format = null;
     if (book.binding) {
       const binding = book.binding.toLowerCase();
-      if (binding.includes('hardcover') || binding.includes('hardback')) {
-        format = 'Hardcover';
-      } else if (binding.includes('mass market')) {
-        format = 'Mass Market Paperback';
-      } else if (binding.includes('paperback') || binding.includes('trade')) {
-        format = 'Trade Paperback';
+      if (binding.includes("hardcover") || binding.includes("hardback")) {
+        format = "Hardcover";
+      } else if (binding.includes("mass market")) {
+        format = "Mass Market Paperback";
+      } else if (binding.includes("paperback") || binding.includes("trade")) {
+        format = "Trade Paperback";
       } else {
-        format = 'Other';
+        format = "Other";
       }
     }
 
@@ -535,7 +535,7 @@ async function fetchFromISBNdb(isbn: string) {
       title: book.title || "Unknown Title",
       author: book.authors?.[0] || "Unknown Author",
       publisher: book.publisher || "Unknown Publisher", 
-      year: book.date_published?.split('-')[0] || "Unknown",
+      year: book.date_published?.split("-")[0] || "Unknown",
       imageUrl: book.image || "",
       format: format, // ISBNdb provides reliable format data
       estimatedPrice: null
@@ -560,13 +560,13 @@ async function fetchFromOpenLibrary(isbn: string) {
     const title = book.title || "Unknown Title";
     let format = null;
     
-    if (title.toLowerCase().includes('hardcover') || title.toLowerCase().includes('hardback')) {
-      format = 'Hardcover';
-    } else if (title.toLowerCase().includes('paperback')) {
-      if (title.toLowerCase().includes('mass market')) {
-        format = 'Mass Market Paperback';
+    if (title.toLowerCase().includes("hardcover") || title.toLowerCase().includes("hardback")) {
+      format = "Hardcover";
+    } else if (title.toLowerCase().includes("paperback")) {
+      if (title.toLowerCase().includes("mass market")) {
+        format = "Mass Market Paperback";
       } else {
-        format = 'Trade Paperback';
+        format = "Trade Paperback";
       }
     }
 
@@ -598,13 +598,13 @@ async function fetchFromGoogleBooks(isbn: string) {
     const title = book.title || "Unknown Title";
     let format = null;
     
-    if (title.toLowerCase().includes('hardcover') || title.toLowerCase().includes('hardback')) {
-      format = 'Hardcover';
-    } else if (title.toLowerCase().includes('paperback')) {
-      if (title.toLowerCase().includes('mass market')) {
-        format = 'Mass Market Paperback';
+    if (title.toLowerCase().includes("hardcover") || title.toLowerCase().includes("hardback")) {
+      format = "Hardcover";
+    } else if (title.toLowerCase().includes("paperback")) {
+      if (title.toLowerCase().includes("mass market")) {
+        format = "Mass Market Paperback";
       } else {
-        format = 'Trade Paperback';
+        format = "Trade Paperback";
       }
     }
 
@@ -612,8 +612,8 @@ async function fetchFromGoogleBooks(isbn: string) {
       title: title,
       author: book.authors?.[0] || "Unknown Author",
       publisher: book.publisher || "Unknown Publisher",
-      year: book.publishedDate?.split('-')[0] || "Unknown",
-      imageUrl: book.imageLinks?.thumbnail?.replace('http:', 'https:') || "",
+      year: book.publishedDate?.split("-")[0] || "Unknown",
+      imageUrl: book.imageLinks?.thumbnail?.replace("http:", "https:") || "",
       format: format, // Include format when detectable
       estimatedPrice: null // Price data not available from Google Books API
     };
