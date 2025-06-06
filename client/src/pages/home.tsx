@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Camera, Package, TrendingUp, LogOut, User, Settings } from "lucide-react";
+import { Camera, Package, TrendingUp, LogOut, User, Settings, BarChart3, Search, FileText, Calculator } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
