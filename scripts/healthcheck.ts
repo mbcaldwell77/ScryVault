@@ -1,19 +1,24 @@
 import { db } from "../server/db";
 import { users, books, userSessions, pricingCache } from "@shared/schema";
+import { count } from "drizzle-orm";
 
 async function runHealthcheck() {
   try {
     console.log("\u2705 Database connection is live.");
 
-    const [userCount] = await db.select({ count: db.fn.count() }).from(users);
-    const [bookCount] = await db.select({ count: db.fn.count() }).from(books);
-    const [sessionCount] = await db
-      .select({ count: db.fn.count() })
+    const userCountRes = await db.select({ count: count() }).from(users);
+    const bookCountRes = await db.select({ count: count() }).from(books);
+    const sessionCountRes = await db
+      .select({ count: count() })
       .from(userSessions);
 
-    console.log(`\uD83D\uDC64 Users: ${userCount.count}`);
-    console.log(`\uD83D\uDCDA Books: ${bookCount.count}`);
-    console.log(`\uD83D\uDD10 Sessions: ${sessionCount.count}`);
+    const userCount = userCountRes?.[0];
+    const bookCount = bookCountRes?.[0];
+    const sessionCount = sessionCountRes?.[0];
+
+    console.log(`\uD83D\uDC64 Users: ${userCount?.count ?? 0}`);
+    console.log(`\uD83D\uDCDA Books: ${bookCount?.count ?? 0}`);
+    console.log(`\uD83D\uDD10 Sessions: ${sessionCount?.count ?? 0}`);
 
     const recentPriceEntry = await db
       .select()
@@ -21,7 +26,7 @@ async function runHealthcheck() {
       .orderBy(pricingCache.updatedAt)
       .limit(1);
 
-    if (recentPriceEntry.length) {
+    if (recentPriceEntry?.length) {
       console.log("\uD83D\uDCB5 Pricing cache is populated.");
     } else {
       console.log("\u26A0\uFE0F  Pricing cache is empty.");
