@@ -89,6 +89,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
+    console.debug(`[Auth] Login attempt: ${email}`);
 
     // Find user
     const user = await db.select()
@@ -145,7 +146,7 @@ router.post("/login", async (req, res) => {
       }
     ]);
 
-    console.log(`[Auth] User logged in: ${email}`);
+    console.debug(`[Auth] Login success for: ${email}`);
 
     res.json({
       user: {
@@ -186,6 +187,7 @@ router.post("/logout", async (req, res) => {
 async function handleRefresh(req: any, res: any) {
   try {
     const { refreshToken } = req.body;
+    console.debug('[Auth] Refresh attempt');
 
     if (!refreshToken) {
       return res.status(401).json({ error: "Refresh token required" });
@@ -248,6 +250,7 @@ async function handleRefresh(req: any, res: any) {
       }
     ]);
 
+    console.debug('[Auth] Refresh success');
     res.json({
       accessToken: newAccessToken,
       refreshToken: newRefreshToken

@@ -43,12 +43,16 @@ export default function LoginPage() {
       localStorage.setItem('authToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
-      
+
       // Redirect to home
       setLocation('/');
     },
     onError: (error: Error) => {
       console.error('Login error:', error);
+      // Clear any stale auth data just in case
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
     },
   });
 
