@@ -1,16 +1,16 @@
-import { Router } from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { db } from './db';
-import { users, userSessions, registerSchema, loginSchema } from '@shared/schema';
-import { eq, and, lt, not } from 'drizzle-orm';
-import { authenticateToken, AuthenticatedRequest } from './auth-middleware';
-import { getJWTSecret, getJWTRefreshSecret, AUTH_CONFIG } from './auth-config';
+import { Router } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { db } from "./db";
+import { users, userSessions, registerSchema, loginSchema } from "@shared/schema";
+import { eq, and, lt, not } from "drizzle-orm";
+import { authenticateToken, AuthenticatedRequest } from "./auth-middleware";
+import { getJWTSecret, getJWTRefreshSecret, AUTH_CONFIG } from "./auth-config";
 
 const router = Router();
 
 // Register new user
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { email, password } = registerSchema.parse(req.body);
 
@@ -21,7 +21,7 @@ router.post('/register', async (req, res) => {
       .limit(1);
 
     if (existingUser.length > 0) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: "User already exists" });
     }
 
     // Get JWT secrets with fallback
@@ -35,20 +35,20 @@ router.post('/register', async (req, res) => {
     const newUser = await db.insert(users).values({
       email,
       passwordHash,
-      subscriptionTier: 'free'
+      subscriptionTier: "free"
     }).returning();
 
     // Generate tokens
     const accessToken = jwt.sign(
       { userId: newUser[0].id }, 
       jwtSecret, 
-      { expiresIn: '1h' }
+      { expiresIn: "1h" }
     );
     
     const refreshToken = jwt.sign(
       { userId: newUser[0].id }, 
       jwtRefreshSecret, 
-      { expiresIn: '7d' }
+      { expiresIn: "7d" }
     );
 
     // Store session
@@ -77,16 +77,16 @@ router.post('/register', async (req, res) => {
       refreshToken
     });
   } catch (error) {
-    console.error('[Auth] Registration error:', error);
-    if (error instanceof Error && error.message.includes('validation')) {
-      return res.status(400).json({ error: 'Invalid input data' });
+    console.error("[Auth] Registration error:", error);
+    if (error instanceof Error && error.message.includes("validation")) {
+      return res.status(400).json({ error: "Invalid input data" });
     }
-    res.status(500).json({ error: 'Registration failed' });
+    res.status(500).json({ error: "Registration failed" });
   }
 });
 
 // Login user
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
 
@@ -97,14 +97,14 @@ router.post('/login', async (req, res) => {
       .limit(1);
 
     if (user.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user[0].passwordHash);
     if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // Get JWT secrets with fallback
@@ -122,13 +122,13 @@ router.post('/login', async (req, res) => {
     const accessToken = jwt.sign(
       { userId: user[0].id }, 
       jwtSecret, 
-      { expiresIn: '1h' }
+      { expiresIn: "1h" }
     );
     
     const refreshToken = jwt.sign(
       { userId: user[0].id }, 
       jwtRefreshSecret, 
-      { expiresIn: '7d' }
+      { expiresIn: "7d" }
     );
 
     // Store session
@@ -157,46 +157,46 @@ router.post('/login', async (req, res) => {
       refreshToken
     });
   } catch (error) {
-    console.error('[Auth] Login error:', error);
-    if (error instanceof Error && error.message.includes('validation')) {
-      return res.status(400).json({ error: 'Invalid input data' });
+    console.error("[Auth] Login error:", error);
+    if (error instanceof Error && error.message.includes("validation")) {
+      return res.status(400).json({ error: "Invalid input data" });
     }
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: "Login failed" });
   }
 });
 
 // Logout
-router.post('/logout', async (req, res) => {
+router.post("/logout", async (req, res) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
 
     if (token) {
       await db.delete(userSessions).where(eq(userSessions.token, token));
-      console.log('[Auth] User logged out');
+      console.log("[Auth] User logged out");
     }
 
-    res.json({ message: 'Logged out successfully' });
+    res.json({ message: "Logged out successfully" });
   } catch (error) {
-    console.error('[Auth] Logout error:', error);
-    res.status(500).json({ error: 'Logout failed' });
+    console.error("[Auth] Logout error:", error);
+    res.status(500).json({ error: "Logout failed" });
   }
 });
 
 // Refresh token
-router.post('/refresh', async (req, res) => {
+router.post("/refresh", async (req, res) => {
   try {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return res.status(401).json({ error: 'Refresh token required' });
+      return res.status(401).json({ error: "Refresh token required" });
     }
 
     const jwtSecret = process.env.JWT_SECRET;
     const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET;
     
     if (!jwtSecret || !jwtRefreshSecret) {
-      return res.status(500).json({ error: 'Authentication service not configured' });
+      return res.status(500).json({ error: "Authentication service not configured" });
     }
 
     // Verify refresh token
@@ -209,7 +209,7 @@ router.post('/refresh', async (req, res) => {
       .limit(1);
 
     if (session.length === 0) {
-      return res.status(401).json({ error: 'Invalid refresh token' });
+      return res.status(401).json({ error: "Invalid refresh token" });
     }
 
     // Get user
@@ -219,20 +219,20 @@ router.post('/refresh', async (req, res) => {
       .limit(1);
 
     if (user.length === 0) {
-      return res.status(401).json({ error: 'User not found' });
+      return res.status(401).json({ error: "User not found" });
     }
 
     // Generate new tokens
     const newAccessToken = jwt.sign(
       { userId: user[0].id }, 
       jwtSecret, 
-      { expiresIn: '1h' }
+      { expiresIn: "1h" }
     );
     
     const newRefreshToken = jwt.sign(
       { userId: user[0].id }, 
       jwtRefreshSecret, 
-      { expiresIn: '7d' }
+      { expiresIn: "7d" }
     );
 
     // Update session
@@ -255,8 +255,8 @@ router.post('/refresh', async (req, res) => {
       refreshToken: newRefreshToken
     });
   } catch (error) {
-    console.error('[Auth] Refresh error:', error);
-    res.status(401).json({ error: 'Invalid refresh token' });
+    console.error("[Auth] Refresh error:", error);
+    res.status(401).json({ error: "Invalid refresh token" });
   }
 });
 
@@ -264,10 +264,10 @@ router.post('/refresh', async (req, res) => {
 router.use(authenticateToken);
 
 // Get current user profile
-router.get('/me', async (req: AuthenticatedRequest, res) => {
+router.get("/me", async (req: AuthenticatedRequest, res) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json({ error: "Not authenticated" });
     }
 
     const user = await db.select({
@@ -281,31 +281,31 @@ router.get('/me', async (req: AuthenticatedRequest, res) => {
     .limit(1);
 
     if (user.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.json(user[0]);
   } catch (error) {
-    console.error('[Auth] Get profile error:', error);
-    res.status(401).json({ error: 'Invalid token' });
+    console.error("[Auth] Get profile error:", error);
+    res.status(401).json({ error: "Invalid token" });
   }
 });
 
 // Change password
-router.post('/change-password', async (req: AuthenticatedRequest, res) => {
+router.post("/change-password", async (req: AuthenticatedRequest, res) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json({ error: "Not authenticated" });
     }
 
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ error: 'Current password and new password are required' });
+      return res.status(400).json({ error: "Current password and new password are required" });
     }
 
     if (newPassword.length < 6) {
-      return res.status(400).json({ error: 'New password must be at least 6 characters long' });
+      return res.status(400).json({ error: "New password must be at least 6 characters long" });
     }
 
     // Get current user data
@@ -315,13 +315,13 @@ router.post('/change-password', async (req: AuthenticatedRequest, res) => {
       .limit(1);
 
     if (userData.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Verify current password
     const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userData[0].passwordHash);
     if (!isCurrentPasswordValid) {
-      return res.status(400).json({ error: 'Current password is incorrect' });
+      return res.status(400).json({ error: "Current password is incorrect" });
     }
 
     // Hash new password
@@ -332,30 +332,30 @@ router.post('/change-password', async (req: AuthenticatedRequest, res) => {
       .set({ passwordHash: newPasswordHash })
       .where(eq(users.id, req.user.id));
 
-    res.json({ message: 'Password updated successfully' });
+    res.json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error('Change password error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Change password error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // Update profile
-router.put('/update-profile', async (req: AuthenticatedRequest, res) => {
+router.put("/update-profile", async (req: AuthenticatedRequest, res) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json({ error: "Not authenticated" });
     }
 
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+      return res.status(400).json({ error: "Email is required" });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Invalid email format' });
+      return res.status(400).json({ error: "Invalid email format" });
     }
 
     // Check if email is already taken by another user
@@ -366,7 +366,7 @@ router.put('/update-profile', async (req: AuthenticatedRequest, res) => {
         .limit(1);
 
       if (existingUser.length > 0) {
-        return res.status(400).json({ error: 'Email is already taken' });
+        return res.status(400).json({ error: "Email is already taken" });
       }
     }
 
@@ -384,21 +384,21 @@ router.put('/update-profile', async (req: AuthenticatedRequest, res) => {
       });
 
     if (updatedUser.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ user: updatedUser[0], message: 'Profile updated successfully' });
+    res.json({ user: updatedUser[0], message: "Profile updated successfully" });
   } catch (error) {
-    console.error('Update profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Update profile error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
 // Delete account
-router.delete('/delete-account', async (req: AuthenticatedRequest, res) => {
+router.delete("/delete-account", async (req: AuthenticatedRequest, res) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
+      return res.status(401).json({ error: "Not authenticated" });
     }
 
     // Delete user sessions first
@@ -411,13 +411,13 @@ router.delete('/delete-account', async (req: AuthenticatedRequest, res) => {
       .returning();
 
     if (deletedUser.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ message: 'Account deleted successfully' });
+    res.json({ message: "Account deleted successfully" });
   } catch (error) {
-    console.error('Delete account error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Delete account error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

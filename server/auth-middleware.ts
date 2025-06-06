@@ -1,9 +1,9 @@
-import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
-import { db } from './db';
-import { users, userSessions } from '@shared/schema';
-import { eq, and, gt } from 'drizzle-orm';
-import { getJWTSecret } from './auth-config';
+import jwt from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
+import { db } from "./db";
+import { users, userSessions } from "@shared/schema";
+import { eq, and, gt } from "drizzle-orm";
+import { getJWTSecret } from "./auth-config";
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -18,11 +18,11 @@ export const authenticateToken = async (
   res: Response, 
   next: NextFunction
 ) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
 
   if (!token) {
-    return res.status(401).json({ error: 'Access token required' });
+    return res.status(401).json({ error: "Access token required" });
   }
 
   try {
@@ -39,7 +39,7 @@ export const authenticateToken = async (
       .limit(1);
 
     if (session.length === 0) {
-      return res.status(403).json({ error: 'Invalid token' });
+      return res.status(403).json({ error: "Invalid token" });
     }
 
     // Get user details
@@ -49,19 +49,19 @@ export const authenticateToken = async (
       .limit(1);
 
     if (user.length === 0) {
-      return res.status(401).json({ error: 'User not found' });
+      return res.status(401).json({ error: "User not found" });
     }
 
     req.user = {
       id: user[0].id,
       email: user[0].email,
-      subscriptionTier: user[0].subscriptionTier || 'free'
+      subscriptionTier: user[0].subscriptionTier || "free"
     };
 
     next();
   } catch (error) {
-    console.error('[Auth] Token verification failed:', error);
-    return res.status(403).json({ error: 'Invalid token' });
+    console.error("[Auth] Token verification failed:", error);
+    return res.status(403).json({ error: "Invalid token" });
   }
 };
 
@@ -71,8 +71,8 @@ export const optionalAuth = async (
   res: Response, 
   next: NextFunction
 ) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
     return next(); // Continue without user
@@ -100,7 +100,7 @@ export const optionalAuth = async (
         req.user = {
           id: user[0].id,
           email: user[0].email,
-          subscriptionTier: user[0].subscriptionTier || 'free'
+          subscriptionTier: user[0].subscriptionTier || "free"
         };
       }
     }

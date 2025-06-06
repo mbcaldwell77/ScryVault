@@ -1,7 +1,7 @@
-import { db } from './db';
-import { books } from '@shared/schema';
-import fs from 'fs/promises';
-import path from 'path';
+import { db } from "./db";
+import { books } from "@shared/schema";
+import fs from "fs/promises";
+import path from "path";
 
 export interface DataBackup {
   timestamp: string;
@@ -14,7 +14,7 @@ export async function createDataBackup(filename?: string): Promise<string> {
   try {
     const allBooks = await db.select().from(books);
     const timestamp = new Date().toISOString();
-    const environment = process.env.NODE_ENV || 'unknown';
+    const environment = process.env.NODE_ENV || "unknown";
     
     const backup: DataBackup = {
       timestamp,
@@ -23,8 +23,8 @@ export async function createDataBackup(filename?: string): Promise<string> {
       books: allBooks
     };
     
-    const backupFilename = filename || `backup-${environment}-${timestamp.replace(/[:.]/g, '-')}.json`;
-    const backupPath = path.join(process.cwd(), 'backups', backupFilename);
+    const backupFilename = filename || `backup-${environment}-${timestamp.replace(/[:.]/g, "-")}.json`;
+    const backupPath = path.join(process.cwd(), "backups", backupFilename);
     
     // Ensure backup directory exists
     await fs.mkdir(path.dirname(backupPath), { recursive: true });
@@ -37,7 +37,7 @@ export async function createDataBackup(filename?: string): Promise<string> {
     
     return backupPath;
   } catch (error) {
-    console.error('[BACKUP] Error creating backup:', error);
+    console.error("[BACKUP] Error creating backup:", error);
     throw error;
   }
 }
@@ -46,16 +46,16 @@ export async function restoreFromBackup(backupPath: string): Promise<void> {
   try {
     console.log(`[RESTORE] Starting restore from: ${backupPath}`);
     
-    const backupData = await fs.readFile(backupPath, 'utf-8');
+    const backupData = await fs.readFile(backupPath, "utf-8");
     const backup: DataBackup = JSON.parse(backupData);
     
     console.log(`[RESTORE] Backup from ${backup.timestamp}, ${backup.bookCount} books`);
     console.log(`[RESTORE] Backup environment: ${backup.environment}`);
-    console.log(`[RESTORE] Current environment: ${process.env.NODE_ENV || 'unknown'}`);
+    console.log(`[RESTORE] Current environment: ${process.env.NODE_ENV || "unknown"}`);
     
     // Clear current data
     await db.delete(books);
-    console.log('[RESTORE] Cleared existing books');
+    console.log("[RESTORE] Cleared existing books");
     
     // Restore books if any exist
     if (backup.books.length > 0) {
@@ -63,9 +63,9 @@ export async function restoreFromBackup(backupPath: string): Promise<void> {
       console.log(`[RESTORE] Restored ${backup.books.length} books`);
     }
     
-    console.log('[RESTORE] Restore completed successfully');
+    console.log("[RESTORE] Restore completed successfully");
   } catch (error) {
-    console.error('[RESTORE] Error restoring backup:', error);
+    console.error("[RESTORE] Error restoring backup:", error);
     throw error;
   }
 }
@@ -77,9 +77,9 @@ export async function validateEnvironmentSafety(): Promise<{
   bookCount: number;
   hasProductionData: boolean;
 }> {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const isDevelopment = process.env.NODE_ENV === 'development';
-  const databaseUrl = process.env.DATABASE_URL || 'not-set';
+  const isProduction = process.env.NODE_ENV === "production";
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const databaseUrl = process.env.DATABASE_URL || "not-set";
   
   // Count current books
   const bookCountResult = await db.select().from(books);
@@ -97,7 +97,7 @@ export async function validateEnvironmentSafety(): Promise<{
   return {
     isProduction,
     isDevelopment,
-    databaseUrl: databaseUrl.substring(0, 50) + '...', // Truncate for security
+    databaseUrl: databaseUrl.substring(0, 50) + "...", // Truncate for security
     bookCount,
     hasProductionData
   };

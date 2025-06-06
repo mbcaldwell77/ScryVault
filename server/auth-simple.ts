@@ -1,19 +1,19 @@
-import { Router } from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { db } from './db';
-import { users, userSessions, registerSchema, loginSchema } from '@shared/schema';
-import { eq, and, lt } from 'drizzle-orm';
-import { AuthenticatedRequest } from './auth-middleware';
+import { Router } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { db } from "./db";
+import { users, userSessions, registerSchema, loginSchema } from "@shared/schema";
+import { eq, and, lt } from "drizzle-orm";
+import { AuthenticatedRequest } from "./auth-middleware";
 
 const router = Router();
 
 // Hardcoded JWT secrets for development
-const JWT_SECRET = 'scryvault_jwt_secret_key_2025_production_secure';
-const JWT_REFRESH_SECRET = 'scryvault_refresh_secret_key_2025_production_secure';
+const JWT_SECRET = "scryvault_jwt_secret_key_2025_production_secure";
+const JWT_REFRESH_SECRET = "scryvault_refresh_secret_key_2025_production_secure";
 
 // Register new user
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   try {
     const { email, password } = registerSchema.parse(req.body);
 
@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
       .limit(1);
 
     if (existingUser.length > 0) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: "User already exists" });
     }
 
     // Hash password
@@ -34,20 +34,20 @@ router.post('/register', async (req, res) => {
     const newUser = await db.insert(users).values({
       email,
       passwordHash,
-      subscriptionTier: 'free'
+      subscriptionTier: "free"
     }).returning();
 
     // Generate tokens
     const accessToken = jwt.sign(
       { userId: newUser[0].id }, 
       JWT_SECRET, 
-      { expiresIn: '1h' }
+      { expiresIn: "1h" }
     );
     
     const refreshToken = jwt.sign(
       { userId: newUser[0].id }, 
       JWT_REFRESH_SECRET, 
-      { expiresIn: '7d' }
+      { expiresIn: "7d" }
     );
 
     // Store session
@@ -76,16 +76,16 @@ router.post('/register', async (req, res) => {
       refreshToken
     });
   } catch (error) {
-    console.error('[Auth] Registration error:', error);
-    if (error instanceof Error && error.message.includes('validation')) {
-      return res.status(400).json({ error: 'Invalid input data' });
+    console.error("[Auth] Registration error:", error);
+    if (error instanceof Error && error.message.includes("validation")) {
+      return res.status(400).json({ error: "Invalid input data" });
     }
-    res.status(500).json({ error: 'Registration failed' });
+    res.status(500).json({ error: "Registration failed" });
   }
 });
 
 // Login user
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
 
@@ -96,14 +96,14 @@ router.post('/login', async (req, res) => {
       .limit(1);
 
     if (user.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user[0].passwordHash);
     if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // Clean up expired sessions for this user
@@ -117,13 +117,13 @@ router.post('/login', async (req, res) => {
     const accessToken = jwt.sign(
       { userId: user[0].id }, 
       JWT_SECRET, 
-      { expiresIn: '1h' }
+      { expiresIn: "1h" }
     );
     
     const refreshToken = jwt.sign(
       { userId: user[0].id }, 
       JWT_REFRESH_SECRET, 
-      { expiresIn: '7d' }
+      { expiresIn: "7d" }
     );
 
     // Store session
@@ -152,18 +152,18 @@ router.post('/login', async (req, res) => {
       refreshToken
     });
   } catch (error) {
-    console.error('[Auth] Login error:', error);
-    if (error instanceof Error && error.message.includes('validation')) {
-      return res.status(400).json({ error: 'Invalid input data' });
+    console.error("[Auth] Login error:", error);
+    if (error instanceof Error && error.message.includes("validation")) {
+      return res.status(400).json({ error: "Invalid input data" });
     }
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: "Login failed" });
   }
 });
 
 // Get current user
-router.get('/me', async (req: AuthenticatedRequest, res) => {
+router.get("/me", async (req: AuthenticatedRequest, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Not authenticated' });
+    return res.status(401).json({ error: "Not authenticated" });
   }
 
   try {
@@ -173,7 +173,7 @@ router.get('/me', async (req: AuthenticatedRequest, res) => {
       .limit(1);
 
     if (user.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.json({
@@ -184,16 +184,16 @@ router.get('/me', async (req: AuthenticatedRequest, res) => {
       }
     });
   } catch (error) {
-    console.error('[Auth] Get user error:', error);
-    res.status(500).json({ error: 'Failed to get user' });
+    console.error("[Auth] Get user error:", error);
+    res.status(500).json({ error: "Failed to get user" });
   }
 });
 
 // Logout
-router.post('/logout', async (req: AuthenticatedRequest, res) => {
+router.post("/logout", async (req: AuthenticatedRequest, res) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
 
     if (token) {
       // Remove session
@@ -201,10 +201,10 @@ router.post('/logout', async (req: AuthenticatedRequest, res) => {
         .where(eq(userSessions.token, token));
     }
 
-    res.json({ message: 'Logged out successfully' });
+    res.json({ message: "Logged out successfully" });
   } catch (error) {
-    console.error('[Auth] Logout error:', error);
-    res.status(500).json({ error: 'Logout failed' });
+    console.error("[Auth] Logout error:", error);
+    res.status(500).json({ error: "Logout failed" });
   }
 });
 

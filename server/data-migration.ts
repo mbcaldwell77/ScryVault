@@ -1,15 +1,15 @@
-import { db } from './db';
-import { users, books } from '@shared/schema';
-import { eq, isNull } from 'drizzle-orm';
-import bcrypt from 'bcrypt';
-import { environmentLockdown } from './environment-lockdown';
+import { db } from "./db";
+import { users, books } from "@shared/schema";
+import { eq, isNull } from "drizzle-orm";
+import bcrypt from "bcrypt";
+import { environmentLockdown } from "./environment-lockdown";
 
 export async function createDefaultAdminUser(): Promise<{ id: number; email: string }> {
   try {
-    console.log('[Migration] Creating default admin user...');
+    console.log("[Migration] Creating default admin user...");
     
-    const adminEmail = 'admin@scryvault.local';
-    const adminPassword = 'admin123456'; // User should change this immediately
+    const adminEmail = "admin@scryvault.local";
+    const adminPassword = "admin123456"; // User should change this immediately
     
     // Check if admin user already exists
     const existingAdmin = await db.select()
@@ -18,7 +18,7 @@ export async function createDefaultAdminUser(): Promise<{ id: number; email: str
       .limit(1);
     
     if (existingAdmin.length > 0) {
-      console.log('[Migration] Admin user already exists');
+      console.log("[Migration] Admin user already exists");
       return { id: existingAdmin[0].id, email: existingAdmin[0].email };
     }
     
@@ -28,26 +28,26 @@ export async function createDefaultAdminUser(): Promise<{ id: number; email: str
     const [adminUser] = await db.insert(users).values({
       email: adminEmail,
       passwordHash,
-      subscriptionTier: 'enterprise'
+      subscriptionTier: "enterprise"
     }).returning();
     
     console.log(`[Migration] Created admin user: ${adminEmail}`);
     console.log(`[Migration] Default password: ${adminPassword}`);
-    console.log('[Migration] ⚠️  CHANGE THE ADMIN PASSWORD IMMEDIATELY');
+    console.log("[Migration] ⚠️  CHANGE THE ADMIN PASSWORD IMMEDIATELY");
     
     return { id: adminUser.id, email: adminUser.email };
   } catch (error) {
-    console.error('[Migration] Error creating admin user:', error);
+    console.error("[Migration] Error creating admin user:", error);
     throw error;
   }
 }
 
 export async function migrateExistingBooks(): Promise<void> {
   try {
-    console.log('[Migration] Checking for books without user ownership...');
+    console.log("[Migration] Checking for books without user ownership...");
     
     // Validate environment safety
-    environmentLockdown.validateBulkOperation('MIGRATE_BOOKS', 0);
+    environmentLockdown.validateBulkOperation("MIGRATE_BOOKS", 0);
     
     // Find books without userId
     const orphanedBooks = await db.select()
@@ -55,7 +55,7 @@ export async function migrateExistingBooks(): Promise<void> {
       .where(isNull(books.userId));
     
     if (orphanedBooks.length === 0) {
-      console.log('[Migration] No books need migration');
+      console.log("[Migration] No books need migration");
       return;
     }
     
@@ -70,29 +70,29 @@ export async function migrateExistingBooks(): Promise<void> {
       .where(isNull(books.userId));
     
     console.log(`[Migration] Migrated ${orphanedBooks.length} books to admin user (${adminUser.email})`);
-    console.log('[Migration] Books are now secure and protected by user authentication');
+    console.log("[Migration] Books are now secure and protected by user authentication");
     
   } catch (error) {
-    console.error('[Migration] Error migrating books:', error);
+    console.error("[Migration] Error migrating books:", error);
     throw error;
   }
 }
 
 export async function runDataMigration(): Promise<void> {
   try {
-    console.log('[Migration] === STARTING DATABASE SECURITY MIGRATION ===');
+    console.log("[Migration] === STARTING DATABASE SECURITY MIGRATION ===");
     
     await migrateExistingBooks();
     
-    console.log('[Migration] === MIGRATION COMPLETE ===');
-    console.log('[Migration] Database is now secured with user authentication');
-    console.log('[Migration] Default admin credentials:');
-    console.log('[Migration]   Email: admin@scryvault.local');
-    console.log('[Migration]   Password: admin123456');
-    console.log('[Migration] ⚠️  CHANGE ADMIN PASSWORD IMMEDIATELY');
+    console.log("[Migration] === MIGRATION COMPLETE ===");
+    console.log("[Migration] Database is now secured with user authentication");
+    console.log("[Migration] Default admin credentials:");
+    console.log("[Migration]   Email: admin@scryvault.local");
+    console.log("[Migration]   Password: admin123456");
+    console.log("[Migration] ⚠️  CHANGE ADMIN PASSWORD IMMEDIATELY");
     
   } catch (error) {
-    console.error('[Migration] Migration failed:', error);
+    console.error("[Migration] Migration failed:", error);
     throw error;
   }
 }
