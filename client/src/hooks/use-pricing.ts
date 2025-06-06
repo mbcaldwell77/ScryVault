@@ -49,18 +49,9 @@ export function useUpdateBookPricing() {
   
   return useMutation({
     mutationFn: async (bookId: number) => {
-      const response = await fetch(`/api/books/${bookId}/pricing`, {
+      return await apiRequest(`/api/books/${bookId}/pricing`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return response.json();
     },
     onSuccess: (data: any, bookId) => {
       // Invalidate and refetch book data
