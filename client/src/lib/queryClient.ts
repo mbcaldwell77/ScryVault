@@ -9,45 +9,47 @@ async function throwIfResNotOk(res: Response) {
 
 // Token refresh mechanism
 async function refreshAuthToken(): Promise<string | null> {
-  const refreshToken = localStorage.getItem('refreshToken');
-  
+  const refreshToken = localStorage.getItem("refreshToken");
+
   if (!refreshToken) {
     return null;
   }
 
   try {
-    const response = await fetch('/api/auth/refresh', {
-      method: 'POST',
+    const response = await fetch("/api/auth/refresh", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ refreshToken }),
-      credentials: 'include',
+      credentials: "include",
     });
 
     if (response.ok) {
       const data = await response.json();
-      localStorage.setItem('authToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem("authToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
       return data.accessToken;
     } else {
+      console.warn("Refresh token invalid. Logging out...");
       // Refresh failed, clear all tokens
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      localStorage.removeItem('recentISBNs');
-      localStorage.removeItem('scannedBooks');
-      localStorage.removeItem('userPreferences');
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("recentISBNs");
+      localStorage.removeItem("scannedBooks");
+      localStorage.removeItem("userPreferences");
       return null;
     }
   } catch (error) {
-    console.error('Token refresh failed:', error);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('recentISBNs');
-    localStorage.removeItem('scannedBooks');
-    localStorage.removeItem('userPreferences');
+    console.warn("Refresh token threw an error. Logging out...");
+    console.error("Token refresh failed:", error);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("recentISBNs");
+    localStorage.removeItem("scannedBooks");
+    localStorage.removeItem("userPreferences");
     return null;
   }
 }
@@ -65,7 +67,7 @@ export async function apiRequest<T>(
       ...options.headers,
     };
 
-    return fetch(url, {
+    return fetch(`/api${url.startsWith("/") ? "" : "/"}${url}`, {
       ...options,
       headers,
       credentials: "include",
@@ -76,9 +78,9 @@ export async function apiRequest<T>(
 
   // If we get 401/403, try to refresh the token once
   if ((res.status === 401 || res.status === 403) && token) {
-    console.log('Token expired, attempting refresh...');
+    console.log("Token expired, attempting refresh...");
     const newToken = await refreshAuthToken();
-    
+
     if (newToken) {
       // Retry the request with the new token
       res = await makeRequest(newToken);
@@ -89,40 +91,42 @@ export async function apiRequest<T>(
   if (res.status === 401 || res.status === 403) {
     const errorText = await res.text();
     console.error(`Authentication error ${res.status}:`, errorText);
-    
+
     // Clear all authentication data
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('recentISBNs');
-    localStorage.removeItem('scannedBooks');
-    localStorage.removeItem('userPreferences');
-    
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("recentISBNs");
+    localStorage.removeItem("scannedBooks");
+    localStorage.removeItem("userPreferences");
+
     // Redirect to login only if not already on auth pages
     const currentPath = window.location.pathname;
-    if (currentPath !== '/login' && currentPath !== '/register') {
-      window.location.href = '/login';
+    if (currentPath !== "/login" && currentPath !== "/register") {
+      window.location.href = "/login";
     }
-    throw new Error('Authentication expired. Please log in again.');
+    throw new Error("Authentication expired. Please log in again.");
   }
 
   await throwIfResNotOk(res);
-  
+
   // Get response text only once
   const text = await res.text();
   if (!text) return null;
-  
+
   // Check if response is HTML (error page) instead of JSON
-  if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-    throw new Error('Server returned HTML error page instead of JSON');
+  if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
+    throw new Error("Server returned HTML error page instead of JSON");
   }
-  
+
   try {
     return JSON.parse(text) as T;
   } catch (parseError) {
-    console.error('JSON parse error:', parseError);
-    console.error('Response text:', text);
-    throw new Error(`Invalid JSON response from server: ${text.substring(0, 100)}`);
+    console.error("JSON parse error:", parseError);
+    console.error("Response text:", text);
+    throw new Error(
+      `Invalid JSON response from server: ${text.substring(0, 100)}`
+    );
   }
 }
 
@@ -132,14 +136,15 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const token = localStorage.getItem('authToken');
-    
+    const token = localStorage.getItem("authToken");
+
     const headers: Record<string, string> = {};
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const res = await fetch(queryKey[0] as string, {
+    const url = queryKey[0] as string;
+    const res = await fetch(`/api${url.startsWith("/") ? "" : "/"}${url}`, {
       headers,
       credentials: "include",
     });
