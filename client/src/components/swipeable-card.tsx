@@ -1,6 +1,5 @@
 import React from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { useSwipeable } from "react-swipeable";
 import type { BookMetadata } from "@/hooks/use-inventory";
 
 interface SwipeableCardProps {
