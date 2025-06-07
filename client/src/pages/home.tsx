@@ -148,24 +148,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Admin Quick Access - Elegant Collector Style */}
-        {user?.role === 'admin' && (
-          <div className="mb-4">
-            <Button 
-              onClick={() => setLocation("/admin")}
-              className="w-full h-16 text-lg font-semibold rounded-xl border-2 transition-all duration-300 hover:scale-102"
-              style={{
-                background: 'linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #B8860B 100%)',
-                borderColor: '#D4AF37',
-                color: '#1a1a1a',
-                boxShadow: '0 4px 20px rgba(212, 175, 55, 0.3)'
-              }}
-            >
-              <Shield className="w-6 h-6 mr-3" />
-              Admin Dashboard
-            </Button>
-          </div>
-        )}
+
 
         {/* Premium Action Buttons */}
         <div className="grid grid-cols-1 gap-4">
