@@ -1,0 +1,27 @@
+I am trying to implement the core UX for ScryVault—a professional-grade book reseller platform. The most important feature is the **swipeable scan-to-save interface**, which allows users to scan books, swipe to keep or discard, and enter purchase data for inventory and COGS tracking. However, the swipe card system is not rendering, and the homepage UI is completely misaligned with our brand and roadmap.
+
+I want you to do the following:
+
+- Research deeply across my codebase
+- Find what files and functions are related to these problems:
+  1. The scanner and swipe card interface does not appear or function
+  2. The homepage layout is broken and violates the design in our roadmap (V5.2)
+  3. The inventory dashboard is either missing or non-functional
+- Assess reasons why these features are not working
+  - Look at route wiring in `App.tsx`
+  - Confirm that scanned books are triggering the swipe card interface
+  - Confirm that `SwipeableCard`, `SwipeCardStack`, and `PurchaseModal` are being rendered and triggered correctly
+  - Audit whether `useScannedBooks()` and `useInventory()` are storing and retrieving expected data
+  - Examine the homepage (likely `Home.tsx` or `Landing.tsx`) for layout violations—red admin button, sizing problems, missing spacing, etc.
+- Cross-check actual behavior against the design and UX priorities in the V5.2 plan (`ScryVault Master Development Plan V5.2.md`)
+- Develop a fix plan to:
+  - Get the swipeable interface working on scanner scan or manual entry
+  - Ensure the purchase modal opens and saves data
+  - Restructure the homepage layout to match the refined collector design (dark theme, emerald/silver/gold, elegant spacing)
+  - Ensure inventory data is visible and browseable
+
+Finally, write this entire audit and fix strategy as a new `Instructions.md` file in the root of my project.
+
+Please be extremely thorough. If there is anything that might stop you from proceeding, tell me exactly what it is so I can unblock you.
+
+DO NOT START FIXING CODE YET. Just analyze and write the plan.
