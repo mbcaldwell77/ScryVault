@@ -77,6 +77,15 @@ export default function GlobalHeader({ title, showBackButton = false, onBack }: 
             <Settings className="w-4 h-4 mr-2" />
             Account Settings
           </DropdownMenuItem>
+          {user?.role === 'admin' && (
+            <DropdownMenuItem 
+              onClick={() => setLocation('/admin')}
+              className="cursor-pointer"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Admin Dashboard
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem 
             onClick={logout}
             disabled={isLoggingOut}

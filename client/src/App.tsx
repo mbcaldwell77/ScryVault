@@ -12,7 +12,6 @@ import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import Account from "@/pages/account";
 import AdminPage from "@/pages/admin";
-import AdminTest from "@/pages/admin-test";
 import PWAInstallBanner from "@/components/pwa-install-banner";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
