@@ -13,10 +13,12 @@ body {
 :root {
   /* ScryVault Premium Dark Theme Color Palette */
   --emerald-primary: #10B981;
+  --emerald-accent: #10B981;
   --forest-secondary: #6a7f3a;
   --sage-accent: #9bb068;
   --platinum-silver: #2a2d2e;
   --antique-gold: #D4AF37;
+  --gold-accent: #D4AF37;
   --charcoal-text: #e8eaed;
   --pure-white: #1a1d1e;
   --light-gray: #242729;
@@ -25,6 +27,7 @@ body {
   --dark-surface: #1e2124;
   --dark-card: #1F2937;
   --dark-border: #374151;
+  --dark-background: #1a1d1e;
   --text-light: #F3F4F6;
   --text-secondary: #9CA3AF;
 }

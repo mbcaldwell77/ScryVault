@@ -215,6 +215,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Book metadata endpoint (alias for book-lookup, used by scanner)
+  app.get("/api/book-metadata/:isbn", async (req, res) => {
+    try {
+      const { isbn } = req.params;
+      
+      // Try ISBNdb API first (provides format data)
+      let bookData = await fetchFromISBNdb(isbn);
+      
+      // Fallback to OpenLibrary API
+      if (!bookData) {
+        bookData = await fetchFromOpenLibrary(isbn);
+      }
+      
+      // Final fallback to Google Books API
+      if (!bookData) {
+        bookData = await fetchFromGoogleBooks(isbn);
+      }
+      
+      if (!bookData) {
+        return res.status(404).json({ error: "Book not found in any database" });
+      }
+      
+      res.json(bookData);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to lookup book" });
+    }
+  });
+
   // Get market pricing data for a book
   app.get("/api/book-pricing/:isbn", optionalAuth, async (req: AuthenticatedRequest, res) => {
     try {

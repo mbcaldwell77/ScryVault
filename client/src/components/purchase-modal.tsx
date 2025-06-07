@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { generateSKU, InventoryCopy, BookMetadata } from "@/hooks/use-inventory";
+import { generateSKU, InventoryCopy, BookMetadata, useInventory } from "@/hooks/use-inventory";
 
 interface PurchaseModalProps {
   isOpen: boolean;
@@ -17,12 +17,13 @@ export default function PurchaseModal({ isOpen, book, onClose, addCopyToInventor
   const [condition, setCondition] = useState("Good");
   const [purchaseLocation, setPurchaseLocation] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split("T")[0]);
+  const { inventory } = useInventory();
 
   if (!book) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const sku = generateSKU(book.metadata, condition);
+    const sku = generateSKU(book.metadata, condition, inventory);
     const copy: InventoryCopy = {
       sku,
       purchasePrice: parseFloat(purchasePrice || "0"),
