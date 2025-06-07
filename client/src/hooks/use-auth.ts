@@ -4,9 +4,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback } from 'react';
 import type { User } from '@shared/schema';
 
+type AuthUser = Pick<User, 'id' | 'email' | 'role' | 'subscriptionTier'>;
+
 interface AuthState {
   isAuthenticated: boolean;
-  user: User | null;
+  user: AuthUser | null;
   tokenValid: boolean;
 }
 
@@ -95,12 +97,14 @@ export function useAuth() {
               profile = await fetchProfile(token);
 
               if (profile) {
+                const { id, email, role, subscriptionTier } = profile as User;
+                const sanitizedUser: AuthUser = { id, email, role, subscriptionTier };
                 setAuthState({
                   isAuthenticated: true,
-                  user: profile,
+                  user: sanitizedUser,
                   tokenValid: true,
                 });
-                localStorage.setItem("user", JSON.stringify(profile));
+                localStorage.setItem("user", JSON.stringify(sanitizedUser));
                 setIsValidating(false);
                 return true;
               }
@@ -124,10 +128,12 @@ export function useAuth() {
       }
 
       // Success path
-      localStorage.setItem("user", JSON.stringify(profile));
+      const { id, email, role, subscriptionTier } = profile as User;
+      const sanitizedUser: AuthUser = { id, email, role, subscriptionTier };
+      localStorage.setItem("user", JSON.stringify(sanitizedUser));
       setAuthState({
         isAuthenticated: true,
-        user: profile,
+        user: sanitizedUser,
         tokenValid: true,
       });
       setIsValidating(false);
