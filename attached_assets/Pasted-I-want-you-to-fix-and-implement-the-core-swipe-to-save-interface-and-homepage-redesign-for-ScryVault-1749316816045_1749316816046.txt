@@ -1,0 +1,51 @@
+I want you to fix and implement the core swipe-to-save interface and homepage redesign for ScryVault.
+
+Before you begin, please carefully read and adhere to the plan and insights found in the `Instructions.md` file located in the root of the project. Follow each step methodically. If there is something in those instructions that might stop you (missing data, unavailable function, etc.), let me know and guide me on how to unblock you.
+
+---
+
+### 🔧 What You Must Implement:
+
+1. ✅ **Install `react-swipeable`**
+   - Run: `npm install react-swipeable`
+   - Add it to `package.json`
+
+2. ✅ **Fix `scanner.tsx` integration**
+   - Connect `useScannedBooks()` hook
+   - Trigger `SwipeCardStack` instead of redirecting to `/book-details/:isbn`
+   - On swipe **right**: open `PurchaseModal`
+   - On swipe **left**: discard and return to scan view
+
+3. ✅ **Connect `PurchaseModal.tsx`**
+   - On submit, generate SKU using existing logic
+   - Save book to `useInventory()` with proper metadata and copy structure
+
+4. ✅ **Redesign `home.tsx`**
+   - Replace `bg-red-600` Admin button with elegant collector style
+   - Use emerald/silver/gold gradient button
+   - Add spacing, container padding, and mystical UI balance
+   - Ensure the home layout reflects the premium tone from the V5.2 plan
+
+5. ✅ **Ensure all components compile and render**
+   - Do not leave half-wired props or broken imports
+   - Test swipe animation, modal behavior, and data persistence
+
+---
+
+### 🧪 Testing Expectations:
+
+- Scanning an ISBN should open a swipeable card
+- Swiping right triggers purchase form modal
+- Submitted data creates a new inventory copy under the correct ISBN
+- Homepage should look consistent with ScryVault’s dark, elegant aesthetic
+
+---
+
+If you are blocked or unsure about a required change, ask for clarification or alert me. Do not invent alternate behavior.
+
+Once complete, confirm in your response:
+- That all listed issues were fixed
+- That the scanner → swipe → modal → inventory path works as described
+- That the homepage now matches the collector aesthetic outlined in the plan
+
+Proceed now.
