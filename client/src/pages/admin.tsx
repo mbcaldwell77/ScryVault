@@ -176,7 +176,7 @@ export default function AdminPage() {
                           ID: {user.id} • Subscription: {user.subscriptionTier}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Created: {new Date(user.createdAt).toLocaleDateString()}
+                          Created: {user.createdAt ? new Date(user.createdAt.toString()).toLocaleDateString() : "Unknown"}
                         </p>
                       </div>
                     </div>

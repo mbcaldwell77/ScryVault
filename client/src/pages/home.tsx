@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Camera, Package, TrendingUp, LogOut, User, Settings } from "lucide-react";
+import { Camera, Package, TrendingUp, LogOut, User, Settings, Shield } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import type { InventoryBook } from "@/types";
@@ -65,8 +65,10 @@ export default function Home() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <div className="px-3 py-2 text-sm border-b">
-                  <p className="font-medium">{user?.firstName} {user?.lastName}</p>
-                  <p className="text-muted-foreground">{user?.email}</p>
+                  <p className="font-medium">{user?.email}</p>
+                  <p className="text-muted-foreground capitalize">
+                    {user?.subscriptionTier} • {user?.role || 'user'}
+                  </p>
                 </div>
                 <DropdownMenuItem 
                   onClick={() => setLocation('/account')}
@@ -75,6 +77,16 @@ export default function Home() {
                   <Settings className="w-4 h-4 mr-2" />
                   Account Settings
                 </DropdownMenuItem>
+                {user?.role === 'admin' && (
+                  <DropdownMenuItem 
+                    onClick={() => setLocation('/admin')}
+                    className="cursor-pointer"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    Admin Dashboard
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem 
                   onClick={logout}
                   disabled={isLoggingOut}
