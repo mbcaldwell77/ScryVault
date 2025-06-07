@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -23,20 +23,26 @@ export default function AdminPage() {
   const queryClient = useQueryClient();
   const currentUser = getUser();
 
-  // Redirect if not authenticated or not admin
-  if (!isAuthenticated()) {
-    setLocation('/login');
-    return null;
-  }
-  
-  if (currentUser?.role !== "admin") {
-    setLocation('/');
+  // Handle redirects with useEffect to avoid React warnings
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      setLocation('/login');
+      return;
+    }
+    
+    if (currentUser?.role !== "admin") {
+      setLocation('/');
+      return;
+    }
+  }, [isAuthenticated, currentUser, setLocation]);
+
+  // Show loading while checking authentication
+  if (!isAuthenticated() || currentUser?.role !== "admin") {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--dark-background)' }}>
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
-          <p className="text-muted-foreground mb-4">You need admin privileges to access this page.</p>
-          <Button onClick={() => setLocation('/')}>Return Home</Button>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Checking access...</p>
         </div>
       </div>
     );
