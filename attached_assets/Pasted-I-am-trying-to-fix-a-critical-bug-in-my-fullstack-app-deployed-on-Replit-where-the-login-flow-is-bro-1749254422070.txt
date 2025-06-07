@@ -1,0 +1,44 @@
+I am trying to fix a critical bug in my fullstack app deployed on Replit where the login flow is broken. I am currently getting a client-side error that says:
+
+"Server returned HTML error page instead of JSON"
+
+This happens when attempting to log in using the form at `/login`. I believe the login POST request to `/api/auth/login` is either not reaching the backend or is being intercepted incorrectly, possibly by the frontend’s Vite SSR fallback or by Replit’s deployment proxy.
+
+I want you to do the following:
+
+- Research deeply across my entire codebase
+- Identify all files and functions related to:
+  - Login API (`/api/auth/login`)
+  - Refresh token handling (`/api/auth/refresh`)
+  - Middleware and SSR fallbacks (especially in `vite.ts`)
+  - Route mounting (`routes.ts`, `auth-routes.ts`)
+  - Token validation and header logic (`queryClient.ts`, `useAuth.ts`)
+- Assess whether the login request is actually reaching the backend or is being swallowed by the Vite middleware or Replit routing layer
+- Investigate if route prefixing (e.g. `/api/auth`) is misaligned between frontend calls and backend Express mounting
+- Determine if the request is falling through to SSR and returning an HTML response instead of JSON
+- Look at frontend API logic and confirm that requests are:
+  - Properly prefixed with `/api`
+  - Sending tokens in the `Authorization` header
+  - Failing gracefully on 401 and retrying as needed
+
+Once you understand the codebase:
+
+- Write a plan that outlines:
+  - The probable root cause(s)
+  - A clean solution to the login issue
+  - Any supporting changes that must be made to prevent future silent failures (e.g. handling 404s or SSR fallbacks on `/api`)
+
+Save the entire report and plan into a new file called:
+
+Instructions.md
+
+sql
+Copy code
+
+This file should:
+- Clearly describe what’s broken
+- Show how the system currently connects (or fails to)
+- Describe what code changes are required and in what files
+- Include any assumptions or conditions that must be verified (e.g. route mounts, secrets, token headers)
+
+When finished, I will start a new chat and have you execute that plan.
