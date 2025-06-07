@@ -44,9 +44,12 @@ app.use((req, res, next) => {
 
   // Catch unmatched API routes before they fall through to frontend
   app.use('/api/*', (req, res) => {
-    console.warn(`[API] 404 - Unmatched API route: ${req.method} ${req.path}`);
+    const fullUrl = req.originalUrl || req.url;
+    console.warn(`[API] 404 - Unmatched API route: ${req.method} ${fullUrl}`);
+    console.warn(`[API] Available auth routes: /api/auth/login, /api/auth/register, /api/auth/refresh, /api/auth/me`);
     res.status(404).json({ 
-      error: `API endpoint not found: ${req.method} ${req.path}`,
+      error: `API endpoint not found: ${req.method} ${fullUrl}`,
+      suggestion: "Check if the URL is correctly formed. Auth endpoints are under /api/auth/",
       timestamp: new Date().toISOString()
     });
   });

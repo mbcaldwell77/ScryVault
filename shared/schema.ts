@@ -16,6 +16,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   subscriptionTier: varchar("subscription_tier", { length: 20 }).default("free"),
+  role: varchar("role", { length: 20 }).default("user"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

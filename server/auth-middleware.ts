@@ -14,6 +14,7 @@ export interface AuthenticatedRequest extends Request {
     id: number;
     email: string;
     subscriptionTier: string;
+    role: string;
   };
 }
 
@@ -104,7 +105,8 @@ export const optionalAuth = async (
         req.user = {
           id: user[0].id,
           email: user[0].email,
-          subscriptionTier: user[0].subscriptionTier || "free"
+          subscriptionTier: user[0].subscriptionTier || "free",
+          role: user[0].role || "user"
         };
       }
     }

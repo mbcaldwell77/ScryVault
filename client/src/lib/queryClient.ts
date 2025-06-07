@@ -117,7 +117,7 @@ export async function apiRequest<T>(
 
   // Check if response is HTML (error page) instead of JSON
   if (text.trim().startsWith("<!DOCTYPE") || text.trim().startsWith("<html")) {
-    throw new Error("Server returned HTML error page instead of JSON");
+    throw new Error(`Server returned HTML instead of JSON. This may indicate an API routing issue. Response: ${text.substring(0, 200)}...`);
   }
 
   try {
