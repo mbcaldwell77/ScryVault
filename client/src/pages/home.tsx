@@ -153,15 +153,15 @@ export default function Home() {
 
         {/* Premium Action Buttons */}
         <div className="grid grid-cols-1 gap-4">
-          <Button 
+          <Button
             onClick={() => setLocation("/scanner")}
             className="mystical-button h-16 text-white text-lg font-semibold rounded-xl"
           >
             <Camera className="w-6 h-6 mr-3" />
             Scan Book
           </Button>
-          
-          <Button 
+
+          <Button
             onClick={() => setLocation("/inventory")}
             className="h-16 text-lg font-semibold rounded-xl border-2 transition-all duration-300 hover:scale-102"
             style={{
@@ -173,6 +173,16 @@ export default function Home() {
             <Package className="w-6 h-6 mr-3" />
             View Inventory
           </Button>
+
+          {user?.role === 'admin' && (
+            <Button
+              onClick={() => setLocation('/admin')}
+              className="mystical-button h-16 text-white text-lg font-semibold rounded-xl"
+            >
+              <Shield className="w-6 h-6 mr-3" />
+              Admin Dashboard
+            </Button>
+          )}
         </div>
 
         {/* Mystical Empty State */}

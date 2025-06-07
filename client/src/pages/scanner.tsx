@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Keyboard, Zap, Monitor, Search } from "lucide-react";
+import { Keyboard, Zap, Search } from "lucide-react";
 import { useLocation } from "wouter";
 import CameraScanner from "@/components/camera-scanner";
 import ManualInputModal from "@/components/manual-input-modal";
@@ -9,7 +9,6 @@ import PurchaseModal from "@/components/purchase-modal";
 import { useRecentISBNs } from "@/lib/storage";
 import { useScannedBooks } from "@/hooks/use-scanned-books";
 import { useInventory, type BookMetadata } from "@/hooks/use-inventory";
-import { useQuery } from "@tanstack/react-query";
 import GlobalHeader from "@/components/global-header";
 
 export default function Scanner() {
