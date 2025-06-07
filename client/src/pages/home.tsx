@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Camera, Package, TrendingUp, LogOut, User, Settings, Shield } from "lucide-react";
 import { useLocation } from "wouter";

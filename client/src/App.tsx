@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -14,7 +15,6 @@ import Account from "@/pages/account";
 import AdminPage from "@/pages/admin";
 import PWAInstallBanner from "@/components/pwa-install-banner";
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect } from "react";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [, setLocation] = useLocation();

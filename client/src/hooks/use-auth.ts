@@ -1,7 +1,7 @@
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect, useCallback } from 'react';
 import type { User } from '@shared/schema';
 
 type AuthUser = Pick<User, 'id' | 'email' | 'role' | 'subscriptionTier'>;

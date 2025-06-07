@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Keyboard, Zap, Monitor, Search } from "lucide-react";
 import { useLocation } from "wouter";
