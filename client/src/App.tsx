@@ -137,14 +137,26 @@ function Router() {
 }
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
+  try {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  } catch (error) {
+    console.error('App initialization error:', error);
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Application Error</h1>
+          <p className="text-gray-600">Please refresh the page to try again.</p>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
