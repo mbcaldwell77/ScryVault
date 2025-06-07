@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import SwipeableCard from "./swipeable-card";
 import type { BookMetadata } from "@/hooks/use-inventory";
 

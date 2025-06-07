@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 
 export function useCamera() {
   const [stream, setStream] = useState<MediaStream | null>(null);

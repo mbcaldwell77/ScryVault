@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useCamera } from "@/hooks/use-camera";
 import { useBarcodeScanner } from "@/lib/barcode-scanner";
 

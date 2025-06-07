@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { LogOut, User, ArrowLeft, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
