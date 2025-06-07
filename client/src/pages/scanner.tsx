@@ -89,14 +89,17 @@ export default function Scanner() {
   };
 
   const handleSwipeRight = (book: { isbn: string; metadata: BookMetadata }) => {
+    console.log('Opening purchase modal for book:', book);
     setPurchaseModalBook(book);
   };
 
   const handleSwipeLeft = (isbn: string) => {
+    console.log('Discarding book:', isbn);
     removeFirst(); // Remove the discarded book from stack
   };
 
   const handlePurchaseModalClose = () => {
+    console.log('Purchase modal closed');
     setPurchaseModalBook(null);
     removeFirst(); // Remove the purchased book from stack
   };
