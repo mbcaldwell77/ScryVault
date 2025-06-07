@@ -283,17 +283,18 @@ router.get("/me", async (req: AuthenticatedRequest, res) => {
       email: users.email,
       subscriptionTier: users.subscriptionTier,
       role: users.role,
-      createdAt: users.createdAt
+      createdAt: users.createdAt,
     })
-    .from(users)
-    .where(eq(users.id, req.user.id))
-    .limit(1);
+      .from(users)
+      .where(eq(users.id, req.user.id))
+      .limit(1);
 
     if (user.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.json(user[0]);
+    const { id, email, subscriptionTier, role, createdAt } = user[0];
+    res.json({ id, email, subscriptionTier, role, createdAt });
   } catch (error) {
     console.error("[Auth] Get profile error:", error);
     res.status(401).json({ error: "Invalid token" });
