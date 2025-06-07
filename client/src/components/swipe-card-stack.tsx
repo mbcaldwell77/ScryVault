@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SwipeableCard from "./swipeable-card";
 import type { BookMetadata } from "@/hooks/use-inventory";
 
@@ -16,17 +16,22 @@ interface SwipeCardStackProps {
 export default function SwipeCardStack({ books, openPurchaseModal, onDiscard }: SwipeCardStackProps) {
   const [index, setIndex] = useState(0);
 
+  // Ensure index stays within bounds when books array changes
+  useEffect(() => {
+    if (index >= books.length) {
+      setIndex(0);
+    }
+  }, [books.length, index]);
+
   const current = books[index];
   if (!current) return <div className="text-center text-slate-500">No books scanned</div>;
 
   const handleRight = () => {
     openPurchaseModal(current);
-    setIndex((i) => i + 1);
   };
 
   const handleLeft = () => {
     if (onDiscard) onDiscard(current.isbn);
-    setIndex((i) => i + 1);
   };
 
   return (

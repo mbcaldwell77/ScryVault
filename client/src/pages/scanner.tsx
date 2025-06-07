@@ -131,12 +131,20 @@ export default function Scanner() {
             </button>
           </div>
           
-          <SwipeCardStack
-            books={books}
-            openPurchaseModal={handleSwipeRight}
-            onDiscard={handleSwipeLeft}
-          />
-        </div>
+      <SwipeCardStack
+        books={books}
+        openPurchaseModal={handleSwipeRight}
+        onDiscard={handleSwipeLeft}
+      />
+        {/* Quick scan button */}
+        <Button
+          className="fixed bottom-6 right-6 rounded-full text-white"
+          style={{ backgroundColor: '#10B981' }}
+          onClick={() => setLocation('/scanner')}
+        >
+          Scan New Book
+        </Button>
+      </div>
 
         <PurchaseModal
           isOpen={!!purchaseModalBook}
