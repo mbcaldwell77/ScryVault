@@ -67,7 +67,8 @@ export async function apiRequest<T>(
       ...options.headers,
     };
 
-    return fetch(`/api${url.startsWith("/") ? "" : "/"}${url}`, {
+    const apiUrl = url.startsWith("/api") ? url : `/api${url.startsWith("/") ? "" : "/"}${url}`;
+    return fetch(apiUrl, {
       ...options,
       headers,
       credentials: "include",
@@ -144,7 +145,8 @@ export const getQueryFn: <T>(options: {
     }
 
     const url = queryKey[0] as string;
-    const res = await fetch(`/api${url.startsWith("/") ? "" : "/"}${url}`, {
+    const apiUrl = url.startsWith("/api") ? url : `/api${url.startsWith("/") ? "" : "/"}${url}`;
+    const res = await fetch(apiUrl, {
       headers,
       credentials: "include",
     });
