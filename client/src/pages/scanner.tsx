@@ -4,7 +4,12 @@ import { ArrowLeft, Keyboard, Zap, Monitor, Search } from "lucide-react";
 import { useLocation } from "wouter";
 import CameraScanner from "@/components/camera-scanner";
 import ManualInputModal from "@/components/manual-input-modal";
+import SwipeCardStack from "@/components/swipe-card-stack";
+import PurchaseModal from "@/components/purchase-modal";
 import { useRecentISBNs } from "@/lib/storage";
+import { useScannedBooks } from "@/hooks/use-scanned-books";
+import { useInventory, type BookMetadata } from "@/hooks/use-inventory";
+import { useQuery } from "@tanstack/react-query";
 import GlobalHeader from "@/components/global-header";
 
 export default function Scanner() {
@@ -12,7 +17,10 @@ export default function Scanner() {
   const [showManualInput, setShowManualInput] = useState(false);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [purchaseModalBook, setPurchaseModalBook] = useState<{ isbn: string; metadata: BookMetadata } | null>(null);
   const { addRecentISBN } = useRecentISBNs();
+  const { books, addBook, removeFirst } = useScannedBooks();
+  const { addCopyToInventory } = useInventory();
 
   useEffect(() => {
     const checkDevice = () => {
@@ -28,15 +36,95 @@ export default function Scanner() {
     return () => window.removeEventListener('resize', checkDevice);
   }, []);
 
-  const handleBarcodeDetected = (isbn: string) => {
-    addRecentISBN(isbn); // Track scanned ISBNs
-    setLocation(`/book-details/${isbn}`);
+  // Fetch book metadata when ISBN is detected
+  const fetchBookMetadata = async (isbn: string): Promise<BookMetadata | null> => {
+    try {
+      const response = await fetch(`/api/book-metadata/${isbn}`);
+      if (!response.ok) throw new Error('Failed to fetch book metadata');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching book metadata:', error);
+      return null;
+    }
   };
 
-  const handleManualSubmit = (isbn: string) => {
-    setShowManualInput(false);
-    setLocation(`/book-details/${isbn}`);
+  const handleBarcodeDetected = async (isbn: string) => {
+    addRecentISBN(isbn); // Track scanned ISBNs
+    
+    // Fetch metadata and add to scanned books for swipe interface
+    const metadata = await fetchBookMetadata(isbn);
+    if (metadata) {
+      addBook(isbn, metadata);
+    } else {
+      // Fallback to basic metadata structure
+      addBook(isbn, {
+        title: `Book ${isbn}`,
+        author: 'Unknown Author'
+      });
+    }
   };
+
+  const handleManualSubmit = async (isbn: string) => {
+    setShowManualInput(false);
+    
+    // Fetch metadata and add to scanned books for swipe interface
+    const metadata = await fetchBookMetadata(isbn);
+    if (metadata) {
+      addBook(isbn, metadata);
+    } else {
+      // Fallback to basic metadata structure
+      addBook(isbn, {
+        title: `Book ${isbn}`,
+        author: 'Unknown Author'
+      });
+    }
+  };
+
+  const handleSwipeRight = (book: { isbn: string; metadata: BookMetadata }) => {
+    setPurchaseModalBook(book);
+  };
+
+  const handleSwipeLeft = (isbn: string) => {
+    removeFirst(); // Remove the discarded book from stack
+  };
+
+  const handlePurchaseModalClose = () => {
+    setPurchaseModalBook(null);
+    removeFirst(); // Remove the purchased book from stack
+  };
+
+  // Show swipe interface if books are available
+  if (books.length > 0) {
+    return (
+      <div className="flex-1 flex flex-col pb-24 min-h-screen" style={{ backgroundColor: 'var(--dark-background)' }}>
+        <GlobalHeader title="Swipe to Save" showBackButton={true} />
+        
+        <div className="flex-1 p-6">
+          <div className="text-center mb-6">
+            <p className="text-lg" style={{ color: 'var(--text-light)' }}>
+              Swipe right to purchase, left to discard
+            </p>
+            <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>
+              {books.length} book{books.length > 1 ? 's' : ''} remaining
+            </p>
+          </div>
+          
+          <SwipeCardStack
+            books={books}
+            openPurchaseModal={handleSwipeRight}
+            onDiscard={handleSwipeLeft}
+          />
+        </div>
+
+        <PurchaseModal
+          isOpen={!!purchaseModalBook}
+          book={purchaseModalBook}
+          onClose={handlePurchaseModalClose}
+          addCopyToInventory={addCopyToInventory}
+        />
+      </div>
+    );
+  }
 
   // Desktop-friendly interface
   if (isDesktop) {
@@ -110,6 +198,13 @@ export default function Scanner() {
           onClose={() => setShowManualInput(false)}
           onSubmit={handleManualSubmit}
         />
+
+        <PurchaseModal
+          isOpen={!!purchaseModalBook}
+          book={purchaseModalBook}
+          onClose={handlePurchaseModalClose}
+          addCopyToInventory={addCopyToInventory}
+        />
       </div>
     );
   }
@@ -168,6 +263,13 @@ export default function Scanner() {
         isOpen={showManualInput}
         onClose={() => setShowManualInput(false)}
         onSubmit={handleManualSubmit}
+      />
+
+      <PurchaseModal
+        isOpen={!!purchaseModalBook}
+        book={purchaseModalBook}
+        onClose={handlePurchaseModalClose}
+        addCopyToInventory={addCopyToInventory}
       />
     </div>
   );

@@ -1,7 +1,5 @@
 import { motion, useMotionValue, useTransform } from "framer-motion";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore dynamically require to avoid type errors if module is missing
-const { useSwipeable } = require("react-swipeable") as typeof import("react-swipeable");
+import { useSwipeable } from "react-swipeable";
 import type { BookMetadata } from "@/hooks/use-inventory";
 
 interface SwipeableCardProps {
@@ -32,33 +30,57 @@ export default function SwipeableCard({ isbn, metadata, onSwipeLeft, onSwipeRigh
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 w-72 h-96 flex flex-col"
-      style={{ x, rotate }}
+      className="rounded-xl shadow-2xl p-6 w-80 h-96 flex flex-col border-2"
+      style={{ 
+        x, 
+        rotate,
+        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d4a3f 100%)',
+        borderColor: 'var(--emerald-accent)',
+        boxShadow: '0 8px 32px rgba(45, 74, 63, 0.4)'
+      }}
       drag="x"
       onDragEnd={handleDragEnd}
       {...handlers}
     >
-      <div className="flex-1 flex flex-col items-center text-center space-y-3">
+      <div className="flex-1 flex flex-col items-center text-center space-y-4">
         <img
           src={metadata.imageUrl || "/placeholder-book-dark.svg"}
           alt="Book cover"
-          className="w-24 h-32 object-cover rounded"
+          className="w-28 h-36 object-cover rounded-lg border-2"
+          style={{ borderColor: 'var(--emerald-accent)' }}
           onError={(e) => {
             (e.target as HTMLImageElement).src = "/placeholder-book-dark.svg";
           }}
         />
-        <div className="space-y-1">
-          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 truncate">
+        <div className="space-y-2">
+          <h3 className="text-lg font-bold text-white leading-tight">
             {metadata.title}
           </h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
+          <p className="text-sm font-medium" style={{ color: 'var(--emerald-accent)' }}>
             {metadata.author}
           </p>
           {metadata.format && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">{metadata.format}</p>
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{metadata.format}</p>
           )}
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">{isbn}</p>
+        <p className="text-xs font-mono px-3 py-1 rounded-full" 
+           style={{ 
+             backgroundColor: 'rgba(212, 175, 55, 0.1)', 
+             color: 'var(--gold-accent)',
+             border: '1px solid rgba(212, 175, 55, 0.3)'
+           }}>
+          {isbn}
+        </p>
+        
+        {/* Swipe Instructions */}
+        <div className="mt-4 space-y-1">
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+            ← Swipe left to discard
+          </p>
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+            Swipe right to purchase →
+          </p>
+        </div>
       </div>
     </motion.div>
   );
