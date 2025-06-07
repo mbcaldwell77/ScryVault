@@ -80,10 +80,10 @@ export function useAuth() {
 
         if (refreshToken) {
           try {
-            const refreshRes = await fetch("/api/refresh-token", {
+            const refreshRes = await fetch("/api/auth/refresh", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ token: refreshToken }),
+              body: JSON.stringify({ refreshToken }),
               credentials: "include",
             });
 
