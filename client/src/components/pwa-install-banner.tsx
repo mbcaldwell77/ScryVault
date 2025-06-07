@@ -1,7 +1,7 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, X } from "lucide-react";
 import { usePWAInstall } from "@/hooks/use-pwa-install";
-import { useState } from "react";
 
 export default function PWAInstallBanner() {
   const { isInstallable, installApp } = usePWAInstall();

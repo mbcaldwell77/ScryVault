@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw, Edit, Trash2, TrendingUp } from "lucide-react";
 import { useLocation } from "wouter";
@@ -5,7 +6,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InventoryBook } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
 import { usePricingData, getConfidenceDisplay } from "@/hooks/use-pricing";

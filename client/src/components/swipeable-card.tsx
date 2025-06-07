@@ -24,18 +24,24 @@ export default function SwipeableCard({ isbn, metadata, onSwipeLeft, onSwipeRigh
     }
   };
 
-  const handlers = useSwipeable({
-    onSwipedLeft: () => {
-      console.log('Swiped left via touch');
-      onSwipeLeft();
-    },
-    onSwipedRight: () => {
+  // Touch events for mobile swipe support
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    x.set(touch.clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - x.get();
+    
+    if (deltaX > 100) {
       console.log('Swiped right via touch');
       onSwipeRight();
-    },
-    delta: 50,
-    trackMouse: true,
-  });
+    } else if (deltaX < -100) {
+      console.log('Swiped left via touch');
+      onSwipeLeft();
+    }
+  };
 
   return (
     <motion.div
@@ -49,7 +55,8 @@ export default function SwipeableCard({ isbn, metadata, onSwipeLeft, onSwipeRigh
       }}
       drag="x"
       onDragEnd={handleDragEnd}
-      {...handlers}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="flex-1 flex flex-col items-center text-center space-y-4">
         <img
