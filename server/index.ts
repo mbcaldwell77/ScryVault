@@ -42,6 +42,15 @@ app.use((req, res, next) => {
   const server = await registerRoutes(app);
   registerAdminRoutes(app);
 
+  // Catch unmatched API routes before they fall through to frontend
+  app.use('/api/*', (req, res) => {
+    console.warn(`[API] 404 - Unmatched API route: ${req.method} ${req.path}`);
+    res.status(404).json({ 
+      error: `API endpoint not found: ${req.method} ${req.path}`,
+      timestamp: new Date().toISOString()
+    });
+  });
+
   app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     const error = err as { status?: number; statusCode?: number; message?: string };
     const status = error.status || error.statusCode || 500;
