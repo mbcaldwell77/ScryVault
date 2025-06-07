@@ -1,16 +1,8 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Camera, Package, ChevronDown, ChevronRight, Download, Search, Upload, RefreshCw, Edit, Trash2, TrendingUp } from "lucide-react";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { useToast } from "@/hooks/use-toast";
-import { usePullToRefresh } from "@/hooks/use-pull-to-refresh";
-import { usePricingData, getConfidenceDisplay } from "@/hooks/use-pricing";
-import LivePricingDisplay from "@/components/live-pricing-display";
-import EditBookDialog from "@/components/edit-book-dialog";
-import DeleteBookDialog from "@/components/delete-book-dialog";
 import GlobalHeader from "@/components/global-header";
 import { useInventory, type InventoryCopy } from "@/hooks/use-inventory";
 
