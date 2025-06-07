@@ -24,9 +24,22 @@ export default function AdminPage() {
   const currentUser = getUser();
 
   // Redirect if not authenticated or not admin
-  if (!isAuthenticated() || currentUser?.role !== "admin") {
-    setLocation('/');
+  if (!isAuthenticated()) {
+    setLocation('/login');
     return null;
+  }
+  
+  if (currentUser?.role !== "admin") {
+    setLocation('/');
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--dark-background)' }}>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <p className="text-muted-foreground mb-4">You need admin privileges to access this page.</p>
+          <Button onClick={() => setLocation('/')}>Return Home</Button>
+        </div>
+      </div>
+    );
   }
 
   const { data: users, isLoading, error } = useQuery<AdminUser[]>({

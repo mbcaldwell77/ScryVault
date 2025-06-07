@@ -148,6 +148,19 @@ export default function Home() {
           </div>
         )}
 
+        {/* Admin Quick Access */}
+        {user?.role === 'admin' && (
+          <div className="mb-4">
+            <Button 
+              onClick={() => setLocation("/admin")}
+              className="w-full h-14 bg-red-600 hover:bg-red-700 text-white text-lg font-semibold rounded-xl border-2 border-red-500"
+            >
+              <Shield className="w-6 h-6 mr-3" />
+              Admin Dashboard
+            </Button>
+          </div>
+        )}
+
         {/* Premium Action Buttons */}
         <div className="grid grid-cols-1 gap-4">
           <Button 
