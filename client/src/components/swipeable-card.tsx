@@ -81,32 +81,13 @@ export default function SwipeableCard({ isbn, metadata, onSwipeLeft, onSwipeRigh
           {isbn}
         </p>
         
-        {/* Action Buttons for Testing */}
-        <div className="mt-4 flex gap-3">
-          <button
-            onClick={() => {
-              console.log('Discard button clicked');
-              onSwipeLeft();
-            }}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700"
-          >
-            Discard
-          </button>
-          <button
-            onClick={() => {
-              console.log('Purchase button clicked');
-              onSwipeRight();
-            }}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700"
-          >
-            Purchase
-          </button>
-        </div>
-        
         {/* Swipe Instructions */}
-        <div className="mt-2 space-y-1">
+        <div className="mt-4 space-y-1">
           <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-            ← Swipe left to discard | Swipe right to purchase →
+            ← Swipe left to discard
+          </p>
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+            Swipe right to purchase →
           </p>
         </div>
       </div>

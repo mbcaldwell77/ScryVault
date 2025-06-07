@@ -157,6 +157,13 @@ export function useAuth() {
   useEffect(() => {
     validateToken();
 
+    // Add visibility change listener to refresh token when tab becomes active
+    const handleVisibilityChange = () => {
+      if (!document.hidden && authState.isAuthenticated) {
+        validateToken();
+      }
+    };
+
     // Listen for storage changes (e.g., logout in another tab)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'authToken' && e.newValue === null) {
@@ -165,9 +172,14 @@ export function useAuth() {
       }
     };
 
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [validateToken, clearAuthData, setLocation]);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [validateToken, clearAuthData, setLocation, authState.isAuthenticated]);
 
   const logout = async () => {
     setIsLoggingOut(true);

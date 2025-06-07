@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { generateSKU, InventoryCopy, BookMetadata, useInventory } from "@/hooks/use-inventory";
+import { useToast } from "@/hooks/use-toast";
 
 interface PurchaseModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export default function PurchaseModal({ isOpen, book, onClose, addCopyToInventor
   const [purchaseLocation, setPurchaseLocation] = useState("");
   const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split("T")[0]);
   const { inventory } = useInventory();
+  const { toast } = useToast();
 
   if (!book) return null;
 
@@ -31,7 +33,14 @@ export default function PurchaseModal({ isOpen, book, onClose, addCopyToInventor
       purchaseDate,
       purchaseLocation: purchaseLocation || undefined,
     };
+    
     addCopyToInventory(book.isbn, book.metadata, copy);
+    
+    toast({
+      title: "Book Added to Inventory",
+      description: `${book.metadata.title} (SKU: ${sku}) saved successfully`,
+    });
+    
     setPurchasePrice("");
     setPurchaseLocation("");
     setCondition("Good");

@@ -295,20 +295,7 @@ export default function Scanner() {
               <Keyboard className="w-5 h-5 mr-2" />
               Manual Entry
             </Button>
-            
-            <Button 
-              onClick={() => {
-                console.log('Test swipe button clicked');
-                addBook('9780123456789', {
-                  title: 'Test Book for Swipe Demo',
-                  author: 'Demo Author',
-                  imageUrl: undefined
-                });
-              }}
-              className="w-full bg-emerald-600 bg-opacity-90 text-white hover:bg-emerald-700 py-3 font-medium"
-            >
-              Test Swipe Interface
-            </Button>
+
           </div>
         </div>
       </div>
