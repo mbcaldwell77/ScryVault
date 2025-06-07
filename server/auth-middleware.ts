@@ -60,7 +60,8 @@ export const authenticateToken = async (
     req.user = {
       id: user[0].id,
       email: user[0].email,
-      subscriptionTier: user[0].subscriptionTier || "free"
+      subscriptionTier: user[0].subscriptionTier || "free",
+      role: user[0].role || "user"
     };
 
     next();
@@ -115,4 +116,25 @@ export const optionalAuth = async (
   }
 
   next();
+};
+
+// Admin authentication - requires admin role
+export const authenticateAdmin = async (
+  req: AuthenticatedRequest, 
+  res: Response, 
+  next: NextFunction
+) => {
+  // First check regular authentication
+  await authenticateToken(req, res, () => {
+    // Then check admin role
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ error: "Admin access required" });
+    }
+    
+    next();
+  });
 };

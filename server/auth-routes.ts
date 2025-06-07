@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { db } from "./db";
 import { users, userSessions, registerSchema, loginSchema } from "@shared/schema";
 import { eq, and, lt, not, gt } from "drizzle-orm";
-import { authenticateToken, AuthenticatedRequest } from "./auth-middleware";
+import { authenticateToken, authenticateAdmin, AuthenticatedRequest } from "./auth-middleware";
 import { getJWTSecret, getJWTRefreshSecret, AUTH_CONFIG } from "./auth-config";
 
 const router = Router();
@@ -71,7 +71,8 @@ router.post("/register", async (req, res) => {
       user: {
         id: newUser[0].id,
         email: newUser[0].email,
-        subscriptionTier: newUser[0].subscriptionTier
+        subscriptionTier: newUser[0].subscriptionTier,
+        role: newUser[0].role || "user"
       },
       accessToken,
       refreshToken
@@ -152,7 +153,8 @@ router.post("/login", async (req, res) => {
       user: {
         id: user[0].id,
         email: user[0].email,
-        subscriptionTier: user[0].subscriptionTier
+        subscriptionTier: user[0].subscriptionTier,
+        role: user[0].role || "user"
       },
       accessToken,
       refreshToken
@@ -280,6 +282,7 @@ router.get("/me", async (req: AuthenticatedRequest, res) => {
       id: users.id,
       email: users.email,
       subscriptionTier: users.subscriptionTier,
+      role: users.role,
       createdAt: users.createdAt
     })
     .from(users)
@@ -424,6 +427,91 @@ router.delete("/delete-account", async (req: AuthenticatedRequest, res) => {
   } catch (error) {
     console.error("Delete account error:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Admin-only routes
+// Get all users (admin only)
+router.get("/admin/users", authenticateAdmin, async (req: AuthenticatedRequest, res) => {
+  try {
+    const allUsers = await db.select({
+      id: users.id,
+      email: users.email,
+      subscriptionTier: users.subscriptionTier,
+      role: users.role,
+      createdAt: users.createdAt
+    })
+    .from(users)
+    .orderBy(users.createdAt);
+
+    res.json(allUsers);
+  } catch (error) {
+    console.error("[Admin] Get users error:", error);
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// Update user role (admin only)
+router.put("/admin/users/:id/role", authenticateAdmin, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const { role } = req.body;
+
+    if (!role || !['user', 'admin'].includes(role)) {
+      return res.status(400).json({ error: "Invalid role. Must be 'user' or 'admin'" });
+    }
+
+    const updatedUser = await db.update(users)
+      .set({ role })
+      .where(eq(users.id, userId))
+      .returning({
+        id: users.id,
+        email: users.email,
+        subscriptionTier: users.subscriptionTier,
+        role: users.role,
+        createdAt: users.createdAt
+      });
+
+    if (updatedUser.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log(`[Admin] User ${updatedUser[0].email} role updated to ${role} by ${req.user!.email}`);
+    res.json({ user: updatedUser[0], message: "User role updated successfully" });
+  } catch (error) {
+    console.error("[Admin] Update user role error:", error);
+    res.status(500).json({ error: "Failed to update user role" });
+  }
+});
+
+// Delete user (admin only)
+router.delete("/admin/users/:id", authenticateAdmin, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+
+    // Prevent admin from deleting themselves
+    if (userId === req.user!.id) {
+      return res.status(400).json({ error: "Cannot delete your own account" });
+    }
+
+    // Delete user sessions first
+    await db.delete(userSessions)
+      .where(eq(userSessions.userId, userId));
+
+    // Delete user
+    const deletedUser = await db.delete(users)
+      .where(eq(users.id, userId))
+      .returning();
+
+    if (deletedUser.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log(`[Admin] User ${deletedUser[0].email} deleted by ${req.user!.email}`);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("[Admin] Delete user error:", error);
+    res.status(500).json({ error: "Failed to delete user" });
   }
 });
 
